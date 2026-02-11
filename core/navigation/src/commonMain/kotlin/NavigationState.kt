@@ -1,4 +1,4 @@
-package com.example.core.navigation
+package com.entourageapp.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -21,7 +21,6 @@ import androidx.savedstate.serialization.SavedStateConfiguration
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import kotlin.collections.mapValues
 
 
 class NavigationState(
@@ -74,6 +73,9 @@ fun rememberNavigationState(
 private val config = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
+            subclass(Route.ProjectList::class, Route.ProjectList.serializer())
+            subclass(Route.CalculatorsList::class, Route.CalculatorsList.serializer())
+            subclass(Route.UserProfile::class, Route.UserProfile.serializer())
         }
     }
 }

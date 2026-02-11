@@ -1,4 +1,4 @@
-package com.example.core.navigation
+package com.entourageapp.core.navigation
 
 import androidx.navigation3.runtime.NavKey
 

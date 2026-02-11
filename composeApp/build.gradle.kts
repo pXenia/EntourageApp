@@ -1,4 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -40,7 +39,15 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.material.icons.core)
+            implementation(libs.jetbrains.material3.adaptiveNavigation3)
+            implementation(libs.jetbrains.navigation3.ui)
+
             implementation(projects.core.ui)
+            implementation(projects.core.navigation)
+            implementation(projects.features.projects)
+            implementation(projects.features.calculators)
+            implementation(projects.features.userprofile)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
