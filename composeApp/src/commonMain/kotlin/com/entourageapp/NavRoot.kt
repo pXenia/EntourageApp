@@ -7,13 +7,19 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
@@ -21,10 +27,11 @@ import com.entourageapp.core.navigation.Navigator
 import com.entourageapp.core.navigation.Route
 import com.entourageapp.core.navigation.rememberNavigationState
 import com.entourageapp.core.navigation.toEntries
+import com.entourageapp.core.ui.appBackground
 import com.entourageapp.features.calculators.navigation.calculatorsListEntryBuilder
 import com.entourageapp.features.projects.navigation.projectListEntryBuilder
 import com.entourageapp.features.userprofile.navigation.userProfileEntryBuilder
-import com.entourageapp.navigation.NavBottomBar
+import com.entourageapp.navigation.CustomBottomBar
 import com.entourageapp.navigation.topLevelNavItems
 
 
@@ -40,20 +47,15 @@ fun NavRoot(
         Navigator(navigationState)
     }
 
-    Scaffold(
-        bottomBar = {
-            if (navigationState.shouldShowBottomBar) {
-                NavBottomBar(
-                    selectedKey = navigationState.topLevelRoute,
-                    onSelectKey = {
-                        navigator.navigate(it)
-                    }
-                )
-            }
-        }
-    ) { padding ->
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .appBackground()
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp)
+    ) {
         NavDisplay(
-            modifier = modifier.fillMaxSize().padding(padding),
+            modifier = modifier.fillMaxSize(),
             onBack = navigator::goBack,
             entries = navigationState.toEntries(
                 entryProvider {
@@ -66,6 +68,19 @@ fun NavRoot(
             popTransitionSpec = { NavigationAnimations.defaultPopTransitionSpec() },
             predictivePopTransitionSpec = { NavigationAnimations.defaultPopTransitionSpec() }
         )
+
+        if (navigationState.shouldShowBottomBar) {
+            CustomBottomBar(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+                    .navigationBarsPadding()
+                    .align(Alignment.BottomCenter),
+                items = topLevelNavItems,
+                navigationState = navigationState,
+                navigator = navigator
+            )
+        }
     }
 }
 
