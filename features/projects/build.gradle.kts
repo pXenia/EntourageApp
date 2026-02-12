@@ -34,6 +34,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.jetbrains.material3.adaptiveNavigation3)
             implementation(projects.core.navigation)
+            implementation(projects.core.ui)
         }
 
         androidMain.dependencies {

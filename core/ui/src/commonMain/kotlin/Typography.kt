@@ -35,6 +35,12 @@ fun getTypography(): Typography {
         ),
 
         // Основа (Lato)
+        headlineLarge = TextStyle(
+            fontFamily = body,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 56.sp
+
+        ),
         bodyMedium = TextStyle(
             fontFamily = body,
             fontWeight = FontWeight.Medium,
