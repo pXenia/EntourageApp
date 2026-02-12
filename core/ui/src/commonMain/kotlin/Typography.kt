@@ -23,11 +23,6 @@ fun getTypography(): Typography {
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp
         ),
-        displayLarge = TextStyle(
-            fontFamily = titles,
-            fontWeight = FontWeight.ExtraBold,
-            fontSize = 38.sp
-        ),
         bodyLarge = TextStyle(
             fontFamily = body,
             fontWeight = FontWeight.Normal,
@@ -38,8 +33,7 @@ fun getTypography(): Typography {
         headlineLarge = TextStyle(
             fontFamily = body,
             fontWeight = FontWeight.SemiBold,
-            fontSize = 56.sp
-
+            fontSize = 48.sp
         ),
         bodyMedium = TextStyle(
             fontFamily = body,

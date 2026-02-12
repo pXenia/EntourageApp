@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,6 +31,7 @@ import com.entourageapp.features.calculators.navigation.calculatorsListEntryBuil
 import com.entourageapp.features.projects.navigation.projectListEntryBuilder
 import com.entourageapp.features.userprofile.navigation.userProfileEntryBuilder
 import com.entourageapp.navigation.CustomBottomBar
+import com.entourageapp.navigation.TopLevelNavigationItem
 import com.entourageapp.navigation.topLevelNavItems
 
 
@@ -73,10 +73,10 @@ fun NavRoot(
             CustomBottomBar(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
+                    .padding(bottom = 16.dp)
                     .navigationBarsPadding()
                     .align(Alignment.BottomCenter),
-                items = topLevelNavItems,
+                items = topLevelNavItems as Map<Route, TopLevelNavigationItem>,
                 navigationState = navigationState,
                 navigator = navigator
             )

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,7 +50,7 @@ fun ProjectCard(
         colors = CardDefaults.cardColors(containerColor = EntourageBlack.copy(alpha = 0.1f))
     ) {
         Column(
-            modifier = Modifier.padding(24.dp),
+            modifier = Modifier.padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
@@ -100,14 +99,14 @@ private fun InfoBox(
     ) {
         Column(
             modifier = modifier
-                .defaultMinSize(minWidth = 75.dp, minHeight = 75.dp)
+                .defaultMinSize(minWidth = 65.dp, minHeight = 65.dp)
                 .padding(vertical = 4.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(-6.dp, Alignment.CenterVertically)
         ) {
             Text(
                 text = value,
-                style = MaterialTheme.typography.headlineLarge.copy(fontSize = 40.sp)
+                style = MaterialTheme.typography.headlineLarge.copy(fontSize = 32.sp)
             )
             Text(
                 text = label,
@@ -151,7 +150,7 @@ private fun CardTitle(
     ) {
         Text(
             text = title.uppercase(),
-            style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge.copy(fontSize = 24.sp),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
@@ -174,7 +173,7 @@ private fun SquareBadge (
             modifier = Modifier
                 .padding(vertical = 4.dp, horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(-10.dp)
+            verticalArrangement = Arrangement.spacedBy(-6.dp)
         ) {
             Text(
                 text = area,
