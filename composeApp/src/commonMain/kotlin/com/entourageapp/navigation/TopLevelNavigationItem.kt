@@ -1,30 +1,31 @@
 package com.entourageapp.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.entourageapp.core.navigation.Route
+import entourageapp.composeapp.generated.resources.Res
+import entourageapp.composeapp.generated.resources.calculator
+import entourageapp.composeapp.generated.resources.folder
+import entourageapp.composeapp.generated.resources.user
+import org.jetbrains.compose.resources.DrawableResource
 
 
 data class TopLevelNavigationItem(
-    val icon: ImageVector,
+    val icon: DrawableResource,
     val title: String
 )
 
 val projectsListFeature = TopLevelNavigationItem(
-    icon = Icons.Default.AccountCircle,
-    title = "Задачи",
+    icon = Res.drawable.folder,
+    title = "Проекты",
 )
 
 val calculatorsListFeature = TopLevelNavigationItem(
-    icon = Icons.Default.Add,
-    title = "Цвета",
+    icon = Res.drawable.calculator,
+    title = "Калькуляторы",
 )
 
 val userProfileFeature = TopLevelNavigationItem(
-    icon = Icons.Default.Add,
-    title = "Добавить",
+    icon = Res.drawable.user,
+    title = "Профиль",
 )
 
 val topLevelNavItems = mapOf(

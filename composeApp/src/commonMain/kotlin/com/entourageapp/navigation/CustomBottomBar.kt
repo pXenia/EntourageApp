@@ -34,6 +34,7 @@ import com.entourageapp.core.navigation.Navigator
 import com.entourageapp.core.navigation.Route
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageWhite
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun CustomBottomBar(
@@ -94,7 +95,7 @@ fun CustomBottomBarItem(
             horizontalArrangement = Arrangement.Center
         ) {
             Icon(
-                imageVector = item.icon,
+                painter = painterResource(item.icon),
                 contentDescription = item.title,
                 tint = contentColor,
                 modifier = Modifier.size(24.dp)
