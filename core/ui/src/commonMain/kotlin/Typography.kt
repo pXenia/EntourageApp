@@ -42,7 +42,7 @@ fun getTypography(): Typography {
         ),
         bodySmall = TextStyle(
             fontFamily = body,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Normal,
             fontSize = 12.sp
         ),
     )

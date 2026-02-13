@@ -15,11 +15,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
-import entourageapp.features.calculators.generated.resources.Res
-import entourageapp.features.calculators.generated.resources.angle_small_right
+import com.entourageapp.core.ui.arrowRight
 import org.jetbrains.compose.resources.painterResource
 
 
@@ -32,15 +32,14 @@ fun CalculatorCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(32.dp))
             .clickable { onCardClick() },
-        shape = RoundedCornerShape(32.dp),
         colors = CardDefaults.cardColors(containerColor = EntourageBlack.copy(alpha = 0.1f))
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 16.dp)
-                .clickable { onCardClick() },
+                .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -49,7 +48,7 @@ fun CalculatorCard(
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 20.sp)
             )
             Icon(
-                painter = painterResource(Res.drawable.angle_small_right),
+                painter = painterResource(arrowRight),
                 contentDescription = "arrow",
                 modifier = Modifier.size(24.dp),
             )
