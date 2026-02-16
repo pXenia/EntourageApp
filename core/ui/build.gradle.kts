@@ -31,9 +31,9 @@ kotlin {
             api(libs.compose.material3)
             api(libs.compose.ui)
             api(libs.compose.components.resources)
-
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.kotlinx.datetime)
         }
 
         androidMain.dependencies {

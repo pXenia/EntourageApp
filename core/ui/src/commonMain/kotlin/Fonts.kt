@@ -3,6 +3,7 @@ package com.entourageapp.core.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import entourageapp.core.ui.generated.resources.Lato_Light
 import entourageapp.core.ui.generated.resources.Lato_Medium
 import entourageapp.core.ui.generated.resources.Lato_Regular
 import entourageapp.core.ui.generated.resources.Lato_Semibold
@@ -30,4 +31,5 @@ fun latoFontFamily() = FontFamily(
     Font(Res.font.Lato_Regular, FontWeight.Normal),
     Font(Res.font.Lato_Semibold, FontWeight.SemiBold),
     Font(Res.font.Lato_Medium, FontWeight.Medium),
+    Font(Res.font.Lato_Light, FontWeight.Light),
 )

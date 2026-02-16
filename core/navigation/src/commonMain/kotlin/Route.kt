@@ -13,4 +13,6 @@ sealed interface Route: NavKey {
     data object UserProfile: Route
     @Serializable
     data object ProjectDetail: Route
+    @Serializable
+    data object CreateProject: Route
 }

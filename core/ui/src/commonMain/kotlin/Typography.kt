@@ -45,5 +45,10 @@ fun getTypography(): Typography {
             fontWeight = FontWeight.Normal,
             fontSize = 12.sp
         ),
+        headlineSmall = TextStyle(
+            fontFamily = body,
+            fontWeight = FontWeight.Light,
+            fontSize = 12.sp
+        ),
     )
 }
