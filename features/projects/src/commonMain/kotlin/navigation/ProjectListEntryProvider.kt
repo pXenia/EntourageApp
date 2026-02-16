@@ -17,7 +17,9 @@ fun EntryProviderScope<NavKey>.projectListEntryBuilder(navigator: Navigator) {
     }
 
     entry<Route.ProjectDetail> {
-        ProjectDetailScreen()
+        ProjectDetailScreen(
+            onBackClick = { navigator.goBack() }
+        )
     }
 
     entry<Route.CreateProject> {
