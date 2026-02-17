@@ -1,6 +1,7 @@
 package com.entourageapp.core.ui
 
 import entourageapp.core.ui.generated.resources.Res
+import entourageapp.core.ui.generated.resources.angle_small_down
 import entourageapp.core.ui.generated.resources.angle_small_left
 import entourageapp.core.ui.generated.resources.angle_small_right
 import entourageapp.core.ui.generated.resources.blueprint
@@ -26,3 +27,4 @@ val stats = Res.drawable.stats
 val document = Res.drawable.document
 val gallery = Res.drawable.layout_fluid
 val info = Res.drawable.info
+val more = Res.drawable.angle_small_down

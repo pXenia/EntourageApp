@@ -28,11 +28,12 @@ import com.entourageapp.core.navigation.rememberNavigationState
 import com.entourageapp.core.navigation.toEntries
 import com.entourageapp.core.ui.appBackground
 import com.entourageapp.features.calculators.navigation.calculatorsListEntryBuilder
-import com.entourageapp.features.projects.navigation.projectListEntryBuilder
+import com.entourageapp.features.projects.navigation.projectsEntryBuilder
 import com.entourageapp.features.userprofile.navigation.userProfileEntryBuilder
 import com.entourageapp.navigation.CustomBottomBar
 import com.entourageapp.navigation.TopLevelNavigationItem
 import com.entourageapp.navigation.topLevelNavItems
+import navigation.estimatesEntryBuilder
 
 
 @Composable
@@ -59,9 +60,10 @@ fun NavRoot(
             onBack = navigator::goBack,
             entries = navigationState.toEntries(
                 entryProvider {
-                    projectListEntryBuilder(navigator)
+                    projectsEntryBuilder(navigator)
                     calculatorsListEntryBuilder(navigator)
                     userProfileEntryBuilder(navigator)
+                    estimatesEntryBuilder(navigator)
                 }
             ),
             transitionSpec = { NavigationAnimations.defaultTransitionSpec() },

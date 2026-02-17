@@ -47,7 +47,8 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun ProjectDetailScreen(
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onEstimateClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -94,6 +95,7 @@ fun ProjectDetailScreen(
             )
             SectionButton(
                 modifier = Modifier.weight(1f),
+                onClick = onEstimateClick,
                 title = "Смета",
                 icon = folder
             )

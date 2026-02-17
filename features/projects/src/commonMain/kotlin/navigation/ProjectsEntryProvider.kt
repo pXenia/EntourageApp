@@ -8,7 +8,7 @@ import com.entourageapp.features.projects.presentation.ProjectDetailScreen
 import com.entourageapp.features.projects.presentation.ProjectListScreen
 import com.entourageapp.features.projects.presentation.createproject.CreateProjectScreen
 
-fun EntryProviderScope<NavKey>.projectListEntryBuilder(navigator: Navigator) {
+fun EntryProviderScope<NavKey>.projectsEntryBuilder(navigator: Navigator) {
     entry<Route.ProjectList> {
         ProjectListScreen(
             onCardClick = { navigator.navigate(Route.ProjectDetail) },
@@ -18,7 +18,8 @@ fun EntryProviderScope<NavKey>.projectListEntryBuilder(navigator: Navigator) {
 
     entry<Route.ProjectDetail> {
         ProjectDetailScreen(
-            onBackClick = { navigator.goBack() }
+            onBackClick = { navigator.goBack() },
+            onEstimateClick = { navigator.navigate(Route.EstimateList) }
         )
     }
 
