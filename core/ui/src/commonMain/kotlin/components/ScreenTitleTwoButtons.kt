@@ -82,7 +82,7 @@ private fun FloatingButton(
         Icon(
             painter = painterResource(icon),
             contentDescription = null,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(18.dp)
         )
     }
 }

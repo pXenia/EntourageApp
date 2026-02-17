@@ -31,10 +31,12 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
-import com.entourageapp.core.ui.EntouragePeachAlpha30
+import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
+import com.entourageapp.core.ui.components.Badge
 import com.entourageapp.core.ui.more
+import com.entourageapp.core.ui.tag
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -58,6 +60,7 @@ fun EstimateCard(
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Headline(
                 text = "материал",
@@ -72,7 +75,7 @@ fun EstimateCard(
             )
 
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -110,6 +113,17 @@ fun EstimateCard(
                         modifier = Modifier.weight(1f)
                     )
                 }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "Комната:",
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
+                    )
+                    Badge(tag, "Спальня")
+                }
+
             }
         }
     }
@@ -164,13 +178,13 @@ private fun InfoCard(
     text: String,
     value: String,
     modifier: Modifier = Modifier
-){
+) {
     Surface(
         modifier = modifier,
-        color = EntouragePeachAlpha30,
+        color = EntouragePeach.copy(alpha = 0.3f),
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, EntourageBlack)
-    ){
+    ) {
         Column(
             modifier = Modifier
                 .padding(12.dp)
