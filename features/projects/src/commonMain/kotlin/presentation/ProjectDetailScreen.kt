@@ -48,7 +48,8 @@ import org.jetbrains.compose.resources.painterResource
 fun ProjectDetailScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onEstimateClick: () -> Unit = {}
+    onEstimateClick: () -> Unit = {},
+    onRoomListClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -72,7 +73,9 @@ fun ProjectDetailScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        ProjectInfoCard()
+        ProjectInfoCard(
+            onRoomListClick = onRoomListClick
+        )
 
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
@@ -190,7 +193,9 @@ private fun DateBadge(
 }
 
 @Composable
-private fun ProjectInfoCard() {
+private fun ProjectInfoCard(
+    onRoomListClick: () -> Unit = {}
+) {
     Surface(
         color = EntourageBlack.copy(alpha = 0.1f),
         shape = RoundedCornerShape(32.dp),
@@ -201,7 +206,7 @@ private fun ProjectInfoCard() {
         ) {
             Row {
                 RoomsInfo(roomsCount = 5)
-                RoomsButton(onClick = {})
+                RoomsButton(onClick = onRoomListClick)
                 Spacer(modifier = Modifier.weight(1f))
                 StatsButton(onClick = {})
             }

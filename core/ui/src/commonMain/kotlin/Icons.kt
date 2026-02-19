@@ -5,18 +5,27 @@ import entourageapp.core.ui.generated.resources.angle_left
 import entourageapp.core.ui.generated.resources.angle_small_down
 import entourageapp.core.ui.generated.resources.angle_small_right
 import entourageapp.core.ui.generated.resources.bars_filter
+import entourageapp.core.ui.generated.resources.bath
+import entourageapp.core.ui.generated.resources.bed
 import entourageapp.core.ui.generated.resources.blueprint
 import entourageapp.core.ui.generated.resources.calculator
+import entourageapp.core.ui.generated.resources.clothes_hanger
 import entourageapp.core.ui.generated.resources.cross_small
 import entourageapp.core.ui.generated.resources.document
+import entourageapp.core.ui.generated.resources.door_open
 import entourageapp.core.ui.generated.resources.folder
+import entourageapp.core.ui.generated.resources.house_plan
 import entourageapp.core.ui.generated.resources.info
+import entourageapp.core.ui.generated.resources.kitchen_set
 import entourageapp.core.ui.generated.resources.layout_fluid
 import entourageapp.core.ui.generated.resources.menu_dots_vertical
 import entourageapp.core.ui.generated.resources.plus
 import entourageapp.core.ui.generated.resources.search
+import entourageapp.core.ui.generated.resources.settings
+import entourageapp.core.ui.generated.resources.stage_theatre
 import entourageapp.core.ui.generated.resources.stats
 import entourageapp.core.ui.generated.resources.tags
+import entourageapp.core.ui.generated.resources.teddy_bear
 import entourageapp.core.ui.generated.resources.user
 
 val folder = Res.drawable.folder
@@ -36,3 +45,12 @@ val tag = Res.drawable.tags
 val search = Res.drawable.search
 val filter = Res.drawable.bars_filter
 val menu = Res.drawable.menu_dots_vertical
+val kitchen = Res.drawable.kitchen_set
+val kidsroom = Res.drawable.teddy_bear
+val bathroom = Res.drawable.bath
+val bedroom = Res.drawable.bed
+val livingroom = Res.drawable.stage_theatre
+val dressingroom = Res.drawable.clothes_hanger
+val techroom = Res.drawable.settings
+val room = Res.drawable.house_plan
+val hallway = Res.drawable.door_open

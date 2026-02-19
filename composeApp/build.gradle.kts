@@ -49,6 +49,7 @@ kotlin {
             implementation(projects.features.calculators)
             implementation(projects.features.userprofile)
             implementation(projects.features.estimates)
+            implementation(projects.features.rooms)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

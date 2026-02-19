@@ -34,6 +34,7 @@ import com.entourageapp.navigation.CustomBottomBar
 import com.entourageapp.navigation.TopLevelNavigationItem
 import com.entourageapp.navigation.topLevelNavItems
 import navigation.estimatesEntryBuilder
+import navigation.roomsEntryBuilder
 
 
 @Composable
@@ -64,6 +65,7 @@ fun NavRoot(
                     calculatorsListEntryBuilder(navigator)
                     userProfileEntryBuilder(navigator)
                     estimatesEntryBuilder(navigator)
+                    roomsEntryBuilder(navigator)
                 }
             ),
             transitionSpec = { NavigationAnimations.defaultTransitionSpec() },
