@@ -6,5 +6,6 @@ data class Project(
     val square: String,
     val numberOfRooms: Int,
     val numberOfParticipants: Int,
-    val years: String
+    val years: String,
+    val isCompleted: Boolean = false
 )

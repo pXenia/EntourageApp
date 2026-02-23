@@ -29,7 +29,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,7 +50,6 @@ fun ProjectListScreen(
     onAddProjectClick: () -> Unit = {},
     viewModel: ProjectListVM = koinViewModel()
 ) {
-    val isSelected = remember { mutableIntStateOf(1) }
     val scrollState = rememberLazyListState()
     val isCollapsed by remember {
         derivedStateOf { scrollState.firstVisibleItemIndex > 0 || scrollState.firstVisibleItemScrollOffset > 50 }
@@ -87,14 +85,14 @@ fun ProjectListScreen(
             TabButton(
                 modifier = Modifier.weight(1f),
                 title = "Все",
-                isSelected = isSelected.intValue == 1,
-                onClick = { isSelected.intValue = 1 }
+                isSelected = state.projectFilter == ProjectFilter.ALL,
+                onClick = {viewModel.handleIntent(ProjectListIntent.FilterProjects(ProjectFilter.ALL))}
             )
             TabButton(
                 modifier = Modifier.weight(1f),
                 title = "Текущие",
-                isSelected = isSelected.intValue == 2,
-                onClick = { isSelected.intValue = 2 }
+                isSelected = state.projectFilter == ProjectFilter.CURRENT,
+                onClick = {viewModel.handleIntent(ProjectListIntent.FilterProjects(ProjectFilter.CURRENT))}
             )
         }
         Box(
