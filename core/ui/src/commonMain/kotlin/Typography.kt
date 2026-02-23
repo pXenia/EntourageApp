@@ -23,11 +23,6 @@ fun getTypography(): Typography {
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp
         ),
-        displayLarge = TextStyle(
-            fontFamily = titles,
-            fontWeight = FontWeight.ExtraBold,
-            fontSize = 38.sp
-        ),
         bodyLarge = TextStyle(
             fontFamily = body,
             fontWeight = FontWeight.Normal,
@@ -35,6 +30,11 @@ fun getTypography(): Typography {
         ),
 
         // Основа (Lato)
+        headlineLarge = TextStyle(
+            fontFamily = body,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 48.sp
+        ),
         bodyMedium = TextStyle(
             fontFamily = body,
             fontWeight = FontWeight.Medium,
@@ -42,7 +42,12 @@ fun getTypography(): Typography {
         ),
         bodySmall = TextStyle(
             fontFamily = body,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp
+        ),
+        headlineSmall = TextStyle(
+            fontFamily = body,
+            fontWeight = FontWeight.Light,
             fontSize = 12.sp
         ),
     )

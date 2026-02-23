@@ -74,6 +74,7 @@ private val config = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
             subclass(Route.ProjectList::class, Route.ProjectList.serializer())
+            subclass(Route.ProjectDetail::class, Route.ProjectDetail.serializer())
             subclass(Route.CalculatorsList::class, Route.CalculatorsList.serializer())
             subclass(Route.UserProfile::class, Route.UserProfile.serializer())
         }

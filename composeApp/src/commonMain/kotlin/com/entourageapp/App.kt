@@ -1,13 +1,14 @@
 package com.entourageapp
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.entourageapp.core.ui.EntourageTheme
 
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
+    EntourageTheme {
         NavRoot()
     }
+    initKoin()
 }
