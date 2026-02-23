@@ -3,6 +3,7 @@ package com.entourageapp.core.ui.components
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -13,6 +14,7 @@ import com.entourageapp.core.ui.EntourageLightBlueGray
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomDatePickerModal(
     initialDate: Long?,
@@ -22,7 +24,6 @@ fun CustomDatePickerModal(
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = initialDate
     )
-
     DatePickerDialog(
     onDismissRequest = onDismiss,
     confirmButton = {

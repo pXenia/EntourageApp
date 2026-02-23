@@ -29,7 +29,7 @@ class ProjectsRepositoryImpl() : ProjectsRepository {
             square = "70",
             numberOfRooms = 2,
             numberOfParticipants = 10,
-            years = "202-2026"
+            years = "2021-2026"
         ),
         Project(
             id = 4,

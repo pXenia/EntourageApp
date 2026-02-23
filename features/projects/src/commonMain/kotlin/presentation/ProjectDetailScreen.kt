@@ -49,7 +49,8 @@ fun ProjectDetailScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onEstimateClick: () -> Unit = {},
-    onRoomListClick: () -> Unit = {}
+    onRoomListClick: () -> Unit = {},
+    onProjectInfoClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -88,6 +89,7 @@ fun ProjectDetailScreen(
         ) {
             SectionButton(
                 modifier = Modifier.weight(1f),
+                onClick = onProjectInfoClick,
                 title = "Документ",
                 icon = document
             )

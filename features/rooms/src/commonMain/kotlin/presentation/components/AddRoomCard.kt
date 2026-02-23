@@ -1,4 +1,4 @@
-package presentation.components
+package com.entourageapp.features.rooms.presentation.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

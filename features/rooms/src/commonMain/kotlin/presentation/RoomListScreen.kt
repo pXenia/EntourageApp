@@ -1,4 +1,4 @@
-package presentation
+package com.entourageapp.features.rooms.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,8 +19,8 @@ import com.entourageapp.core.ui.hallway
 import com.entourageapp.core.ui.kidsroom
 import com.entourageapp.core.ui.kitchen
 import com.entourageapp.core.ui.techroom
-import presentation.components.AddRoomCard
-import presentation.components.RoomCard
+import com.entourageapp.features.rooms.presentation.components.AddRoomCard
+import com.entourageapp.features.rooms.presentation.components.RoomCard
 
 @Composable
 fun RoomListScreen (
