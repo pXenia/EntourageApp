@@ -7,6 +7,7 @@ import com.entourageapp.features.projects.domain.usecases.GetProjectListUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -33,11 +34,18 @@ class ProjectListVM(
                 it.copy(isLoading = true)
             }
             delay(1000)
-            allProjects = getProjectListUseCase()
-            currentProjects = allProjects.filter { !it.isCompleted }
-            _state.update {
-                it.copy(isLoading = false, projects = allProjects)
-            }
+
+            getProjectListUseCase()
+                .catch { error ->
+                    _state.update { it.copy(isLoading = false, error = error.message.toString()) }
+                }
+                .collect { projects ->
+                    allProjects = projects
+                    currentProjects = allProjects.filter { !it.isCompleted }
+                    _state.update {
+                        it.copy(isLoading = false, projects = allProjects)
+                    }
+                }
         }
     }
 

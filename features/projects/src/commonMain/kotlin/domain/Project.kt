@@ -1,5 +1,7 @@
 package com.entourageapp.features.projects.domain
 
+import com.entourageapp.core.network.ProjectDto
+
 data class Project(
     val id: Int,
     val title: String,
@@ -8,4 +10,14 @@ data class Project(
     val numberOfParticipants: Int,
     val years: String,
     val isCompleted: Boolean = false
+)
+
+fun ProjectDto.toDomain() = Project(
+    id = id,
+    title = title,
+    square = square,
+    numberOfRooms = numberOfRooms,
+    numberOfParticipants = numberOfParticipants,
+    years = years,
+    isCompleted = isCompleted
 )

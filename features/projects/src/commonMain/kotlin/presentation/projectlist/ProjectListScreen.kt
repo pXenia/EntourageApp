@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -103,6 +104,12 @@ fun ProjectListScreen(
                     modifier = Modifier.align(Alignment.Center),
                     color = EntourageTeal,
                     trackColor = EntourageWhite.copy(alpha = 0.6f),
+                )
+            }
+            if (state.error != null) {
+                Text(
+                    text = state.error,
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
             LazyColumn(

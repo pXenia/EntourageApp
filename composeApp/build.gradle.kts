@@ -56,6 +56,7 @@ kotlin {
             implementation(projects.features.userprofile)
             implementation(projects.features.estimates)
             implementation(projects.features.rooms)
+            implementation(projects.core.network)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

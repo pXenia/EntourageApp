@@ -6,7 +6,7 @@ data class ProjectListState(
     val isLoading: Boolean = false,
     val projectFilter: ProjectFilter = ProjectFilter.ALL,
     val projects: List<Project> = emptyList(),
-    val error: Error? = null
+    val error: String? = null
 )
 
 sealed class ProjectListIntent {
