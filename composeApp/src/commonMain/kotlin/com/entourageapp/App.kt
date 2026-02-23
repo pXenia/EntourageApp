@@ -10,4 +10,5 @@ fun App() {
     EntourageTheme {
         NavRoot()
     }
+    initKoin()
 }

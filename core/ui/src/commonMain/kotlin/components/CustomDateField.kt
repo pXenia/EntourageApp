@@ -3,15 +3,14 @@ package com.entourageapp.core.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,10 +53,15 @@ fun CustomDateField(
             OutlinedTextField(
                 value = value.toFormattedDate(),
                 onValueChange = {},
-                modifier = Modifier.fillMaxWidth().minimumInteractiveComponentSize(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = 40.dp),
                 readOnly = true,
                 shape = shape,
-                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                textStyle = MaterialTheme.typography.bodySmall.copy(
+                    textAlign = TextAlign.Center,
+                    fontSize = 14.sp
+                ),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = EntourageWhite.copy(alpha = 0.6f),
                     unfocusedContainerColor = EntourageWhite.copy(alpha = 0.6f),

@@ -9,6 +9,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.entourageapp.core.ui.EntourageTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,7 +25,9 @@ class MainActivity : ComponentActivity() {
         windowInsetsController.show(WindowInsetsCompat.Type.statusBars())
 
         setContent {
-            App()
+            EntourageTheme {
+                NavRoot()
+            }
         }
     }
 }

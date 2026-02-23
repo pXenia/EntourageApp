@@ -1,6 +1,7 @@
 package com.entourageapp.core.ui.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -52,13 +53,15 @@ fun CustomTextBar(
                     text = placeholder,
                     modifier = Modifier.fillMaxWidth(),
                     color = EntourageBlack.copy(alpha = 0.7f),
-                    //textAlign = textAlign
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp)
                 )
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 40.dp),
             shape = RoundedCornerShape(32.dp),
             singleLine = isSingleLine,
-            //textStyle = TextStyle.Default.copy(textAlign = textAlign),
+            textStyle = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp),
             trailingIcon = {
                 if (trailingIcon != null) {
                     IconButton(
