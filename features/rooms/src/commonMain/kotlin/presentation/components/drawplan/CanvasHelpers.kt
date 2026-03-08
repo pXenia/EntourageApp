@@ -1,17 +1,8 @@
 package com.entourageapp.features.rooms.presentation.components.drawplan
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
@@ -19,8 +10,8 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
 import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageRed
@@ -40,8 +31,8 @@ fun DrawScope.drawGridCentered(w: Float, h: Float, cellSize: Float, step: Int, o
     val majorRows = ((h - 2 * offY) / (cellSize * step)).toInt()
 
     // цвета
-    val gridMajor = EntourageWhite
-    val gridMinor = EntourageWhite.copy(alpha = 0.5f)
+    val gridMajor = EntourageBlack.copy(alpha = 0.8f)
+    val gridMinor = EntourageBlack.copy(alpha = 0.2f)
 
     // отрисовка вертикальных линий
     for (c in 0..(majorCols * step)) {
@@ -87,23 +78,6 @@ fun DrawScope.drawWallLabel(measurer: TextMeasurer, label: String, cx: Float, cy
             cornerRadius = CornerRadius(4f)
         )
         drawText(measured, topLeft = Offset(cx - tw / 2, cy - th / 2))
-    }
-}
-
-@Composable
-fun RowScope.ModeChip(label: String, active: Boolean, color: Color, onClick: () -> Unit) {
-    // кнопка выбора режима рисования
-    Button(
-        onClick = onClick,
-        modifier = Modifier.weight(1f),
-        shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (active) color.copy(alpha = 0.15f) else Color.Transparent,
-            contentColor = if (active) color else EntourageLightBlueGray.copy(alpha = 0.4f)
-        ),
-        contentPadding = PaddingValues(0.dp)
-    ) {
-        Text(label, fontSize = 11.sp, maxLines = 1)
     }
 }
 

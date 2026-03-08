@@ -9,6 +9,16 @@ class GetProjectListUseCaseImpl(
     private val projectsRepository: ProjectsRepository
 ): GetProjectListUseCase {
     override operator fun invoke(): Flow<List<Project>> = flow {
-        emit(emptyList())
+        emit(listOf(
+            Project(
+                1,
+                "",
+                "",
+                0,
+                0,
+                "",
+                true,
+            )
+        ))
     }
 }

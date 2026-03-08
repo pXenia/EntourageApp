@@ -21,7 +21,7 @@ fun EntryProviderScope<NavKey>.projectsEntryBuilder(navigator: Navigator) {
             onBackClick = { navigator.goBack() },
             onEstimateClick = { navigator.navigate(Route.EstimateList) },
             onRoomListClick = { navigator.navigate(Route.RoomList) },
-            onProjectInfoClick = {  }
+            onProjectInfoClick = { navigator.navigate(Route.RoomInfo) }
         )
     }
 
