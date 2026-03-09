@@ -119,7 +119,7 @@ fun ProjectListScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(bottom = 24.dp)
             ) {
-                items(state.projects) { project ->
+                items(state.projectCards) { project ->
                     ProjectCard(
                         modifier = Modifier
                             .animateItem(
@@ -130,8 +130,8 @@ fun ProjectListScreen(
                         title = project.title,
                         area = project.square,
                         years = project.years,
-                        rooms = project.numberOfRooms,
-                        participants = project.numberOfParticipants
+                        rooms = project.roomsCount,
+                        participants = project.membersCount
                     )
                 }
             }

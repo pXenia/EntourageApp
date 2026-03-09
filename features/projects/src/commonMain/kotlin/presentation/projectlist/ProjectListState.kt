@@ -1,11 +1,11 @@
 package com.entourageapp.features.projects.presentation.projectlist
 
-import com.entourageapp.features.projects.domain.Project
+import com.entourageapp.features.projects.domain.ProjectCard
 
 data class ProjectListState(
     val isLoading: Boolean = false,
     val projectFilter: ProjectFilter = ProjectFilter.ALL,
-    val projects: List<Project> = emptyList(),
+    val projectCards: List<ProjectCard> = emptyList(),
     val error: String? = null
 )
 

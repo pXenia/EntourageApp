@@ -18,7 +18,7 @@ private const val BASE_URL = "http://10.0.2.2:8000/" // для эмулятор�
 
 class KtorProjectsApi(private val client: HttpClient) : ProjectsApi {
     override suspend fun getProjects(): List<ProjectDto> {
-        return client.get("projects").body()
+        return client.get("projects/list").body()
     }
 }
 

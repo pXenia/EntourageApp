@@ -2,7 +2,7 @@ package com.entourageapp.features.projects.presentation.projectlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.entourageapp.features.projects.domain.Project
+import com.entourageapp.features.projects.domain.ProjectCard
 import com.entourageapp.features.projects.domain.usecases.GetProjectListUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +17,8 @@ class ProjectListVM(
 ) : ViewModel() {
     private val _state = MutableStateFlow(ProjectListState())
     val state: StateFlow<ProjectListState> = _state
-    private var allProjects = emptyList<Project>()
-    private var currentProjects = emptyList<Project>()
+    private var allProjectCards = emptyList<ProjectCard>()
+    private var currentProjectCards = emptyList<ProjectCard>()
 
 
     fun handleIntent(intent: ProjectListIntent) {
@@ -40,10 +40,10 @@ class ProjectListVM(
                     _state.update { it.copy(isLoading = false, error = error.message.toString()) }
                 }
                 .collect { projects ->
-                    allProjects = projects
-                    currentProjects = allProjects.filter { !it.isCompleted }
+                    allProjectCards = projects
+                    currentProjectCards = allProjectCards.filter { !it.isCompleted }
                     _state.update {
-                        it.copy(isLoading = false, projects = allProjects)
+                        it.copy(isLoading = false, projectCards = allProjectCards)
                     }
                 }
         }
@@ -51,8 +51,8 @@ class ProjectListVM(
 
     private fun filterProjects(filter: ProjectFilter) {
         when(filter){
-            ProjectFilter.ALL -> _state.update { it.copy(projectFilter = ProjectFilter.ALL, projects = allProjects) }
-            ProjectFilter.CURRENT -> _state.update { it.copy(projectFilter = ProjectFilter.CURRENT, projects = currentProjects) }
+            ProjectFilter.ALL -> _state.update { it.copy(projectFilter = ProjectFilter.ALL, projectCards = allProjectCards) }
+            ProjectFilter.CURRENT -> _state.update { it.copy(projectFilter = ProjectFilter.CURRENT, projectCards = currentProjectCards) }
         }
     }
 }

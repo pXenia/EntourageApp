@@ -7,12 +7,17 @@ import kotlinx.serialization.Serializable
 data class ProjectDto(
     val id: Int,
     val title: String,
-    val square: String,
-    @SerialName("number_of_rooms")
-    val numberOfRooms: Int,
-    @SerialName("number_of_participants")
-    val numberOfParticipants: Int,
-    val years: String,
+    @SerialName("start_date")
+    val startDate: String,
+    @SerialName("end_date")
+    val endDate: String?,
+    val square: Float,
+    val budget: Float,
+    val description: String,
+    @SerialName("rooms_count")
+    val roomsCount: Int,
+    @SerialName("members_count")
+    val membersCount: Int,
     @SerialName("is_completed")
     val isCompleted: Boolean
 )
