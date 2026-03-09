@@ -1,45 +1,38 @@
 package com.entourageapp.core.ui.components
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.number
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Instant
 
 @Composable
 fun CustomDateField(
     label: String = "",
-    value: Long? = 1771228634,
-    onDateSelected: (Long?) -> Unit = {},
+    value: String = "",
+    onValueChange: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    var showDatePicker by remember { mutableStateOf(false) }
     val shape = RoundedCornerShape(50)
-    val currentBorderColor = if (showDatePicker) EntourageTeal else Color.Transparent
 
     Column(modifier = modifier) {
         Text(
@@ -49,56 +42,65 @@ fun CustomDateField(
             modifier = Modifier.padding(start = 22.dp)
         )
 
-        Box(modifier = Modifier.fillMaxWidth()) {
-            OutlinedTextField(
-                value = value.toFormattedDate(),
-                onValueChange = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .defaultMinSize(minHeight = 40.dp),
-                readOnly = true,
-                shape = shape,
-                textStyle = MaterialTheme.typography.bodySmall.copy(
-                    textAlign = TextAlign.Center,
-                    fontSize = 14.sp
-                ),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = EntourageWhite.copy(alpha = 0.6f),
-                    unfocusedContainerColor = EntourageWhite.copy(alpha = 0.6f),
-                    focusedBorderColor = EntourageTeal,
-                    unfocusedBorderColor = currentBorderColor,
-                    focusedTextColor = EntourageBlack,
-                    unfocusedTextColor = EntourageBlack,
-                    disabledBorderColor = currentBorderColor
-                )
-            )
-
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .clip(shape)
-                    .clickable { showDatePicker = true }
-            )
-        }
-    }
-
-    if (showDatePicker) {
-        CustomDatePickerModal(
-            initialDate = value,
-            onDateSelected = {
-                onDateSelected(it)
-                showDatePicker = false
+        OutlinedTextField(
+            value = value,
+            onValueChange = { input ->
+                val digitsOnly = input.filter { it.isDigit() }
+                if (digitsOnly.length <= 8) {
+                    onValueChange(digitsOnly)
+                }
             },
-            onDismiss = { showDatePicker = false }
+            modifier = Modifier
+                .fillMaxWidth()
+                .defaultMinSize(minHeight = 40.dp),
+            placeholder = {
+                Text("ДД.ММ.ГГГГ", color = Color.Gray, fontSize = 14.sp)
+            },
+            shape = shape,
+            visualTransformation = DateTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            textStyle = MaterialTheme.typography.bodySmall.copy(
+                textAlign = TextAlign.Center,
+                fontSize = 14.sp
+            ),
+            singleLine = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = EntourageWhite.copy(alpha = 0.6f),
+                unfocusedContainerColor = EntourageWhite.copy(alpha = 0.6f),
+                focusedBorderColor = EntourageTeal,
+                unfocusedBorderColor = Color.Transparent,
+                focusedTextColor = EntourageBlack,
+                unfocusedTextColor = EntourageBlack
+            )
         )
     }
 }
 
-fun Long?.toFormattedDate(): String {
-    if (this == null) return ""
-    val instant = Instant.fromEpochMilliseconds(this)
-    val date = instant.toLocalDateTime(TimeZone.currentSystemDefault()).date
-    return "${date.dayOfMonth.toString().padStart(2, '0')}.${
-        date.month.number.toString().padStart(2, '0')
-    }.${date.year}"
+class DateTransformation : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val trimmed = if (text.text.length >= 8) text.text.substring(0..7) else text.text
+        var out = ""
+        for (i in trimmed.indices) {
+            out += trimmed[i]
+            if (i == 1 || i == 3) out += "."
+        }
+
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                if (offset <= 1) return offset
+                if (offset <= 3) return offset + 1
+                if (offset <= 8) return offset + 2
+                return 10
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                if (offset <= 2) return offset
+                if (offset <= 5) return offset - 1
+                if (offset <= 10) return offset - 2
+                return 8
+            }
+        }
+
+        return TransformedText(AnnotatedString(out), offsetMapping)
+    }
 }

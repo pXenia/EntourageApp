@@ -1,5 +1,6 @@
 package com.entourageapp.features.projects.data
 
+import com.entourageapp.core.network.ProjectCreateDto
 import com.entourageapp.core.network.ProjectsApi
 import com.entourageapp.features.projects.domain.ProjectCard
 import com.entourageapp.features.projects.domain.ProjectsRepository
@@ -18,5 +19,9 @@ class ProjectsRepositoryImpl(
         emit(domainProjects)
     }.catch { e ->
         throw e
+    }
+
+    override suspend fun createProject(project: ProjectCreateDto) {
+        return api.createProject(project)
     }
 }
