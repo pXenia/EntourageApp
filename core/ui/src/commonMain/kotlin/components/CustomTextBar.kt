@@ -32,6 +32,7 @@ fun CustomTextBar(
     label: String = "",
     placeholder: String = "",
     isSingleLine: Boolean = true,
+    isEnable: Boolean = true,
     trailingIcon:  DrawableResource? = null,
     onTrailingIconClick: () -> Unit = {},
     //textAlign: TextAlign = TextAlign.Start,
@@ -79,6 +80,7 @@ fun CustomTextBar(
                     }
                 }
             },
+            enabled = isEnable,
             colors = OutlinedTextFieldDefaults.colors(
                 // Фон
                 focusedContainerColor = EntourageWhite.copy(alpha = 0.6f),

@@ -77,6 +77,7 @@ private val config = SavedStateConfiguration {
             subclass(Route.ProjectDetail::class, Route.ProjectDetail.serializer())
             subclass(Route.CalculatorsList::class, Route.CalculatorsList.serializer())
             subclass(Route.UserProfile::class, Route.UserProfile.serializer())
+            subclass(Route.RoomInfo::class, Route.RoomInfo.serializer())
         }
     }
 }
