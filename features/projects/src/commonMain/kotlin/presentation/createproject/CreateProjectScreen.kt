@@ -92,15 +92,18 @@ fun CreateProjectScreen(
             ) {
                 CustomTextBar(
                     label = "Площадь, кв. м",
-                    placeholder = "90,1",
+                    placeholder = if (state.isCalculatedSquare) "--" else "Например, 90",
                     // textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f).padding(end = 4.dp),
-                    value = state.square,
+                    value = if (state.isCalculatedSquare) "--" else state.square,
+                    isEnable = !state.isCalculatedSquare,
                     onValueChange = { viewModel.handleIntent(CreateProjectIntent.UpdateSquare(it)) },
                 )
                 SquareCheckbox(
                     modifier = Modifier.weight(1f).padding(top = 18.dp)
-                        .align(Alignment.CenterVertically)
+                        .align(Alignment.CenterVertically),
+                    isChecked = state.isCalculatedSquare,
+                    onCheckedChange = { viewModel.handleIntent(CreateProjectIntent.UpdateIsCalculatedSquare(it)) },
                 )
             }
             CustomTextBar(

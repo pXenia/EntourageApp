@@ -22,6 +22,7 @@ class CreateProjectVM(
             is CreateProjectIntent.UpdateStartDate -> _state.update { it.copy(startDate = intent.value) }
             is CreateProjectIntent.UpdateEndDate -> _state.update { it.copy(endDate = intent.value) }
             is CreateProjectIntent.UpdateSquare -> _state.update { it.copy(square = intent.value) }
+            is CreateProjectIntent.UpdateIsCalculatedSquare -> _state.update { it.copy(isCalculatedSquare = intent.value) }
             is CreateProjectIntent.UpdateBudget -> _state.update { it.copy(budget = intent.value) }
             is CreateProjectIntent.UpdateDescription -> _state.update { it.copy(description = intent.value) }
             is CreateProjectIntent.Submit -> createProject()
@@ -36,9 +37,10 @@ class CreateProjectVM(
                 val dto = ProjectCreateDto(
                     title = currentState.title,
                     startDate = convertToBackendDate(currentState.startDate) ?: "",
-                    endDate = currentState.endDate?.let { convertToBackendDate(currentState.endDate) } ?: "",
-                    square = currentState.square.toDoubleOrNull() ?: 0.0,
-                    budget = currentState.budget.toDoubleOrNull() ?: 0.0,
+                    endDate = currentState.endDate?.let { convertToBackendDate(currentState.endDate) },
+                    square = currentState.square.toDoubleOrNull() ?: 0.toDouble(),
+                    budget = currentState.budget.toDoubleOrNull() ?: 0.toDouble(),
+                    isSquareCalculated = currentState.isCalculatedSquare,
                     description = currentState.description
                 )
 
