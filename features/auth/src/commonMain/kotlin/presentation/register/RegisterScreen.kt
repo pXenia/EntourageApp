@@ -49,14 +49,11 @@ fun RegisterScreen(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         FloatingButton(onClick = onBackClick, icon = arrowLeft)
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Text(
             text = "регистрация".uppercase(),
             style = MaterialTheme.typography.titleMedium.copy(fontSize = 32.sp)
         )
-
         Text(
             text = "Создайте аккаунт для начала работы",
             style = MaterialTheme.typography.bodySmall.copy(
@@ -64,23 +61,19 @@ fun RegisterScreen(
                 color = EntourageTeal
             )
         )
-
         Spacer(modifier = Modifier.height(40.dp))
-
         CustomTextBar(
             label = "Имя",
             value = state.name,
             onValueChange = { viewModel.handleIntent(RegisterIntent.OnNameChanged(it)) },
             errorText = state.nameError
         )
-
         CustomTextBar(
             label = "Эл. почта",
             value = state.email,
             onValueChange = { viewModel.handleIntent(RegisterIntent.OnEmailChanged(it)) },
             errorText = state.emailError
         )
-
         CustomTextBar(
             label = "Пароль",
             value = state.password,
@@ -88,7 +81,6 @@ fun RegisterScreen(
             errorText = state.passwordError,
             isPassword = true
         )
-
         CustomTextBar(
             label = "Подтвердить пароль",
             value = state.confirmPassword,
@@ -96,9 +88,15 @@ fun RegisterScreen(
             errorText = state.confirmPasswordError,
             isPassword = true
         )
-
+        state.generalError?.let {
+            Text(
+                text = "Возникла ошибка при регистрации",
+                color = EntourageRed,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(top = 8.dp, start = 20.dp)
+            )
+        }
         Spacer(modifier = Modifier.height(40.dp))
-
         AccentButton(
             modifier = Modifier.fillMaxWidth().height(56.dp),
             onClick = { viewModel.handleIntent(RegisterIntent.OnRegisterClicked(onRegistrationSuccess)) },
@@ -107,17 +105,7 @@ fun RegisterScreen(
             contentColor = EntourageWhite,
             enabled = !state.isLoading
         )
-
-        state.generalError?.let {
-            Text(
-                text = "Возникла ошибка при регистрации",
-                color = EntourageRed,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
-
         Spacer(modifier = Modifier.weight(1f))
-
         Row(
             modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
             horizontalArrangement = Arrangement.Center,

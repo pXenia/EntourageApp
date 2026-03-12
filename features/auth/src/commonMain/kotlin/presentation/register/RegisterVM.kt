@@ -15,10 +15,10 @@ class RegisterVM(private val authRepository: AuthRepository) : ViewModel() {
 
     fun handleIntent(intent: RegisterIntent) {
         when (intent) {
-            is RegisterIntent.OnNameChanged -> _state.update { it.copy(name = intent.value) }
-            is RegisterIntent.OnEmailChanged -> _state.update { it.copy(email = intent.value, emailError = null) }
-            is RegisterIntent.OnPasswordChanged -> _state.update { it.copy(password = intent.value, passwordError = null) }
-            is RegisterIntent.OnConfirmPasswordChanged -> _state.update { it.copy(confirmPassword = intent.value, confirmPasswordError = null) }
+            is RegisterIntent.OnNameChanged -> _state.update { it.copy(name = intent.value, generalError = null) }
+            is RegisterIntent.OnEmailChanged -> _state.update { it.copy(email = intent.value, emailError = null, generalError = null) }
+            is RegisterIntent.OnPasswordChanged -> _state.update { it.copy(password = intent.value, passwordError = null, generalError = null) }
+            is RegisterIntent.OnConfirmPasswordChanged -> _state.update { it.copy(confirmPassword = intent.value, confirmPasswordError = null, generalError = null) }
             is RegisterIntent.OnRegisterClicked -> validateAndRegister(intent.onSuccess)
         }
     }

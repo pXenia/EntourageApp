@@ -18,32 +18,18 @@ class LoginVM(
 
     fun handleIntent(intent: LoginIntent) {
         when (intent) {
-            is LoginIntent.OnEmailChanged -> updateEmail(intent.value)
-            is LoginIntent.OnPasswordChanged -> updatePassword(intent.value)
+            is LoginIntent.OnEmailChanged -> _state.update { it.copy(email = intent.value, generalError = null) }
+            is LoginIntent.OnPasswordChanged -> _state.update { it.copy(password = intent.value, generalError = null) }
             is LoginIntent.OnLoginClicked -> login(intent.onSuccess)
         }
     }
 
-    private fun updateEmail(value: String) {
-        _state.update { it.copy(email = value) }
-    }
-
-    private fun updatePassword(value: String) {
-        _state.update { it.copy(password = value) }
-    }
-
     private fun login(onSuccess: () -> Unit) {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
-
-            authRepository.login(_state.value.email, _state.value.password)
-                .onSuccess {
-                    onSuccess()
-                }
-                .onFailure { e ->
-                    _state.update { it.copy(error = e.message) }
-                }
-
+            _state.update { it.copy(isLoading = true) }
+            authRepository.login(state.value.email, state.value.password)
+                .onSuccess { onSuccess() }
+                .onFailure { e -> _state.update { it.copy(generalError = e.message) } }
             _state.update { it.copy(isLoading = false) }
         }
     }

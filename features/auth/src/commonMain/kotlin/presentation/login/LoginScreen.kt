@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.entourageapp.core.ui.EntourageBlack
+import com.entourageapp.core.ui.EntourageRed
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.arrowLeft
@@ -71,8 +72,17 @@ fun LoginScreen(
         CustomTextBar(
             label = "Пароль",
             value = state.password,
-            onValueChange = { viewModel.handleIntent(LoginIntent.OnPasswordChanged(it)) }
+            onValueChange = { viewModel.handleIntent(LoginIntent.OnPasswordChanged(it)) },
+            isPassword = true
         )
+        state.generalError?.let {
+            Text(
+                text = "Неверные почта или пароль",
+                color = EntourageRed,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(top = 8.dp, start = 20.dp)
+            )
+        }
         Spacer(modifier = Modifier.height(80.dp))
         AccentButton(
             modifier = Modifier.fillMaxWidth().height(56.dp),
