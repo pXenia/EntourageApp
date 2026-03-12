@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -16,10 +17,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeach
+import com.entourageapp.core.ui.EntourageRed
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import org.jetbrains.compose.resources.DrawableResource
@@ -33,8 +37,10 @@ fun CustomTextBar(
     placeholder: String = "",
     isSingleLine: Boolean = true,
     isEnable: Boolean = true,
-    trailingIcon:  DrawableResource? = null,
+    trailingIcon: DrawableResource? = null,
     onTrailingIconClick: () -> Unit = {},
+    errorText: String? = null,
+    isPassword: Boolean = false,
     //textAlign: TextAlign = TextAlign.Start,
     modifier: Modifier = Modifier
 ) {
@@ -54,7 +60,7 @@ fun CustomTextBar(
                     text = placeholder,
                     modifier = Modifier.fillMaxWidth(),
                     color = EntourageBlack.copy(alpha = 0.7f),
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp)
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 16.sp)
                 )
             },
             modifier = Modifier
@@ -62,7 +68,7 @@ fun CustomTextBar(
                 .defaultMinSize(minHeight = 40.dp),
             shape = RoundedCornerShape(32.dp),
             singleLine = isSingleLine,
-            textStyle = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp),
+            textStyle = MaterialTheme.typography.bodySmall.copy(fontSize = 16.sp),
             trailingIcon = {
                 if (trailingIcon != null) {
                     IconButton(
@@ -81,6 +87,8 @@ fun CustomTextBar(
                 }
             },
             enabled = isEnable,
+            isError = errorText != null,
+            visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
             colors = OutlinedTextFieldDefaults.colors(
                 // Фон
                 focusedContainerColor = EntourageWhite.copy(alpha = 0.6f),
@@ -93,7 +101,27 @@ fun CustomTextBar(
                 // Текст
                 focusedTextColor = EntourageBlack,
                 unfocusedTextColor = EntourageBlack,
+
+                // Ошибка
+                errorBorderColor = EntourageRed,
+                errorContainerColor = EntourageWhite.copy(alpha = 0.6f),
+
+                // Курсор
+                cursorColor = EntourageTeal,
+                errorCursorColor = EntourageTeal,
+                selectionColors = TextSelectionColors(
+                    handleColor = EntourageTeal,
+                    backgroundColor = EntourageTeal.copy(alpha = 0.2f)
+                )
             )
         )
+        if (errorText != null) {
+            Text(
+                modifier = Modifier.padding(start = 20.dp),
+                text = errorText,
+                color = EntourageRed,
+                fontSize = 16.sp
+            )
+        }
     }
 }

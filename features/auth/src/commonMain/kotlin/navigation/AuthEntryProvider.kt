@@ -4,8 +4,8 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.entourageapp.core.navigation.Navigator
 import com.entourageapp.core.navigation.Route
-import presentation.RegisterScreen
 import presentation.login.LoginScreen
+import presentation.register.RegisterScreen
 
 fun EntryProviderScope<NavKey>.authEntryBuilder(navigator: Navigator) {
     entry<Route.Login> {
@@ -17,7 +17,8 @@ fun EntryProviderScope<NavKey>.authEntryBuilder(navigator: Navigator) {
     }
     entry<Route.Registration> {
         RegisterScreen(
-            onBack = { navigator.goBack() },
+            onBackClick = { navigator.goBack() },
+            onNavigateToLogin = { navigator.navigate(Route.Login) },
             onRegistrationSuccess = { navigator.navigateToMain() }
         )
     }
