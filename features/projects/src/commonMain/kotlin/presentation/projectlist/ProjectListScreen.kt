@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
@@ -117,7 +118,7 @@ fun ProjectListScreen(
                 modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(32.dp)),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(bottom = 24.dp)
+                contentPadding = PaddingValues(bottom = 80.dp)
             ) {
                 items(state.projectCards) { project ->
                     ProjectCard(
@@ -141,9 +142,9 @@ fun ProjectListScreen(
                 containerColor = EntourageTeal.copy(alpha = 0.9f),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = 96.dp)
+                    .padding(bottom = 80.dp)
                     .size(64.dp),
-                shape = RoundedCornerShape(16.dp)
+                shape = CircleShape
             ) {
                 Icon(
                     painter = painterResource(add),

@@ -18,6 +18,7 @@ fun ProjectDto.toDomain(): ProjectCard {
 
     val yearsString = when {
         endYear != null && startYear != endYear -> "$startYear–$endYear"
+        endYear != null && startYear == endYear -> startYear
         endYear == null -> startYear
         else -> ""
     }

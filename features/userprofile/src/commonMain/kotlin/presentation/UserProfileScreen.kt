@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,7 +51,8 @@ fun UserProfileScreen(
     LazyColumn(
         state = scrollState,
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .clip(RoundedCornerShape(32.dp)),
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
         item {
@@ -101,7 +103,7 @@ fun UserProfileScreen(
 
         item {
             Column(
-                modifier = Modifier.padding(bottom = 100.dp),
+                modifier = Modifier.padding(bottom = 80.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 AccentButton(

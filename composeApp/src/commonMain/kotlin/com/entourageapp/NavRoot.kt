@@ -46,7 +46,7 @@ fun NavRoot(
     authViewModel: AuthViewModel = koinViewModel()
 ) {
 //    val isAuthenticated by authViewModel.isAuthenticated.collectAsStateWithLifecycle()
-    val isAuthenticated = false
+    val isAuthenticated = true
     val startRoute = remember(isAuthenticated) {
         if (isAuthenticated) Route.ProjectList else Route.Login
     }
@@ -69,6 +69,7 @@ fun NavRoot(
             .fillMaxSize()
             .appBackground()
             .statusBarsPadding()
+            .navigationBarsPadding()
             .padding(horizontal = 16.dp)
     ) {
         NavDisplay(
@@ -93,7 +94,6 @@ fun NavRoot(
             CustomBottomBar(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
                     .navigationBarsPadding()
                     .align(Alignment.BottomCenter),
                 items = topLevelNavItems as Map<Route, TopLevelNavigationItem>,
