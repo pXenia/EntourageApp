@@ -1,6 +1,6 @@
 package com.entourageapp.features.projects.domain
 
-import com.entourageapp.core.network.ProjectDto
+import com.entourageapp.core.network.dto.ProjectDto
 
 data class ProjectCard(
     val id: Int,

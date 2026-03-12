@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,19 +35,33 @@ import com.entourageapp.features.userprofile.navigation.userProfileEntryBuilder
 import com.entourageapp.navigation.CustomBottomBar
 import com.entourageapp.navigation.TopLevelNavigationItem
 import com.entourageapp.navigation.topLevelNavItems
+import navigation.authEntryBuilder
 import navigation.estimatesEntryBuilder
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
 fun NavRoot(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    authViewModel: AuthViewModel = koinViewModel()
 ) {
+//    val isAuthenticated by authViewModel.isAuthenticated.collectAsStateWithLifecycle()
+    val isAuthenticated = false
+    val startRoute = remember(isAuthenticated) {
+        if (isAuthenticated) Route.ProjectList else Route.Login
+    }
+
     val navigationState = rememberNavigationState(
-        startRoute = Route.ProjectList,
+        startRoute = startRoute,
         topLevelRoutes = topLevelNavItems.keys as Set<NavKey>
     )
-    val navigator = remember {
+    val navigator = remember(navigationState) {
         Navigator(navigationState)
+    }
+
+    LaunchedEffect(isAuthenticated) {
+        if (isAuthenticated) navigator.navigate(Route.ProjectList)
+        else navigator.navigate(Route.Login)
     }
 
     Box(
@@ -61,6 +76,7 @@ fun NavRoot(
             onBack = navigator::goBack,
             entries = navigationState.toEntries(
                 entryProvider {
+                    authEntryBuilder(navigator)
                     projectsEntryBuilder(navigator)
                     calculatorsListEntryBuilder(navigator)
                     userProfileEntryBuilder(navigator)

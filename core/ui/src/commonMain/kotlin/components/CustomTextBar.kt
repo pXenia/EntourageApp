@@ -43,7 +43,7 @@ fun CustomTextBar(
             text = label,
             color = EntourageTeal,
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 18.sp),
-            modifier = Modifier.padding(start = 22.dp)
+            modifier = Modifier.padding(start = 20.dp, bottom = 2.dp)
         )
 
         OutlinedTextField(

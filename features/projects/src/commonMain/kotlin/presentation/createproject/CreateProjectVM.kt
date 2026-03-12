@@ -2,7 +2,7 @@ package com.entourageapp.features.projects.presentation.createproject
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.entourageapp.core.network.ProjectCreateDto
+import com.entourageapp.core.network.dto.ProjectCreateDto
 import com.entourageapp.features.projects.domain.ProjectsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

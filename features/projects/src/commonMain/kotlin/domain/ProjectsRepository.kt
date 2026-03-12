@@ -1,6 +1,6 @@
 package com.entourageapp.features.projects.domain
 
-import com.entourageapp.core.network.ProjectCreateDto
+import com.entourageapp.core.network.dto.ProjectCreateDto
 import kotlinx.coroutines.flow.Flow
 
 interface ProjectsRepository {

@@ -30,14 +30,21 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
-
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.androidx.lifecycle.viewmodelCompose)
+            implementation(libs.jetbrains.material3.adaptiveNavigation3)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose.viewmodel)
 
+            implementation(projects.core.navigation)
+            implementation(projects.core.ui)
+            implementation(projects.core.network)
         }
 
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
         }
     }
 }

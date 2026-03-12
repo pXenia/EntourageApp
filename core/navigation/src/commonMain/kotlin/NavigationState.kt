@@ -35,14 +35,22 @@ class NavigationState(
         } else {
             listOf(startRoute, topLevelRoute)
         }
+
+    val currentRoute: NavKey
+        get() = backStacks[topLevelRoute]?.lastOrNull() ?: topLevelRoute
+
+    private val authRoutes = setOf(Route.Login, Route.Registration)
+    private val topLevelRoutes = setOf(Route.ProjectList, Route.CalculatorsList, Route.UserProfile)
+
     val shouldShowBottomBar: Boolean
-        get() = backStacks[topLevelRoute]?.size == 1
+        get() = (currentRoute !in authRoutes) && (currentRoute in topLevelRoutes)
 }
 
 
 @Composable
 fun rememberNavigationState(
-    startRoute: NavKey, topLevelRoutes: Set<NavKey>
+    startRoute: NavKey,
+    topLevelRoutes: Set<NavKey>
 ): NavigationState {
 
     val topLevelRoute = rememberSerializable(
@@ -54,7 +62,9 @@ fun rememberNavigationState(
         mutableStateOf(startRoute)
     }
 
-    val backStacks = topLevelRoutes.associateWith { key ->
+    val authRoutes = setOf(Route.Login, Route.Registration)
+
+    val backStacks = (topLevelRoutes + authRoutes).associateWith { key ->
         rememberNavBackStack(
             configuration = config,
             key
@@ -73,6 +83,9 @@ fun rememberNavigationState(
 private val config = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
+            subclass(Route.AuthGraph::class, Route.AuthGraph.serializer())
+            subclass(Route.Login::class, Route.Login.serializer())
+            subclass(Route.Registration::class, Route.Registration.serializer())
             subclass(Route.ProjectList::class, Route.ProjectList.serializer())
             subclass(Route.ProjectDetail::class, Route.ProjectDetail.serializer())
             subclass(Route.CalculatorsList::class, Route.CalculatorsList.serializer())
