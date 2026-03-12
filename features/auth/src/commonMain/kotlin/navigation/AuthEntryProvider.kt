@@ -4,8 +4,8 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.entourageapp.core.navigation.Navigator
 import com.entourageapp.core.navigation.Route
-import presentation.LoginScreen
 import presentation.RegisterScreen
+import presentation.login.LoginScreen
 
 fun EntryProviderScope<NavKey>.authEntryBuilder(navigator: Navigator) {
     entry<Route.Login> {

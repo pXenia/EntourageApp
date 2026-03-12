@@ -1,4 +1,4 @@
-package presentation
+package presentation.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -36,13 +37,13 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onBackClick: () -> Unit,
-    viewModel: LoginViewModel = koinViewModel()
+    viewModel: LoginVM = koinViewModel()
 ) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val scrollState = rememberLazyListState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val scrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         FloatingButton(
@@ -63,18 +64,25 @@ fun LoginScreen(
         )
         Spacer(modifier = Modifier.height(80.dp))
         CustomTextBar(
-            label = "Эл. почта"
+            label = "Эл. почта",
+            value = state.email,
+            onValueChange = { viewModel.handleIntent(LoginIntent.OnEmailChanged(it)) }
         )
         CustomTextBar(
-            label = "Пароль"
+            label = "Пароль",
+            value = state.password,
+            onValueChange = { viewModel.handleIntent(LoginIntent.OnPasswordChanged(it)) }
         )
         Spacer(modifier = Modifier.height(80.dp))
         AccentButton(
-            modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth().height(56.dp),
-            onClick = { },
-            text = "войти",
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            onClick = {
+                viewModel.handleIntent(LoginIntent.OnLoginClicked(onLoginSuccess))
+            },
+            text = if (state.isLoading) "загрузка..." else "войти",
             containerColor = EntourageBlack,
-            contentColor = EntourageWhite
+            contentColor = EntourageWhite,
+            enabled = !state.isLoading
         )
         Spacer(modifier = Modifier.weight(1f))
         Row(
