@@ -18,6 +18,7 @@ fun AccentButton(
     text: String,
     containerColor: Color,
     contentColor: Color,
+    enabled: Boolean = true
 ) {
     Button(
         modifier = modifier,
@@ -27,7 +28,8 @@ fun AccentButton(
             containerColor = containerColor,
             contentColor = contentColor
         ),
-        elevation = ButtonDefaults.elevatedButtonElevation(2.dp)
+        elevation = ButtonDefaults.elevatedButtonElevation(2.dp),
+        enabled = enabled
     ) {
         Text(
             text = text.uppercase(),

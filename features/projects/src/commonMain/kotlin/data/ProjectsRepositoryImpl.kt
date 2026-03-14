@@ -1,7 +1,7 @@
 package com.entourageapp.features.projects.data
 
-import com.entourageapp.core.network.ProjectCreateDto
-import com.entourageapp.core.network.ProjectsApi
+import com.entourageapp.core.network.api.ProjectsApi
+import com.entourageapp.core.network.dto.ProjectCreateDto
 import com.entourageapp.features.projects.domain.ProjectCard
 import com.entourageapp.features.projects.domain.ProjectsRepository
 import com.entourageapp.features.projects.domain.toDomain

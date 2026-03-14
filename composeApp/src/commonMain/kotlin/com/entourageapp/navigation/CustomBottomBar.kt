@@ -45,7 +45,7 @@ fun CustomBottomBar(
 ) {
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(32.dp))
             .background(EntourageBlack.copy(alpha = 0.9f))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,

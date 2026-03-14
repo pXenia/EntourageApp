@@ -1,4 +1,4 @@
-package com.entourageapp.core.network
+package com.entourageapp.core.network.dto
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

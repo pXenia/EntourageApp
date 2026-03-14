@@ -61,7 +61,7 @@ fun CalculatorListScreen(
             modifier = Modifier.padding(top = 16.dp).fillMaxSize().clip(RoundedCornerShape(32.dp)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp),
-            contentPadding = PaddingValues(bottom = 24.dp)
+            contentPadding = PaddingValues(bottom = 80.dp)
         ) {
             items(
                 count = 26,

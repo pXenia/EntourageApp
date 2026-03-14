@@ -1,6 +1,6 @@
 package com.entourageapp.features.projects.domain
 
-import com.entourageapp.core.network.ProjectDto
+import com.entourageapp.core.network.dto.ProjectDto
 
 data class ProjectCard(
     val id: Int,
@@ -18,6 +18,7 @@ fun ProjectDto.toDomain(): ProjectCard {
 
     val yearsString = when {
         endYear != null && startYear != endYear -> "$startYear–$endYear"
+        endYear != null && startYear == endYear -> startYear
         endYear == null -> startYear
         else -> ""
     }
