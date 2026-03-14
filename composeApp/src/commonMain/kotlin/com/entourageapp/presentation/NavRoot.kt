@@ -15,11 +15,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
@@ -43,25 +45,23 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun NavRoot(
     modifier: Modifier = Modifier,
-    authViewModel: AuthViewModel = koinViewModel()
+    authVM: AuthVM = koinViewModel()
 ) {
-//    val isAuthenticated by authViewModel.isAuthenticated.collectAsStateWithLifecycle()
-    val isAuthenticated = false
-    val startRoute = remember(isAuthenticated) {
-        if (isAuthenticated) Route.ProjectList else Route.Login
-    }
-
+    val isAuthenticated by authVM.isAuthenticated.collectAsStateWithLifecycle()
+    if (isAuthenticated == null) return
+    val startRoute = if (isAuthenticated == true) Route.ProjectList else Route.Login
     val navigationState = rememberNavigationState(
         startRoute = startRoute,
         topLevelRoutes = topLevelNavItems.keys as Set<NavKey>
     )
-    val navigator = remember(navigationState) {
-        Navigator(navigationState)
-    }
+    val navigator = remember(navigationState) { Navigator(navigationState) }
 
     LaunchedEffect(isAuthenticated) {
-        if (isAuthenticated) navigator.navigate(Route.ProjectList)
-        else navigator.navigate(Route.Login)
+        when (isAuthenticated) {
+            true -> navigator.navigate(Route.ProjectList)
+            false -> navigator.navigate(Route.Login)
+            null -> Unit
+        }
     }
 
     Box(

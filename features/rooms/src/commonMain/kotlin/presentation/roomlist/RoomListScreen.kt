@@ -27,16 +27,17 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun RoomListScreen(
+    projectId: Int,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onAddRoomClick: () -> Unit = {},
-    viewModel: RoomsVM = koinViewModel()
+    viewModel: RoomListVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
 
 
     LaunchedEffect(Unit) {
-        viewModel.handleIntent(RoomListIntent.LoadRooms(1))
+        viewModel.handleIntent(RoomListIntent.LoadRooms(projectId))
     }
 
     Column(

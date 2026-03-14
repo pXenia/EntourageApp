@@ -12,6 +12,7 @@ import com.entourageapp.features.rooms.presentation.roomlist.RoomListScreen
 fun EntryProviderScope<NavKey>.roomsEntryBuilder(navigator: Navigator) {
     entry<Route.RoomList> {
         RoomListScreen(
+            projectId = it.projectId,
             onBackClick = { navigator.goBack() }
         )
     }

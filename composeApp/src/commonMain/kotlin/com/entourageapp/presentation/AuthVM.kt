@@ -7,13 +7,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
-class AuthViewModel(
+class AuthVM(
     private val tokenStore: TokenStore
 ) : ViewModel() {
-    val isAuthenticated: StateFlow<Boolean> = tokenStore.hasAccessToken
+    val isAuthenticated: StateFlow<Boolean?> = tokenStore.hasAccessToken
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
+            initialValue = null
         )
 }

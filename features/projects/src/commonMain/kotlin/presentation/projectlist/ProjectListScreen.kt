@@ -48,7 +48,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ProjectListScreen(
     modifier: Modifier = Modifier,
-    onCardClick: () -> Unit = {},
+    onCardClick: (projectId: Int) -> Unit = {},
     onAddProjectClick: () -> Unit = {},
     viewModel: ProjectListVM = koinViewModel()
 ) {
@@ -127,7 +127,7 @@ fun ProjectListScreen(
                                 fadeInSpec = tween(500),
                                 placementSpec = spring(stiffness = Spring.StiffnessLow)
                             ),
-                        onCardClick = onCardClick,
+                        onCardClick = { onCardClick(project.id) },
                         title = project.title,
                         area = project.square,
                         years = project.years,

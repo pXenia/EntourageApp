@@ -9,9 +9,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class RoomsVM(
+class RoomListVM(
     private val repository: RoomsRepository,
-    private val projectId: Int
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RoomListState())
