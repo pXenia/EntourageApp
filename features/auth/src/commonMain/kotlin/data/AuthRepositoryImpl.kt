@@ -1,15 +1,11 @@
 package data
 
-import com.entourageapp.core.network.PersistentCookiesStorage
 import com.entourageapp.core.network.TokenStore
 import com.entourageapp.core.network.api.AuthApi
 import com.entourageapp.core.network.dto.LoginRequestDto
 import com.entourageapp.core.network.dto.RegisterRequestDto
 import domain.AuthRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 
 class AuthRepositoryImpl(
     private val api: AuthApi,

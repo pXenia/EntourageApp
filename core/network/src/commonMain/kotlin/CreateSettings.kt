@@ -1,5 +1,5 @@
 package com.entourageapp.core.network
 
-import com.russhwolf.settings.ObservableSettings
+import com.russhwolf.settings.Settings
 
-expect fun createSettings(): ObservableSettings
+expect fun createSettings(): Settings

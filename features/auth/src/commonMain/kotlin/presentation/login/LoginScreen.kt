@@ -77,7 +77,7 @@ fun LoginScreen(
         )
         state.generalError?.let {
             Text(
-                text = "Неверные почта или пароль",
+                text = it,
                 color = EntourageRed,
                 fontSize = 16.sp,
                 modifier = Modifier.padding(top = 8.dp, start = 20.dp)
