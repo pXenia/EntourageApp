@@ -12,11 +12,11 @@ import io.ktor.http.contentType
 
 class ProjectsKtorApi(private val client: HttpClient) : ProjectsApi {
     override suspend fun getProjects(): List<ProjectDto> {
-        return client.get("projects/list").body()
+        return client.get("projects/").body()
     }
 
     override suspend fun createProject(project: ProjectCreateDto) {
-        client.post("projects/create") {
+        client.post("projects/add/") {
             contentType(ContentType.Application.Json)
             setBody(project)
         }

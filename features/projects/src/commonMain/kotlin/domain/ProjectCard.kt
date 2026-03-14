@@ -30,6 +30,6 @@ fun ProjectDto.toDomain(): ProjectCard {
         roomsCount = roomsCount,
         membersCount = membersCount,
         years = yearsString,
-        isCompleted = isCompleted
+        isCompleted = true
     )
 }
