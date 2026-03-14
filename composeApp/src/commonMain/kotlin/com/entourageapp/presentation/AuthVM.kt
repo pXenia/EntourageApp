@@ -1,18 +1,16 @@
-package com.entourageapp
+package com.entourageapp.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.entourageapp.core.network.TokenStorage
+import com.entourageapp.core.network.TokenStore
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class AuthViewModel(
-    private val tokenStorage: TokenStorage
+    private val tokenStore: TokenStore
 ) : ViewModel() {
-    val isAuthenticated: StateFlow<Boolean> = tokenStorage.accessToken
-        .map { it != null }
+    val isAuthenticated: StateFlow<Boolean> = tokenStore.hasAccessToken
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),

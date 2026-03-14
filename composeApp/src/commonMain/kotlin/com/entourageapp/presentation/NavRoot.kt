@@ -1,4 +1,4 @@
-package com.entourageapp
+package com.entourageapp.presentation
 
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.tween
@@ -46,7 +46,7 @@ fun NavRoot(
     authViewModel: AuthViewModel = koinViewModel()
 ) {
 //    val isAuthenticated by authViewModel.isAuthenticated.collectAsStateWithLifecycle()
-    val isAuthenticated = true
+    val isAuthenticated = false
     val startRoute = remember(isAuthenticated) {
         if (isAuthenticated) Route.ProjectList else Route.Login
     }
