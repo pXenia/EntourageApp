@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -38,8 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeach
+import com.entourageapp.core.ui.EntouragePeachAlpha80
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
+import com.entourageapp.core.ui.components.AccentButton
 import com.entourageapp.features.rooms.presentation.components.drawplan.drawGridCentered
 import com.entourageapp.features.rooms.presentation.components.drawplan.drawRoomContent
 import com.entourageapp.features.rooms.presentation.components.drawplan.dst
@@ -54,7 +57,8 @@ private const val HIT_RADIUS   = 36f  // радиус касания
 @Composable
 fun CreateRoomPlanScreen(
     viewModel: CreateRoomPlanVM = koinViewModel(),
-    cellSizeDp: Dp = 18.dp
+    onBackClick: () -> Unit = {},
+    cellSizeDp: Dp = 8.dp
 ) {
     val state by viewModel.state.collectAsState()
     val textMeasurer = rememberTextMeasurer()
@@ -68,7 +72,6 @@ fun CreateRoomPlanScreen(
     Column(
         modifier = Modifier.fillMaxSize().padding(bottom = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         // расчет метрики
         val area = remember(state.points, state.cellSizePx) {
@@ -77,13 +80,13 @@ fun CreateRoomPlanScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .border(1.dp, EntourageBlack, RoundedCornerShape(32.dp))
-                .padding(8.dp),
+                .border(1.dp, EntourageBlack, RoundedCornerShape(32.dp)),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
+                    .padding(8.dp)
                     .background(
                         EntourageTeal.copy(alpha = 0.2f),
                         RoundedCornerShape(32.dp)
@@ -99,6 +102,7 @@ fun CreateRoomPlanScreen(
             }
 
             Row(
+                modifier = Modifier,
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -108,10 +112,11 @@ fun CreateRoomPlanScreen(
                     colors = SwitchDefaults.colors(checkedTrackColor = EntourageTeal.copy(alpha = 0.2f))
                 )
                 Text(
+                    modifier = Modifier.padding(end = 16.dp),
                     text = "Привязка\nк сетке",
                     color = EntourageBlack,
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
         }
@@ -207,10 +212,7 @@ fun CreateRoomPlanScreen(
 
         // тулбар режимов
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(1.dp, EntourageBlack, RoundedCornerShape(32.dp))
-                .padding(8.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             ModeChip("Рисование", state.mode == DrawMode.DRAW) {
@@ -229,6 +231,15 @@ fun CreateRoomPlanScreen(
                 )
             }
         }
+        AccentButton(
+            modifier = Modifier.fillMaxWidth()
+                .padding(top = 4.dp)
+                .height(48.dp),
+            onClick = onBackClick,
+            text = "готово",
+            containerColor = EntouragePeachAlpha80,
+            contentColor = EntourageBlack
+        )
     }
 }
 

@@ -30,7 +30,7 @@ fun RoomListScreen(
     projectId: Int,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onAddRoomClick: () -> Unit = {},
+    onAddRoomClick: (Int) -> Unit = {},
     viewModel: RoomListVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -81,7 +81,7 @@ fun RoomListScreen(
             }
 
             item {
-                AddRoomCard(onCardClick = onAddRoomClick)
+                AddRoomCard(onCardClick = { onAddRoomClick(projectId) })
             }
         }
     }

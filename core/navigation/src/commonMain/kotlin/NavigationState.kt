@@ -91,6 +91,9 @@ private val config = SavedStateConfiguration {
             subclass(Route.CalculatorsList::class, Route.CalculatorsList.serializer())
             subclass(Route.UserProfile::class, Route.UserProfile.serializer())
             subclass(Route.RoomInfo::class, Route.RoomInfo.serializer())
+            subclass(Route.CreateRoom::class, Route.CreateRoom.serializer())
+            subclass(Route.CreateRoomPlan::class, Route.CreateRoomPlan.serializer())
+
         }
     }
 }

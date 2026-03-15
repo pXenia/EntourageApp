@@ -16,7 +16,7 @@ fun snapToGrid(offset: Offset, cellSize: Float, offX: Float, offY: Float): Offse
 )
 
 // расчет площади в кв.м по формуле Гаусса
-fun polygonAreaM2(pts: List<Offset>, cellSize: Float, scale: Float = 0.5f): Float {
+fun polygonAreaM2(pts: List<Offset>, cellSize: Float, scale: Float = 0.2f): Float {
     if (pts.size < 3) return 0f
     var sum = 0.0
     for (i in pts.indices) {
@@ -30,7 +30,7 @@ fun polygonAreaM2(pts: List<Offset>, cellSize: Float, scale: Float = 0.5f): Floa
 }
 
 // расчет длины стены в метрах
-fun wallLenM(a: Offset, b: Offset, cellSize: Float, scale: Float = 0.5f) = a.dst(b) / cellSize * scale
+fun wallLenM(a: Offset, b: Offset, cellSize: Float, scale: Float = 0.2f) = a.dst(b) / cellSize * scale
 
 // форматирование числа
 fun Float.fmt(dec: Int = 2): String {
