@@ -1,19 +1,42 @@
 package com.entourageapp.core.network.api
 
+import com.entourageapp.core.network.dto.MessageDto
+import com.entourageapp.core.network.dto.OffsetAddDto
+import com.entourageapp.core.network.dto.RoomAddDto
+import com.entourageapp.core.network.dto.RoomCreatedDto
 import com.entourageapp.core.network.dto.RoomDto
 import com.entourageapp.core.network.dto.RoomTypeDto
+import com.entourageapp.core.network.dto.WallAddDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
 class RoomsKtorApi(private val client: HttpClient) : RoomsApi {
-    override suspend fun getRoomTypes(projectId: Int): List<RoomTypeDto> {
-        return client.get("rooms/types/") {
-            parameter("project_id", projectId)
+    override suspend fun getRoomTypes(projectId: Int): List<RoomTypeDto> =
+        client.get("projects/$projectId/rooms/types/").body()
+
+    override suspend fun getRooms(projectId: Int): List<RoomDto> =
+        client.get("projects/$projectId/rooms/").body()
+
+    override suspend fun createRoom(projectId: Int, room: RoomAddDto): RoomCreatedDto =
+        client.post("projects/$projectId/rooms/") {
+            contentType(ContentType.Application.Json)
+            setBody(room)
         }.body()
-    }
-    override suspend fun getRooms(projectId: Int): List<RoomDto> {
-        return client.get("projects/$projectId/rooms/").body()
-    }
+
+    override suspend fun addWall(projectId: Int, roomId: Int, wall: WallAddDto): MessageDto =
+        client.post("projects/$projectId/rooms/$roomId/walls/") {
+            contentType(ContentType.Application.Json)
+            setBody(wall)
+        }.body()
+
+    override suspend fun addOffset(projectId: Int, roomId: Int, offset: OffsetAddDto): MessageDto =
+        client.post("projects/$projectId/rooms/$roomId/offsets/") {
+            contentType(ContentType.Application.Json)
+            setBody(offset)
+        }.body()
 }

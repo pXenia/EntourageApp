@@ -1,4 +1,4 @@
-package com.entourageapp.features.rooms.presentation.createplan
+package com.entourageapp.features.rooms.presentation.createroom
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -49,24 +49,24 @@ import com.entourageapp.features.rooms.presentation.components.drawplan.dst
 import com.entourageapp.features.rooms.presentation.components.drawplan.fmt
 import com.entourageapp.features.rooms.presentation.components.drawplan.polygonAreaM2
 import com.entourageapp.features.rooms.presentation.components.drawplan.snapToGrid
-import org.koin.compose.viewmodel.koinViewModel
 
 private const val POINT_RADIUS = 14f  // радиус точки
-private const val HIT_RADIUS   = 36f  // радиус касания
+private const val HIT_RADIUS = 36f  // радиус касания
 
 @Composable
 fun CreateRoomPlanScreen(
-    viewModel: CreateRoomPlanVM = koinViewModel(),
+    viewModel: CreateRoomVM,
     onBackClick: () -> Unit = {},
-    cellSizeDp: Dp = 8.dp
+    modifier: Modifier = Modifier,
+    cellSizeDp: Dp = 8.dp,
 ) {
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.planState.collectAsState()
     val textMeasurer = rememberTextMeasurer()
     val density = LocalDensity.current
 
     // обновление размера ячейки при смене плотности экрана
     LaunchedEffect(cellSizeDp) {
-        viewModel.handleIntent(RoomDrawerIntent.UpdateCellSize(with(density) { cellSizeDp.toPx() }))
+        viewModel.handlePlanIntent(RoomDrawerIntent.UpdateCellSize(with(density) { cellSizeDp.toPx() }))
     }
 
     Column(
@@ -108,7 +108,7 @@ fun CreateRoomPlanScreen(
             ) {
                 Switch(
                     checked = state.snapEnabled,
-                    onCheckedChange = { viewModel.handleIntent(RoomDrawerIntent.ToggleSnap(it)) },
+                    onCheckedChange = { viewModel.handlePlanIntent(RoomDrawerIntent.ToggleSnap(it)) },
                     colors = SwitchDefaults.colors(checkedTrackColor = EntourageTeal.copy(alpha = 0.2f))
                 )
                 Text(
@@ -146,7 +146,7 @@ fun CreateRoomPlanScreen(
                             when (state.mode) {
                                 DrawMode.DRAW -> {
                                     val pos = maybeSnap(tap)
-                                    if (state.points.none { it.dst(pos) < HIT_RADIUS }) viewModel.handleIntent(
+                                    if (state.points.none { it.dst(pos) < HIT_RADIUS }) viewModel.handlePlanIntent(
                                         RoomDrawerIntent.AddPoint(pos)
                                     )
                                 }
@@ -154,7 +154,7 @@ fun CreateRoomPlanScreen(
                                 DrawMode.DELETE -> {
                                     val idx =
                                         state.points.indexOfFirst { it.dst(tap) < HIT_RADIUS }
-                                    if (idx != -1) viewModel.handleIntent(
+                                    if (idx != -1) viewModel.handlePlanIntent(
                                         RoomDrawerIntent.RemovePoint(
                                             idx
                                         )
@@ -171,7 +171,7 @@ fun CreateRoomPlanScreen(
                             onDragStart = { start ->
                                 val idx =
                                     state.points.indexOfFirst { it.dst(start) < HIT_RADIUS }
-                                if (idx != -1) viewModel.handleIntent(RoomDrawerIntent.DragEnd) // сброс старого индекса
+                                if (idx != -1) viewModel.handlePlanIntent(RoomDrawerIntent.DragEnd) // сброс старого индекса
                             },
                             onDrag = { change, _ ->
                                 val idx =
@@ -181,7 +181,7 @@ fun CreateRoomPlanScreen(
                                         change.position.x.coerceIn(0f, w),
                                         change.position.y.coerceIn(0f, h)
                                     )
-                                    viewModel.handleIntent(
+                                    viewModel.handlePlanIntent(
                                         RoomDrawerIntent.MovePoint(
                                             idx,
                                             maybeSnap(clamped)
@@ -189,7 +189,7 @@ fun CreateRoomPlanScreen(
                                     )
                                 }
                             },
-                            onDragEnd = { viewModel.handleIntent(RoomDrawerIntent.DragEnd) }
+                            onDragEnd = { viewModel.handlePlanIntent(RoomDrawerIntent.DragEnd) }
                         )
                     }
             ) {
@@ -216,17 +216,17 @@ fun CreateRoomPlanScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             ModeChip("Рисование", state.mode == DrawMode.DRAW) {
-                viewModel.handleIntent(
+                viewModel.handlePlanIntent(
                     RoomDrawerIntent.SetMode(DrawMode.DRAW)
                 )
             }
             ModeChip("Правка", state.mode == DrawMode.EDIT) {
-                viewModel.handleIntent(
+                viewModel.handlePlanIntent(
                     RoomDrawerIntent.SetMode(DrawMode.EDIT)
                 )
             }
             ModeChip("Удаление", state.mode == DrawMode.DELETE) {
-                viewModel.handleIntent(
+                viewModel.handlePlanIntent(
                     RoomDrawerIntent.SetMode(DrawMode.DELETE)
                 )
             }
@@ -251,7 +251,9 @@ fun RowScope.ModeChip(label: String, active: Boolean, onClick: () -> Unit) {
         modifier = Modifier.weight(1f),
         shape = RoundedCornerShape(24.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (active) EntourageTeal.copy(alpha = 0.2f) else EntourageWhite.copy(alpha = 0.2f),
+            containerColor = if (active) EntourageTeal.copy(alpha = 0.2f) else EntourageWhite.copy(
+                alpha = 0.2f
+            ),
             contentColor = if (active) EntourageTeal else EntourageBlack.copy(alpha = 0.8f)
         )
     ) {

@@ -17,8 +17,8 @@ import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageRed
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
-import com.entourageapp.features.rooms.presentation.createplan.DrawMode
-import com.entourageapp.features.rooms.presentation.createplan.RoomDrawerState
+import com.entourageapp.features.rooms.presentation.createroom.DrawMode
+import com.entourageapp.features.rooms.presentation.createroom.RoomDrawerState
 import kotlin.math.PI
 import kotlin.math.atan2
 

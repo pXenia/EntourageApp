@@ -4,31 +4,43 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface Route: NavKey {
+sealed interface Route : NavKey {
     @Serializable
     data object AuthGraph : Route
+
     @Serializable
     data object Login : Route
+
     @Serializable
     data object Registration : Route
+
     @Serializable
-    data object ProjectList: Route
+    data object ProjectList : Route
+
     @Serializable
-    data object CalculatorsList: Route
+    data object CalculatorsList : Route
+
     @Serializable
-    data object UserProfile: Route
+    data object UserProfile : Route
+
     @Serializable
-    data object ProjectDetail: Route
+    data object ProjectDetail : Route
+
     @Serializable
-    data object CreateProject: Route
+    data object CreateProject : Route
+
     @Serializable
-    data object EstimateList: Route
+    data object EstimateList : Route
+
     @Serializable
-    data class RoomList(val projectId: Int): Route
+    data class RoomList(val projectId: Int) : Route
+
     @Serializable
-    data class RoomInfo(val projectId: Int): Route
+    data class RoomInfo(val projectId: Int) : Route
+
     @Serializable
-    data class CreateRoom(val projectId: Int): Route
+    data class CreateRoomPlan(val projectId: Int) : Route
+
     @Serializable
-    data class CreateRoomPlan(val projectId: Int): Route
+    data class CreateRoom(val projectId: Int) : Route
 }

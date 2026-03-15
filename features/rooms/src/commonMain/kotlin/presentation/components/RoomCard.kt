@@ -52,7 +52,7 @@ fun RoomCard(
                     style = MaterialTheme.typography.headlineLarge.copy(fontSize = 22.sp)
                 )
                 Text(
-                    text = square,
+                    text = "$square кв. м",
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
                     color = EntourageTeal
                 )
