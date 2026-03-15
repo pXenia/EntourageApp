@@ -9,6 +9,7 @@ import com.entourageapp.core.network.api.RoomsKtorApi
 import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpCallValidator
+import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
@@ -16,9 +17,12 @@ import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.post
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 actual val networkModule = module {
@@ -26,7 +30,19 @@ actual val networkModule = module {
     single { PersistentCookiesStorage(get<Settings>()) }
     single<TokenStore> { get<PersistentCookiesStorage>() }
 
+    single(named("refreshClient")) {
+        HttpClient {
+            defaultRequest { url("http://localhost:8000/") }
+            install(ContentNegotiation) {
+                json(Json { ignoreUnknownKeys = true; coerceInputValues = true })
+            }
+        }
+    }
+
     single {
+        val refreshClient = get<HttpClient>(named("refreshClient"))
+        val tokenStore = get<TokenStore>()
+
         HttpClient {
             defaultRequest { url("http://localhost:8000/") }
             install(ContentNegotiation) {
@@ -34,12 +50,28 @@ actual val networkModule = module {
             }
             install(Logging) { level = LogLevel.ALL; logger = Logger.DEFAULT }
             install(HttpCallValidator) {
-                handleResponseExceptionWithRequest { exception, _ ->
+                handleResponseExceptionWithRequest { exception, request ->
                     val response = (exception as? ResponseException)?.response
                         ?: return@handleResponseExceptionWithRequest
+
                     if (response.status == HttpStatusCode.Unauthorized) {
-                        get<TokenStore>().clear()
+                        if (request.url.encodedPath.contains("auth/refresh")) {
+                            tokenStore.clear()
+                            return@handleResponseExceptionWithRequest
+                        }
+                        try {
+                            refreshClient.post("auth/refresh/")
+                        } catch (e: Exception) {
+                            tokenStore.clear()
+                        }
                     }
+                }
+            }
+            install(HttpRequestRetry) {
+                maxRetries = 1
+                retryIf { _, response -> response.status == HttpStatusCode.Unauthorized }
+                modifyRequest { request ->
+                    request.headers.remove(HttpHeaders.Cookie)
                 }
             }
         }
