@@ -85,9 +85,9 @@ fun NavRoot(
                     roomsEntryBuilder(navigator)
                 }
             ),
-            transitionSpec = { NavigationAnimations.defaultTransitionSpec() },
-            popTransitionSpec = { NavigationAnimations.defaultPopTransitionSpec() },
-            predictivePopTransitionSpec = { NavigationAnimations.defaultPopTransitionSpec() }
+//            transitionSpec = { NavigationAnimations.defaultTransitionSpec() },
+//            popTransitionSpec = { NavigationAnimations.defaultPopTransitionSpec() },
+//            predictivePopTransitionSpec = { NavigationAnimations.defaultPopTransitionSpec() }
         )
 
         if (navigationState.shouldShowBottomBar) {

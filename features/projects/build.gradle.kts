@@ -35,6 +35,8 @@ kotlin {
             implementation(libs.jetbrains.material3.adaptiveNavigation3)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.kotlinx.datetime)
+
 
             implementation(projects.core.navigation)
             implementation(projects.core.ui)

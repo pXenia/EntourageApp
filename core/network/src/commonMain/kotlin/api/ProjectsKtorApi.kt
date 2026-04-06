@@ -21,4 +21,8 @@ class ProjectsKtorApi(private val client: HttpClient) : ProjectsApi {
             setBody(project)
         }
     }
+
+    override suspend fun getProjectById(projectId: Int): ProjectDto {
+        return client.get("projects/$projectId").body()
+    }
 }

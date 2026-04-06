@@ -1,4 +1,4 @@
-package com.entourageapp.features.projects.presentation
+package com.entourageapp.features.projects.presentation.projectdetail
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,11 +24,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeachAlpha80
 import com.entourageapp.core.ui.EntourageTeal
@@ -43,100 +46,128 @@ import com.entourageapp.core.ui.info
 import com.entourageapp.core.ui.stats
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProjectDetailScreen(
+    projectId: Int,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onEstimateClick: () -> Unit = {},
-    onRoomListClick: () -> Unit = {},
+    onRoomListClick: (Int) -> Unit = {},
     onProjectInfoClick: () -> Unit = {}
 ) {
-    Column(
-        modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        ScreenTitleTwoButtons(
-            modifier = Modifier.padding(bottom = 16.dp),
-            title = "КВАРТИРА НА ЛЕНИНСКОМ",
-            leftIcon = arrowLeft,
-            rightIcon = info,
-            onLeftButtonClick = onBackClick,
-            onRightButtonClick = {}
-        )
-        DaysProgress(
-            starDate = "27.02.2022",
-            endDate = "05.03.2022",
-            pastDays = 20,
-            allDays = 30
-        )
+    val viewModel: ProjectDetailVM = koinViewModel()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
-        Spacer(modifier = Modifier.height(24.dp))
+    LaunchedEffect(Unit) {
+        viewModel.handleIntent(ProjectDetailIntent.LoadProject(projectId))
+    }
 
-        ProjectInfoCard(
-            onRoomListClick = onRoomListClick
-        )
-
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            thickness = 1.dp,
-            color = EntourageBlack
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            SectionButton(
-                modifier = Modifier.weight(1f),
-                onClick = onProjectInfoClick,
-                title = "Документ",
-                icon = document
-            )
-            SectionButton(
-                modifier = Modifier.weight(1f),
-                title = "Галерея",
-                icon = gallery
-            )
-            SectionButton(
-                modifier = Modifier.weight(1f),
-                onClick = onEstimateClick,
-                title = "Смета",
-                icon = folder
-            )
+    when {
+        state.isLoading -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = EntourageBlack)
+            }
         }
 
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            thickness = 1.dp,
-            color = EntourageBlack
-        )
+        state.error != null -> {
+            Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = state.error ?: "Ошибка", color = EntourageBlack)
+            }
+        }
+
+        state.project != null -> {
+            val project = state.project!!
+
+            Column(
+                modifier = modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                ScreenTitleTwoButtons(
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    title = project.title,
+                    leftIcon = arrowLeft,
+                    rightIcon = info,
+                    onLeftButtonClick = onBackClick,
+                    onRightButtonClick = {}
+                )
+
+                DaysProgress(
+                    startDate = project.startDateFormatted,
+                    endDate = project.endDateFormatted ?: "—",
+                    pastDays = project.pastDays,
+                    allDays = project.allDays,
+                    progress = project.progress
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                ProjectInfoCard(
+                    roomsCount = project.roomsCount,
+                    onRoomListClick = { onRoomListClick(projectId) }
+                )
+
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = EntourageBlack
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    SectionButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = onProjectInfoClick,
+                        title = "Документ",
+                        icon = document
+                    )
+                    SectionButton(
+                        modifier = Modifier.weight(1f),
+                        title = "Галерея",
+                        icon = gallery
+                    )
+                    SectionButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = onEstimateClick,
+                        title = "Смета",
+                        icon = folder
+                    )
+                }
+
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = EntourageBlack
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun DaysProgress(
-    starDate: String,
+    startDate: String,
     endDate: String,
     pastDays: Int,
-    allDays: Int
+    allDays: Int,
+    progress: Float
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        CircularDaysProgress(pastDays, allDays)
+        CircularDaysProgress(pastDays, allDays, progress)
         Column(
             modifier = Modifier.width(IntrinsicSize.Min),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            DateBadge(starDate)
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth(),
-                thickness = 1.dp,
-                color = EntourageBlack
-            )
+            DateBadge(startDate)
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = EntourageBlack)
             DateBadge(endDate)
         }
     }
@@ -145,13 +176,12 @@ private fun DaysProgress(
 @Composable
 private fun CircularDaysProgress(
     pastDays: Int,
-    allDays: Int
+    allDays: Int,
+    progress: Float
 ) {
-    Box(
-        contentAlignment = Alignment.Center
-    ) {
+    Box(contentAlignment = Alignment.Center) {
         CircularProgressIndicator(
-            progress = 0.8f,
+            progress = progress,
             modifier = Modifier.size(200.dp),
             color = EntourageBlack,
             trackColor = EntourageBlack.copy(alpha = 0.2f),
@@ -196,6 +226,7 @@ private fun DateBadge(
 
 @Composable
 private fun ProjectInfoCard(
+    roomsCount: Int,
     onRoomListClick: () -> Unit = {}
 ) {
     Surface(
@@ -207,18 +238,12 @@ private fun ProjectInfoCard(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row {
-                RoomsInfo(roomsCount = 5)
+                RoomsInfo(roomsCount = roomsCount)
                 RoomsButton(onClick = onRoomListClick)
                 Spacer(modifier = Modifier.weight(1f))
                 StatsButton(onClick = {})
             }
-
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth(),
-                thickness = 1.dp,
-                color = EntourageBlack
-            )
-
+            HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = EntourageBlack)
             CostProgress()
         }
     }
