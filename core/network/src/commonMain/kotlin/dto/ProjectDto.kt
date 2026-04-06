@@ -13,14 +13,12 @@ data class ProjectDto(
     val endDate: String?,
     val square: Float,
     val budget: Float,
-    @SerialName("is_square_calculated")
-    val isSquareCalculated: Boolean,
     val description: String,
+    @SerialName("auto_calculate_square")
+    val isSquareCalculated: Boolean,
     @SerialName("rooms_count")
     val roomsCount: Int,
     @SerialName("members_count")
-    val membersCount: Int,
-    @SerialName("is_completed")
-    val isCompleted: Boolean
+    val membersCount: Int
 )
 

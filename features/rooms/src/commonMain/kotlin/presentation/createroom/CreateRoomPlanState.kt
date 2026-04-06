@@ -1,15 +1,22 @@
-package com.entourageapp.features.rooms.presentation.createplan
+package com.entourageapp.features.rooms.presentation.createroom
 
 import androidx.compose.ui.geometry.Offset
 
 enum class DrawMode { DRAW, EDIT, DELETE }
+
+data class WallInfo(
+    val index: Int,
+    val lengthM: Float
+)
 
 data class RoomDrawerState(
     val points: List<Offset> = emptyList(),
     val mode: DrawMode = DrawMode.DRAW,
     val snapEnabled: Boolean = true,
     val dragIndex: Int = -1,
-    val cellSizePx: Float = 0f
+    val cellSizePx: Float = 0f,
+    val walls: List<WallInfo> = emptyList(),
+    val square: Float = 0f
 )
 
 sealed class RoomDrawerIntent {

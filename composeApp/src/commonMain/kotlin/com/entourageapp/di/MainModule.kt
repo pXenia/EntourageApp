@@ -1,9 +1,9 @@
 package com.entourageapp.di
 
-import com.entourageapp.presentation.AuthViewModel
+import com.entourageapp.presentation.AuthVM
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val mainModule = module{
-    viewModel { AuthViewModel(get()) }
+    viewModel { AuthVM(get(),get()) }
 }

@@ -36,4 +36,8 @@ class AuthRepositoryImpl(
         runCatching {
             api.refreshToken()
         }
+
+    override suspend fun getMe(): Result<Unit> = runCatching {
+        api.getMe()
+    }
 }

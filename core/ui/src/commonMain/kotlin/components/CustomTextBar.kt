@@ -42,7 +42,8 @@ fun CustomTextBar(
     errorText: String? = null,
     isPassword: Boolean = false,
     //textAlign: TextAlign = TextAlign.Start,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    barModifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         Text(
@@ -63,7 +64,7 @@ fun CustomTextBar(
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 16.sp)
                 )
             },
-            modifier = Modifier
+            modifier = barModifier
                 .fillMaxWidth()
                 .defaultMinSize(minHeight = 40.dp),
             shape = RoundedCornerShape(32.dp),

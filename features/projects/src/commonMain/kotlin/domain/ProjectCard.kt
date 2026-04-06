@@ -12,7 +12,7 @@ data class ProjectCard(
     val isCompleted: Boolean = false
 )
 
-fun ProjectDto.toDomain(): ProjectCard {
+fun ProjectDto.toProjectCard(): ProjectCard {
     val startYear = startDate.take(4)
     val endYear = endDate?.take(4)
 
@@ -30,6 +30,6 @@ fun ProjectDto.toDomain(): ProjectCard {
         roomsCount = roomsCount,
         membersCount = membersCount,
         years = yearsString,
-        isCompleted = isCompleted
+        isCompleted = true
     )
 }
