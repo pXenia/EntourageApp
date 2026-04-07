@@ -23,11 +23,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
+import com.entourageapp.core.ui.EntourageRed
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.add
@@ -48,9 +52,26 @@ fun CreateProjectScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+    var showAddUserDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) onBackClick()
+    }
+
+    if (showAddUserDialog) {
+        AddParticipantDialog(
+            email = state.currentParticipantEmail,
+            onDismiss = { showAddUserDialog = false },
+            onConfirm = { allowEdit ->
+                viewModel.handleIntent(
+                    CreateProjectIntent.AddParticipant(
+                        email = state.currentParticipantEmail,
+                        allowEdit = allowEdit
+                    )
+                )
+                showAddUserDialog = false
+            }
+        )
     }
 
     Column {
@@ -68,8 +89,9 @@ fun CreateProjectScreen(
                 label = "Название",
                 value = state.title,
                 onValueChange = { viewModel.handleIntent(CreateProjectIntent.UpdateTitle(it)) },
-                placeholder = "Например, двушка на Ленинском"
+                placeholder = "Например, двушка на Ленинском",
             )
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -78,7 +100,7 @@ fun CreateProjectScreen(
                     modifier = Modifier.weight(1f),
                     value = state.startDate,
                     onValueChange = { viewModel.handleIntent(CreateProjectIntent.UpdateStartDate(it)) },
-                    label = "Дата начала"
+                    label = "Дата начала",
                 )
                 CustomDateField(
                     modifier = Modifier.weight(1f),
@@ -87,13 +109,11 @@ fun CreateProjectScreen(
                     label = "Дата окончания"
                 )
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
+
+            Row(modifier = Modifier.fillMaxWidth()) {
                 CustomTextBar(
                     label = "Площадь, кв. м",
                     placeholder = if (state.isCalculatedSquare) "--" else "Например, 90",
-                    // textAlign = TextAlign.Center,
                     modifier = Modifier.weight(1f).padding(end = 4.dp),
                     value = if (state.isCalculatedSquare) "--" else state.square,
                     isEnable = !state.isCalculatedSquare,
@@ -103,38 +123,75 @@ fun CreateProjectScreen(
                     modifier = Modifier.weight(1f).padding(top = 18.dp)
                         .align(Alignment.CenterVertically),
                     isChecked = state.isCalculatedSquare,
-                    onCheckedChange = { viewModel.handleIntent(CreateProjectIntent.UpdateIsCalculatedSquare(it)) },
+                    onCheckedChange = {
+                        viewModel.handleIntent(CreateProjectIntent.UpdateIsCalculatedSquare(it))
+                    },
                 )
             }
+
             CustomTextBar(
                 label = "Планируемый бюджет, ₽",
                 placeholder = "Например, 2 700 000",
                 value = state.budget,
                 onValueChange = { viewModel.handleIntent(CreateProjectIntent.UpdateBudget(it)) },
-                // textAlign = TextAlign.Center
             )
+
             CustomTextBar(
                 label = "Участники",
                 placeholder = "user@example.ru",
+                value = state.currentParticipantEmail,
+                onValueChange = {
+                    viewModel.handleIntent(CreateProjectIntent.UpdateCurrentParticipantEmail(it))
+                },
                 trailingIcon = add,
-                onTrailingIconClick = {}
+                onTrailingIconClick = {
+                    if (state.currentParticipantEmail.isNotBlank()) {
+                        showAddUserDialog = true
+                    }
+                }
             )
-            AddUserCard(Modifier.fillMaxWidth(), "Анна Миронова", "редакт.", "annie@example.ru")
-            //AddUserCard(Modifier.fillMaxWidth(), "Миша М", "чит.", "mishamironov17@example.ru")
+
+            state.pendingParticipants.forEach { participant ->
+                AddUserCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    name = participant.email,
+                    role = when (participant.roleCode) {
+                        "editor" -> "редакт."
+                        "viewer" -> "читатель"
+                        else -> participant.roleCode
+                    },
+                    email = participant.email,
+                    onCrossClick = {
+                        viewModel.handleIntent(CreateProjectIntent.RemoveParticipant(participant.email))
+                    }
+                )
+            }
+
             CustomTextBar(
                 label = "Описание",
-                placeholder = "Что-то важное\nЧто-то важное",
+                placeholder = "Что-то важное",
                 value = state.description,
                 onValueChange = { viewModel.handleIntent(CreateProjectIntent.UpdateDescription(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 isSingleLine = false
             )
+
+            if (state.error != null) {
+                Text(
+                    text = state.error!!,
+                    color = EntourageRed,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
+            }
+
             AccentButton(
                 modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth().height(56.dp),
                 onClick = { viewModel.handleIntent(CreateProjectIntent.Submit) },
-                text = "создать",
+                text = if (state.isLoading) "создание..." else "создать",
                 containerColor = EntourageBlack,
-                contentColor = EntourageWhite
+                contentColor = EntourageWhite,
+                enabled = !state.isLoading
             )
         }
     }

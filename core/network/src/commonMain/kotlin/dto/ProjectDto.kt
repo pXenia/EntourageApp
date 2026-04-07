@@ -11,9 +11,9 @@ data class ProjectDto(
     val startDate: String,
     @SerialName("end_date")
     val endDate: String?,
-    val square: Float,
-    val budget: Float,
-    val description: String,
+    val square: Float?,
+    val budget: Float?,
+    val description: String?,
     @SerialName("auto_calculate_square")
     val isSquareCalculated: Boolean,
     @SerialName("rooms_count")

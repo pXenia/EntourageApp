@@ -5,6 +5,7 @@ import com.entourageapp.core.network.dto.ProjectDto
 
 interface ProjectsApi {
     suspend fun getProjects(): List<ProjectDto>
-    suspend fun createProject(project: ProjectCreateDto)
     suspend fun getProjectById(projectId: Int): ProjectDto
+    suspend fun createProject(project: ProjectCreateDto): Int
+    suspend fun addProjectMember(projectId: Int, email: String, roleCode: String)
 }
