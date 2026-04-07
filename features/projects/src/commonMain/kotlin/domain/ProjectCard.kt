@@ -26,7 +26,7 @@ fun ProjectDto.toProjectCard(): ProjectCard {
     return ProjectCard(
         id = id,
         title = title,
-        square = square.toInt().toString(),
+        square = (square ?: 0).toInt().toString(),
         roomsCount = roomsCount,
         membersCount = membersCount,
         years = yearsString,

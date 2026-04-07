@@ -27,7 +27,6 @@ import kotlinx.serialization.json.Json
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-//private const val BASE_URL = "http://10.240.155.126:8000/" // для устройства
 
 actual val networkModule = module {
     single<Settings> { createSettings() }
