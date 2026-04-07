@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -20,7 +20,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,11 +49,19 @@ fun CustomTextBar(
     onTrailingIconClick: () -> Unit = {},
     errorText: String? = null,
     isPassword: Boolean = false,
+    isNumeric: Boolean = false,
     textAlign: TextAlign = TextAlign.Start,
     modifier: Modifier = Modifier,
     barModifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
+
+    // Выбор трансформации
+    val visualTransformation = when {
+        isPassword -> PasswordVisualTransformation()
+        isNumeric -> ThousandsSeparatorTransformation()
+        else -> VisualTransformation.None
+    }
 
     val colors = OutlinedTextFieldDefaults.colors(
         focusedContainerColor = EntourageWhite.copy(alpha = 0.6f),
@@ -62,7 +74,7 @@ fun CustomTextBar(
         errorContainerColor = EntourageWhite.copy(alpha = 0.6f),
         cursorColor = EntourageTeal,
         errorCursorColor = EntourageTeal,
-        selectionColors = TextSelectionColors(
+        selectionColors = androidx.compose.foundation.text.selection.TextSelectionColors(
             handleColor = EntourageTeal,
             backgroundColor = EntourageTeal.copy(alpha = 0.2f)
         )
@@ -80,7 +92,15 @@ fun CustomTextBar(
 
         BasicTextField(
             value = value,
-            onValueChange = onValueChange,
+            onValueChange = { newValue ->
+                if (isNumeric) {
+                    if (newValue.all { it.isDigit() }) {
+                        onValueChange(newValue)
+                    }
+                } else {
+                    onValueChange(newValue)
+                }
+            },
             modifier = barModifier.fillMaxWidth(),
             singleLine = isSingleLine,
             textStyle = MaterialTheme.typography.bodySmall.copy(
@@ -90,7 +110,10 @@ fun CustomTextBar(
             ),
             interactionSource = interactionSource,
             enabled = isEnable,
-            visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = if (isNumeric) KeyboardType.Number else KeyboardType.Text
+            ),
+            visualTransformation = visualTransformation,
             cursorBrush = SolidColor(EntourageTeal),
             decorationBox = { innerTextField ->
                 OutlinedTextFieldDefaults.DecorationBox(
@@ -98,7 +121,7 @@ fun CustomTextBar(
                     innerTextField = innerTextField,
                     enabled = isEnable,
                     singleLine = isSingleLine,
-                    visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+                    visualTransformation = visualTransformation,
                     interactionSource = interactionSource,
                     isError = errorText != null,
                     placeholder = {
@@ -146,11 +169,43 @@ fun CustomTextBar(
 
         if (errorText != null) {
             Text(
-                modifier = Modifier.padding(start = 20.dp),
+                modifier = Modifier.padding(start = 20.dp, top = 2.dp),
                 text = errorText,
                 color = EntourageRed,
-                fontSize = 16.sp
+                fontSize = 14.sp
             )
         }
+    }
+}
+
+class ThousandsSeparatorTransformation : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val originalText = text.text
+        if (originalText.isEmpty()) {
+            return TransformedText(text, OffsetMapping.Identity)
+        }
+
+        val formattedText = originalText
+            .reversed()
+            .chunked(3)
+            .joinToString(" ")
+            .reversed()
+
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                if (offset <= 0) return 0
+                val spacesBefore = (formattedText.length - originalText.length)
+                val originalToRight = originalText.length - offset
+                val spacesToRight = originalToRight / 3
+                return formattedText.length - originalToRight - spacesToRight
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                val spacesBefore = formattedText.substring(0, offset).count { it == ' ' }
+                return offset - spacesBefore
+            }
+        }
+
+        return TransformedText(AnnotatedString(formattedText), offsetMapping)
     }
 }

@@ -10,6 +10,7 @@ import entourageapp.core.ui.generated.resources.bed
 import entourageapp.core.ui.generated.resources.blueprint
 import entourageapp.core.ui.generated.resources.calculator
 import entourageapp.core.ui.generated.resources.clothes_hanger
+import entourageapp.core.ui.generated.resources.coins
 import entourageapp.core.ui.generated.resources.cross_small
 import entourageapp.core.ui.generated.resources.document
 import entourageapp.core.ui.generated.resources.door_open
@@ -54,3 +55,4 @@ val dressingroom = Res.drawable.clothes_hanger
 val techroom = Res.drawable.settings
 val room = Res.drawable.house_plan
 val hallway = Res.drawable.door_open
+val coins = Res.drawable.coins
