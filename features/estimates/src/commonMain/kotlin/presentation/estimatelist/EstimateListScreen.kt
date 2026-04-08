@@ -49,6 +49,7 @@ import com.entourageapp.core.ui.arrowLeft
 import com.entourageapp.core.ui.components.ScreenTitleTwoButtons
 import com.entourageapp.core.ui.components.SearchBar
 import com.entourageapp.core.ui.menu
+import com.entourageapp.core.ui.print
 import com.entourageapp.core.ui.tools.formatTwoDecimals
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -93,9 +94,11 @@ fun EstimateListScreen(
                     modifier = Modifier.padding(bottom = 8.dp),
                     title = "Смета по проекту",
                     leftIcon = arrowLeft,
-                    rightIcon = menu,
+                    rightIcon = print,
                     onLeftButtonClick = onBackClick,
-                    onRightButtonClick = { /*TODO*/ }
+                    onRightButtonClick = {
+                        viewModel.handleIntent(EstimateListIntent.ExportXlsx(projectId))
+                    }
                 )
                 TotalCard(string = "Итого", value = "${state.totalSum.formatTwoDecimals()} ₽")
                 TotalCard(string = "Позиций", value = state.itemsCount.toString())

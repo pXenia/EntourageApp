@@ -21,6 +21,7 @@ import entourageapp.core.ui.generated.resources.kitchen_set
 import entourageapp.core.ui.generated.resources.layout_fluid
 import entourageapp.core.ui.generated.resources.menu_dots_vertical
 import entourageapp.core.ui.generated.resources.plus
+import entourageapp.core.ui.generated.resources.print
 import entourageapp.core.ui.generated.resources.search
 import entourageapp.core.ui.generated.resources.settings
 import entourageapp.core.ui.generated.resources.stage_theatre
@@ -56,3 +57,4 @@ val techroom = Res.drawable.settings
 val room = Res.drawable.house_plan
 val hallway = Res.drawable.door_open
 val coins = Res.drawable.coins
+val print = Res.drawable.print

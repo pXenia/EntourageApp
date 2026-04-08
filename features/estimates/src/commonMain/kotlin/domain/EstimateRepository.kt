@@ -12,4 +12,5 @@ interface EstimateRepository {
     suspend fun getRooms(projectId: Int): List<RoomShortDto>
     suspend fun addEstimateItem(projectId: Int, item: EstimateItemCreateDto): Int
     suspend fun getEstimateList(projectId: Int): EstimateListDto
+    suspend fun exportEstimateXlsx(projectId: Int): ByteArray
 }

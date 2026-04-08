@@ -8,6 +8,7 @@ data class EstimateListState(
     val itemsCount: Int = 0,
     val searchQuery: String = "",
     val isLoading: Boolean = false,
+    val isExporting: Boolean = false,
     val error: String? = null
 ) {
     val filteredItems: List<EstimateItemDto>
@@ -19,4 +20,5 @@ sealed class EstimateListIntent {
     data class LoadData(val projectId: Int) : EstimateListIntent()
     data class UpdateSearch(val query: String) : EstimateListIntent()
     data class DeleteItem(val itemId: Int) : EstimateListIntent()
+    data class ExportXlsx(val projectId: Int) : EstimateListIntent()
 }

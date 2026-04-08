@@ -14,11 +14,13 @@ import io.ktor.client.plugins.HttpCallValidator
 import io.ktor.client.plugins.HttpRequestRetry
 import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
@@ -38,6 +40,7 @@ actual val networkModule = module {
             install(ContentNegotiation) {
                 json(Json { ignoreUnknownKeys = true; coerceInputValues = true })
             }
+            install(HttpCookies)
         }
     }
 
@@ -46,11 +49,17 @@ actual val networkModule = module {
         val tokenStore = get<TokenStore>()
 
         HttpClient {
-            defaultRequest { url("http://localhost:8000/") }
+            defaultRequest {
+                url("http://localhost:8000/")
+                headers {
+                    append(HttpHeaders.Accept, "application/json")
+                }
+            }
             install(ContentNegotiation) {
                 json(Json { ignoreUnknownKeys = true; coerceInputValues = true })
             }
             install(Logging) { level = LogLevel.ALL; logger = Logger.DEFAULT }
+            install(HttpCookies)
             install(HttpCallValidator) {
                 handleResponseExceptionWithRequest { exception, request ->
                     val response = (exception as? ResponseException)?.response
@@ -82,5 +91,5 @@ actual val networkModule = module {
     single<ProjectsApi> { ProjectsKtorApi(get()) }
     single<AuthApi> { AuthKtorApi(get()) }
     single<RoomsApi> { RoomsKtorApi(get()) }
-    single< EstimateApi> { EstimateKtorApi(get()) }
+    single<EstimateApi> { EstimateKtorApi(get()) }
 }

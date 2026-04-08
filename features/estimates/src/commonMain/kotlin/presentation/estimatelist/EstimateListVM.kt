@@ -2,6 +2,7 @@ package presentation.estimatelist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.entourageapp.core.database.saveAndOpenFile
 import domain.EstimateRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,6 +21,7 @@ class EstimateListVM(
             is EstimateListIntent.LoadData -> loadEstimate(intent.projectId)
             is EstimateListIntent.UpdateSearch -> _state.update { it.copy(searchQuery = intent.query) }
             is EstimateListIntent.DeleteItem -> { /* логика удаления */ }
+            is EstimateListIntent.ExportXlsx -> exportXlsx(intent.projectId)
         }
     }
 
@@ -37,6 +39,19 @@ class EstimateListVM(
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.message) }
             }
+        }
+    }
+
+    private fun exportXlsx(projectId: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isExporting = true) }
+            runCatching {
+                val bytes = repository.exportEstimateXlsx(projectId)
+                saveAndOpenFile("estimate_project_$projectId.xlsx", bytes)
+            }.onFailure { e ->
+                _state.update { it.copy(error = e.message) }
+            }
+            _state.update { it.copy(isExporting = false) }
         }
     }
 }
