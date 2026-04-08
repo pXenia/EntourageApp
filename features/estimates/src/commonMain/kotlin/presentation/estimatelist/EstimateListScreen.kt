@@ -11,13 +11,15 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +31,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -45,18 +49,26 @@ import com.entourageapp.core.ui.arrowLeft
 import com.entourageapp.core.ui.components.ScreenTitleTwoButtons
 import com.entourageapp.core.ui.components.SearchBar
 import com.entourageapp.core.ui.menu
+import com.entourageapp.core.ui.tools.formatTwoDecimals
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 import presentation.EstimateCard
 
 @Composable
 fun EstimateListScreen(
     projectId: Int,
-    onAddPosition: (Int) -> Unit
+    onAddPosition: (Int) -> Unit,
+    onBackClick: () -> Unit,
+    viewModel: EstimateListVM = koinViewModel()
 ) {
     val scrollState = rememberLazyListState()
-
+    val state by viewModel.state.collectAsState()
     val isCollapsedHeader by remember {
         derivedStateOf { scrollState.firstVisibleItemScrollOffset > 0 }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.handleIntent(EstimateListIntent.LoadData(projectId))
     }
 
     Column(
@@ -82,11 +94,11 @@ fun EstimateListScreen(
                     title = "Смета по проекту",
                     leftIcon = arrowLeft,
                     rightIcon = menu,
-                    onLeftButtonClick = { /*TODO*/ },
+                    onLeftButtonClick = onBackClick,
                     onRightButtonClick = { /*TODO*/ }
                 )
-                TotalCard(string = "Итого", value = "12 500₽")
-                TotalCard(string = "Позиций", value = "200")
+                TotalCard(string = "Итого", value = "${state.totalSum.formatTwoDecimals()} ₽")
+                TotalCard(string = "Позиций", value = state.itemsCount.toString())
 
                 HorizontalDivider(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
@@ -95,9 +107,11 @@ fun EstimateListScreen(
                 )
             }
         }
-            SearchBar(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
-            )
+        SearchBar(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+            text = state.searchQuery,
+            onTextChange = { viewModel.handleIntent(EstimateListIntent.UpdateSearch(it)) }
+        )
         Box(modifier = Modifier.fillMaxSize()) {
 
             LazyColumn(
@@ -105,12 +119,25 @@ fun EstimateListScreen(
                 state = scrollState,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(15) {
-                    EstimateCard(modifier = Modifier.fillMaxWidth())
+                itemsIndexed(
+                    items = state.filteredItems,
+                    key = { _, item -> item.id }
+                ) { index, item ->
+                    EstimateCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        number = index + 1,
+                        type = item.itemType,
+                        name = item.name,
+                        units = item.unit,
+                        price = item.price.formatTwoDecimals(),
+                        quantity = item.quantity.formatTwoDecimals(),
+                        total = item.total.formatTwoDecimals(),
+                        room = item.room
+                    )
                 }
 
                 item {
-                    PaddingValues(bottom = 16.dp)
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
             FloatingActionButton(

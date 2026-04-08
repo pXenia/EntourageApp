@@ -6,6 +6,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import presentation.createestimateposition.CreatePositionVM
+import presentation.estimatelist.EstimateListVM
 
 val estimateModule = module {
     single<EstimateRepositoryImpl>() {
@@ -13,4 +14,5 @@ val estimateModule = module {
     } bind EstimateRepository::class
 
     viewModel { CreatePositionVM(get()) }
+    viewModel { EstimateListVM(get()) }
 }

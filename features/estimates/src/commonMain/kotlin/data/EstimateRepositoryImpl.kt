@@ -10,4 +10,5 @@ class EstimateRepositoryImpl(private val api: EstimateApi) : EstimateRepository 
     override suspend fun getItemTypes(projectId: Int) = api.getItemTypes(projectId)
     override suspend fun getRooms(projectId: Int): List<RoomShortDto> = api.getRooms(projectId)
     override suspend fun addEstimateItem(projectId: Int, item: EstimateItemCreateDto) = api.addEstimateItem(projectId, item)
+    override suspend fun getEstimateList(projectId: Int) = api.getEstimateList(projectId)
 }
