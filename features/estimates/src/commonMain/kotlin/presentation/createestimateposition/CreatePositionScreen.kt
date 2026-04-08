@@ -1,6 +1,7 @@
 package presentation.createestimateposition
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +41,7 @@ import com.entourageapp.core.ui.EntouragePeachAlpha30
 import com.entourageapp.core.ui.EntourageRed
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
+import com.entourageapp.core.ui.add
 import com.entourageapp.core.ui.calculator
 import com.entourageapp.core.ui.coins
 import com.entourageapp.core.ui.components.AccentButton
@@ -58,12 +63,24 @@ fun CreatePositionScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+    var showRoomDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(CreatePositionIntent.LoadDictionaries(projectId))
     }
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) onBackClick()
+    }
+
+    if (showRoomDialog) {
+        SelectRoomDialog(
+            rooms = state.availableRooms,
+            onDismiss = { showRoomDialog = false },
+            onSelect = { room ->
+                viewModel.handleIntent(CreatePositionIntent.SelectRoom(room))
+                showRoomDialog = false // Закрываем после выбора
+            }
+        )
     }
 
     Column(
@@ -181,14 +198,22 @@ fun CreatePositionScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Badge(tag, "Детская Ани")
+                if (state.selectedRoom != null) {
+                    Badge(tag, state.selectedRoom!!.title)
+                }
                 Surface(
                     color = EntouragePeachAlpha30,
-                    modifier = Modifier.clip(CircleShape)
+                    modifier = Modifier.clip(CircleShape).clickable{
+                        if (state.selectedRoom != null) {
+                            viewModel.handleIntent(CreatePositionIntent.ClearRoom)
+                        } else {
+                            showRoomDialog = true
+                        }
+                    }
                 ) {
                     Icon(
                         modifier = Modifier.padding(12.dp).size(18.dp),
-                        painter = painterResource(cross),
+                        painter = if (state.selectedRoom != null) painterResource(cross) else painterResource(add),
                         contentDescription = null,
                         tint = EntourageBlack
                     )

@@ -24,6 +24,8 @@ class CreatePositionVM(
             is CreatePositionIntent.UpdateQuantity -> _state.update { it.copy(quantity = intent.value) }
             is CreatePositionIntent.SelectType -> _state.update { it.copy(selectedType = intent.type) }
             is CreatePositionIntent.SelectUnit -> _state.update { it.copy(selectedUnit = intent.unit) }
+            is CreatePositionIntent.SelectRoom -> _state.update { it.copy(selectedRoom = intent.room) }
+            is CreatePositionIntent.ClearRoom -> _state.update { it.copy(selectedRoom = null) }
             is CreatePositionIntent.Submit -> submitPosition(intent.projectId)
         }
     }
@@ -33,6 +35,7 @@ class CreatePositionVM(
             try {
                 val types = repository.getItemTypes(projectId)
                 val units = repository.getUnits(projectId)
+                val rooms = repository.getRooms(projectId)
 
                 val defaultType = types.find { it.id == 1 } ?: types.firstOrNull()
                 val defaultUnit = units.find { it.id == 1 } ?: units.firstOrNull()
@@ -41,6 +44,7 @@ class CreatePositionVM(
                     it.copy(
                         availableTypes = types,
                         availableUnits = units,
+                        availableRooms = rooms,
                         selectedType = defaultType,
                         selectedUnit = defaultUnit
                     )
@@ -58,12 +62,16 @@ class CreatePositionVM(
             _state.update { it.copy(error = "Заполните все обязательные поля") }
             return
         }
+        if (s.selectedRoom == null) {
+            _state.update { it.copy(error = "Выберите комнату") }
+            return
+        }
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
                 val dto = EstimateItemCreateDto(
-                    roomId = s.roomId,
+                    roomId = s.selectedRoom.id,
                     itemTypeId = s.selectedType.id,
                     name = s.name.trim(),
                     quantity = s.quantity.toDoubleOrNull() ?: 0.0,

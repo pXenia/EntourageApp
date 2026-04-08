@@ -3,10 +3,10 @@ package com.entourageapp.core.network.api
 import com.entourageapp.core.network.dto.EstimateItemCreateDto
 import com.entourageapp.core.network.dto.EstimateItemTypeDto
 import com.entourageapp.core.network.dto.MeasureUnitDto
+import com.entourageapp.core.network.dto.RoomShortDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -23,6 +23,8 @@ class EstimateKtorApi(private val client: HttpClient) : EstimateApi {
     override suspend fun getItemTypes(projectId: Int): List<EstimateItemTypeDto> {
         return client.get("/projects/$projectId/estimates/item-types/").body()
     }
+
+    override suspend fun getRooms(projectId: Int) = client.get("/projects/$projectId/rooms/short-list/").body<List<RoomShortDto>>()
 
     override suspend fun addEstimateItem(projectId: Int, item: EstimateItemCreateDto): Int {
         val response = client.post("/projects/$projectId/estimates/add/") {
