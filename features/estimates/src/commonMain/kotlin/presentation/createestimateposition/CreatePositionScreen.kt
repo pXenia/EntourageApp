@@ -23,6 +23,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeachAlpha30
+import com.entourageapp.core.ui.EntourageRed
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.calculator
@@ -42,16 +46,30 @@ import com.entourageapp.core.ui.components.CustomTextBar
 import com.entourageapp.core.ui.components.ScreenTitle
 import com.entourageapp.core.ui.cross
 import com.entourageapp.core.ui.tag
+import com.entourageapp.core.ui.tools.formatTwoDecimals
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CreatePositionScreen(
-    modifier: Modifier = Modifier,
-    onBackClick: () -> Unit
+    projectId: Int,
+    onBackClick: () -> Unit,
+    viewModel: CreatePositionVM = koinViewModel(),
 ) {
+    val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(Unit) {
+        viewModel.handleIntent(CreatePositionIntent.LoadDictionaries(projectId))
+    }
+    LaunchedEffect(state.isSuccess) {
+        if (state.isSuccess) onBackClick()
+    }
+
     Column(
-        modifier = modifier.fillMaxSize().verticalScroll(scrollState),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         ScreenTitle(
@@ -61,55 +79,59 @@ fun CreatePositionScreen(
         )
 
         CustomTextBar(
-            value = "",
-            onValueChange = { },
+            value = state.name,
+            onValueChange = { viewModel.handleIntent(CreatePositionIntent.UpdateName(it)) },
             label = "Название",
-            placeholder = "Например, ламинат"
+            placeholder = "Например, ламинат",
+            errorText = if (state.error?.contains("Название") == true) state.error else null
         )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             CustomDropdownBar(
                 modifier = Modifier.weight(1f),
-                items = listOf(""),
-                selectedItem = "",
-                onItemSelected = { },
-                itemLabel = { "" },
+                items = state.availableTypes,
+                selectedItem = state.selectedType,
+                onItemSelected = { viewModel.handleIntent(CreatePositionIntent.SelectType(it)) },
+                itemLabel = { it.name },
                 label = "Тип",
                 placeholder = "..."
             )
             CustomDropdownBar(
                 modifier = Modifier.weight(1f),
-                items = listOf(""),
-                selectedItem = "",
-                onItemSelected = { },
-                itemLabel = { "" },
+                items = state.availableUnits,
+                selectedItem = state.selectedUnit,
+                onItemSelected = { viewModel.handleIntent(CreatePositionIntent.SelectUnit(it)) },
+                itemLabel = { it.name },
                 label = "Ед. измерения",
                 placeholder = "..."
             )
         }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             CustomTextBar(
                 modifier = Modifier.weight(1f),
-                value = "",
-                onValueChange = { },
+                value = state.price,
+                onValueChange = { viewModel.handleIntent(CreatePositionIntent.UpdatePrice(it)) },
                 label = "Цена за ед.",
                 isNumeric = true,
                 placeholder = "200"
             )
             CustomTextBar(
                 modifier = Modifier.weight(1f),
-                value = "",
-                onValueChange = { },
+                value = state.quantity,
+                onValueChange = { viewModel.handleIntent(CreatePositionIntent.UpdateQuantity(it)) },
                 label = "Количество",
                 isNumeric = true,
                 placeholder = "12"
             )
         }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
@@ -123,13 +145,10 @@ fun CreatePositionScreen(
             Spacer(modifier = Modifier.width(12.dp))
             Surface(
                 color = EntouragePeachAlpha30,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(32.dp))
-
+                modifier = Modifier.clip(RoundedCornerShape(32.dp))
             ) {
                 Row(
-                    modifier = Modifier
-                        .padding(vertical = 12.dp, horizontal = 16.dp),
+                    modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -147,6 +166,7 @@ fun CreatePositionScreen(
                 }
             }
         }
+
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -156,10 +176,7 @@ fun CreatePositionScreen(
                 color = EntourageTeal,
                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 18.sp),
             )
-            HorizontalDivider(
-                color = EntourageBlack,
-                thickness = 1.dp
-            )
+            HorizontalDivider(color = EntourageBlack, thickness = 1.dp)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -167,14 +184,10 @@ fun CreatePositionScreen(
                 Badge(tag, "Детская Ани")
                 Surface(
                     color = EntouragePeachAlpha30,
-                    modifier = Modifier
-                        .clip(CircleShape)
-
+                    modifier = Modifier.clip(CircleShape)
                 ) {
                     Icon(
-                        modifier = Modifier
-                            .padding(12.dp)
-                            .size(18.dp),
+                        modifier = Modifier.padding(12.dp).size(18.dp),
                         painter = painterResource(cross),
                         contentDescription = null,
                         tint = EntourageBlack
@@ -182,7 +195,9 @@ fun CreatePositionScreen(
                 }
             }
         }
-        Spacer(modifier = Modifier.width(12.dp))
+
+        Spacer(modifier = Modifier.height(12.dp))
+
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -197,11 +212,9 @@ fun CreatePositionScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(32.dp),
                 border = BorderStroke(width = 1.dp, color = EntourageBlack)
-
             ) {
                 Row(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp, horizontal = 12.dp),
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 12.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -219,20 +232,33 @@ fun CreatePositionScreen(
                         )
                     }
                     Text(
-                        text = "8 220 ₽",
+                        text = "${state.total.formatTwoDecimals()} ₽",
                         color = EntourageBlack,
                         style = MaterialTheme.typography.headlineLarge.copy(fontSize = 22.sp),
                     )
                 }
             }
         }
-        Spacer(modifier = Modifier.width(12.dp))
+
+        Spacer(modifier = Modifier.height(12.dp))
+        if (state.error != null) {
+            Text(
+                text = state.error!!,
+                color = EntourageRed,
+                fontSize = 16.sp,
+                modifier = Modifier.padding(horizontal = 4.dp)
+            )
+        }
         AccentButton(
-            modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth().height(56.dp),
-            onClick = { },
-            text = "ДОБАВИТЬ В СМЕТУ",
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .fillMaxWidth()
+                .height(56.dp),
+            onClick = { viewModel.handleIntent(CreatePositionIntent.Submit(projectId)) },
+            text = if (state.isLoading) "ДОБАВЛЕНИЕ..." else "ДОБАВИТЬ В СМЕТУ",
             containerColor = EntourageBlack,
             contentColor = EntourageWhite,
+            enabled = !state.isLoading
         )
     }
 }

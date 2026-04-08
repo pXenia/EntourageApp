@@ -53,7 +53,7 @@ fun ProjectDetailScreen(
     projectId: Int,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onEstimateClick: () -> Unit = {},
+    onEstimateClick: (Int) -> Unit = {},
     onRoomListClick: (Int) -> Unit = {},
     onProjectInfoClick: () -> Unit = {}
 ) {
@@ -132,7 +132,7 @@ fun ProjectDetailScreen(
                     )
                     SectionButton(
                         modifier = Modifier.weight(1f),
-                        onClick = onEstimateClick,
+                        onClick = { onEstimateClick(projectId) },
                         title = "Смета",
                         icon = folder
                     )
@@ -391,10 +391,10 @@ private fun SectionButton(
     Surface(
         color = EntourageTeal.copy(alpha = 0.2f),
         shape = RoundedCornerShape(32.dp),
-        modifier = modifier.clickable { onClick() }
+        modifier = modifier
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
+            modifier = Modifier.clickable { onClick() }.padding(vertical = 24.dp, horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

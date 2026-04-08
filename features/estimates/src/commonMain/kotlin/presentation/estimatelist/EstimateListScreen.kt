@@ -50,7 +50,8 @@ import presentation.EstimateCard
 
 @Composable
 fun EstimateListScreen(
-    onAddPosition: () -> Unit
+    projectId: Int,
+    onAddPosition: (Int) -> Unit
 ) {
     val scrollState = rememberLazyListState()
 
@@ -113,7 +114,7 @@ fun EstimateListScreen(
                 }
             }
             FloatingActionButton(
-                onClick = onAddPosition,
+                onClick = { onAddPosition(projectId) },
                 containerColor = EntourageTeal.copy(alpha = 0.9f),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)

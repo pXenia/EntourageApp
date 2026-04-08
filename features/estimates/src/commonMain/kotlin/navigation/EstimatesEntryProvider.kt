@@ -10,11 +10,13 @@ import presentation.estimatelist.EstimateListScreen
 fun EntryProviderScope<NavKey>.estimatesEntryBuilder(navigator: Navigator) {
     entry<Route.EstimateList> {
         EstimateListScreen(
-            onAddPosition = { navigator.navigate(Route.CreateEstimatePosition) }
+            projectId = it.projectId,
+            onAddPosition = { navigator.navigate(Route.CreateEstimatePosition(it)) }
         )
     }
     entry<Route.CreateEstimatePosition> {
         CreatePositionScreen(
+            projectId =  it.projectId,
             onBackClick = { navigator.goBack() }
         )
     }
