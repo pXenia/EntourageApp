@@ -1,4 +1,4 @@
-package presentation.login
+package com.entourageapp.features.auth.presentation.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,7 +31,6 @@ import com.entourageapp.core.ui.components.AccentButton
 import com.entourageapp.core.ui.components.CustomTextBar
 import com.entourageapp.core.ui.components.FloatingButton
 import org.koin.compose.viewmodel.koinViewModel
-
 
 @Composable
 fun LoginScreen(

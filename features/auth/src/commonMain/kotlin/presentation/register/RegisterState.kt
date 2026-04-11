@@ -1,4 +1,4 @@
-package presentation.register
+package com.entourageapp.features.auth.presentation.register
 
 data class RegisterState(
     val name: String = "",

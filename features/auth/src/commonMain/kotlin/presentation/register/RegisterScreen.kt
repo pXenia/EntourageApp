@@ -1,4 +1,4 @@
-package presentation.register
+package com.entourageapp.features.auth.presentation.register
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
