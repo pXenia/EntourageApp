@@ -27,13 +27,13 @@ import com.entourageapp.features.auth.navigation.authEntryBuilder
 import com.entourageapp.features.auth.presentation.AuthState
 import com.entourageapp.features.auth.presentation.AuthVM
 import com.entourageapp.features.calculators.navigation.calculatorsListEntryBuilder
+import com.entourageapp.features.estimates.navigation.estimatesEntryBuilder
 import com.entourageapp.features.projects.navigation.projectsEntryBuilder
 import com.entourageapp.features.rooms.navigation.roomsEntryBuilder
 import com.entourageapp.features.userprofile.navigation.userProfileEntryBuilder
 import com.entourageapp.navigation.CustomBottomBar
 import com.entourageapp.navigation.TopLevelNavigationItem
 import com.entourageapp.navigation.topLevelNavItems
-import navigation.estimatesEntryBuilder
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

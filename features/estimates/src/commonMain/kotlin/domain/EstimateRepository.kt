@@ -1,4 +1,4 @@
-package domain
+package com.entourageapp.features.estimates.domain
 
 import com.entourageapp.core.network.dto.EstimateItemCreateDto
 import com.entourageapp.core.network.dto.EstimateItemTypeDto

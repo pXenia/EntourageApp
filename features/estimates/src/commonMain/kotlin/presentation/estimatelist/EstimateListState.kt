@@ -1,4 +1,4 @@
-package presentation.estimatelist
+package com.entourageapp.features.estimates.presentation.estimatelist
 
 import com.entourageapp.core.network.dto.EstimateItemDto
 

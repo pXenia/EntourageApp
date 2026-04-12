@@ -1,4 +1,4 @@
-package presentation
+package com.entourageapp.features.estimates.presentation
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing

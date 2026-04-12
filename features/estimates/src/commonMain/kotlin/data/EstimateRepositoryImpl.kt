@@ -1,9 +1,9 @@
-package data
+package com.entourageapp.features.estimates.data
 
 import com.entourageapp.core.network.api.EstimateApi
 import com.entourageapp.core.network.dto.EstimateItemCreateDto
 import com.entourageapp.core.network.dto.RoomShortDto
-import domain.EstimateRepository
+import com.entourageapp.features.estimates.domain.EstimateRepository
 
 class EstimateRepositoryImpl(private val api: EstimateApi) : EstimateRepository {
     override suspend fun getUnits(projectId: Int) = api.getUnits(projectId)

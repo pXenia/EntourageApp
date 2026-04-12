@@ -1,4 +1,4 @@
-package presentation.estimatelist
+package com.entourageapp.features.estimates.presentation.estimatelist
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -48,12 +48,11 @@ import com.entourageapp.core.ui.add
 import com.entourageapp.core.ui.arrowLeft
 import com.entourageapp.core.ui.components.ScreenTitleTwoButtons
 import com.entourageapp.core.ui.components.SearchBar
-import com.entourageapp.core.ui.menu
 import com.entourageapp.core.ui.print
 import com.entourageapp.core.ui.tools.formatTwoDecimals
+import com.entourageapp.features.estimates.presentation.EstimateCard
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
-import presentation.EstimateCard
 
 @Composable
 fun EstimateListScreen(
