@@ -10,7 +10,7 @@ import androidx.core.content.FileProvider
 import org.koin.mp.KoinPlatform
 import java.io.File
 
-actual fun saveAndOpenFile(fileName: String, bytes: ByteArray) {
+actual suspend fun saveFile(fileName: String, bytes: ByteArray) {
     val context = KoinPlatform.getKoin().get<Context>()
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

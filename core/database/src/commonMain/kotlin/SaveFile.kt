@@ -1,3 +1,3 @@
 package com.entourageapp.core.database
 
-expect fun saveAndOpenFile(fileName: String, bytes: ByteArray)
+expect suspend fun saveFile(fileName: String, bytes: ByteArray)
