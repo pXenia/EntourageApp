@@ -19,11 +19,9 @@ class CreateRoomVM(
     private val roomsApi: RoomsApi
 ) : ViewModel() {
 
-    // --- Room form state ---
     private val _state = MutableStateFlow(CreateRoomState())
     val state: StateFlow<CreateRoomState> = _state.asStateFlow()
 
-    // --- Plan state ---
     private val _planState = MutableStateFlow(RoomDrawerState())
     val planState: StateFlow<RoomDrawerState> = _planState
 
@@ -113,7 +111,6 @@ class CreateRoomVM(
         }
     }
 
-    // Plan helpers
     private fun addPoint(point: Offset) {
         _planState.update { s ->
             val updated = s.copy(points = s.points + point)

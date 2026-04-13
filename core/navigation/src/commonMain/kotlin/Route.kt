@@ -36,13 +36,13 @@ sealed interface Route : NavKey {
 
     @Serializable
     data class RoomList(val projectId: Int) : Route
-
     @Serializable
     data class RoomInfo(val projectId: Int) : Route
 
     @Serializable
-    data class CreateRoomPlan(val projectId: Int) : Route
-
-    @Serializable
-    data class CreateRoom(val projectId: Int) : Route
+    data class RoomGraph(val projectId: Int) : Route
+    @Serializable sealed interface CreateRoom : NavKey {
+        @Serializable data class CreateForm(val projectId: Int) : CreateRoom
+        @Serializable data class CreatePlan(val projectId: Int) : CreateRoom
+    }
 }
