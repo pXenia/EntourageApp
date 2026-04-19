@@ -37,10 +37,11 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun Wallpaper(
-    roomId: Int,
-    projectId: Int,
+    roomId: Int = 0,
+    projectId: Int = 0,
     viewModel: WallpaperVM = koinViewModel(),
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    transferToEstimate: (Int) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
@@ -180,11 +181,11 @@ fun Wallpaper(
                 color = EntourageTeal
             )
         }
-        if (roomId != 0 && state.result != 0) {
+        if (projectId != 0 && state.result != 0) {
             AccentButton(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).height(52.dp),
                 text = "Перенести в смету",
-                onClick = { },
+                onClick = { transferToEstimate(state.result) },
                 containerColor = EntouragePeachAlpha80,
                 contentColor = EntourageBlack
             )

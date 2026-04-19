@@ -58,7 +58,10 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun CreatePositionScreen(
     projectId: Int,
+    roomId: Int,
+    amount: Int,
     onBackClick: () -> Unit,
+    onCalculateClick: (Int, Int) -> Unit,
     viewModel: CreatePositionVM = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
@@ -67,6 +70,9 @@ fun CreatePositionScreen(
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(CreatePositionIntent.LoadDictionaries(projectId))
+    }
+    LaunchedEffect(amount) {
+        viewModel.handleIntent(CreatePositionIntent.UpdateQuantity(amount.toString()))
     }
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) onBackClick()
@@ -78,7 +84,7 @@ fun CreatePositionScreen(
             onDismiss = { showRoomDialog = false },
             onSelect = { room ->
                 viewModel.handleIntent(CreatePositionIntent.SelectRoom(room))
-                showRoomDialog = false // Закрываем после выбора
+                showRoomDialog = false
             }
         )
     }
@@ -162,7 +168,9 @@ fun CreatePositionScreen(
             Spacer(modifier = Modifier.width(12.dp))
             Surface(
                 color = EntouragePeachAlpha30,
-                modifier = Modifier.clip(RoundedCornerShape(32.dp))
+                modifier = Modifier
+                    .clip(RoundedCornerShape(32.dp))
+                    .clickable{ onCalculateClick(projectId, roomId) }
             ) {
                 Row(
                     modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),

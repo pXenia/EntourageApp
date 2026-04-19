@@ -11,14 +11,17 @@ fun EntryProviderScope<NavKey>.estimatesEntryBuilder(navigator: Navigator) {
     entry<Route.EstimateList> {
         EstimateListScreen(
             projectId = it.projectId,
-            onAddPosition = { navigator.navigate(Route.CreateEstimatePosition(it)) },
+            onAddPosition = { projectId -> navigator.navigate(Route.CreateEstimatePosition(projectId, 0)) },
             onBackClick = { navigator.goBack() }
         )
     }
     entry<Route.CreateEstimatePosition> {
         CreatePositionScreen(
             projectId =  it.projectId,
-            onBackClick = { navigator.goBack() }
+            roomId = it.roomId,
+            amount = it.amount,
+            onBackClick = { navigator.goBack() },
+            onCalculateClick = { projectId, roomId -> navigator.navigate(Route.CalculatorsList(projectId, roomId))}
         )
     }
 }
