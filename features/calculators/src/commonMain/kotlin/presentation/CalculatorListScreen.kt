@@ -32,9 +32,9 @@ import com.entourageapp.features.calculators.presentation.components.CalculatorC
 @Composable
 fun CalculatorListScreen(
     modifier: Modifier = Modifier,
+    onWallpaperClick: (Int, Int) -> Unit,
     onCardClick: () -> Unit = {}
 ) {
-    val isSelected = remember { mutableIntStateOf(1) }
     val scrollState = rememberLazyListState()
     val isCollapsed by remember {
         derivedStateOf { scrollState.firstVisibleItemIndex > 0 || scrollState.firstVisibleItemScrollOffset > 50 }
@@ -63,17 +63,16 @@ fun CalculatorListScreen(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             contentPadding = PaddingValues(bottom = 80.dp)
         ) {
-            items(
-                count = 26,
-                key = { it }
-            ) { index ->
+            item{
                 CalculatorCard(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .animateItem(
                             fadeInSpec = tween(500),
                             placementSpec = spring(stiffness = Spring.StiffnessLow)
                         ),
-                    onCardClick = onCardClick
+                    onCardClick = { onWallpaperClick(2, 7) },
+                    title = "Обои"
                 )
             }
         }

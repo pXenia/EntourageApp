@@ -32,7 +32,7 @@ sealed interface Route : NavKey {
     @Serializable
     data class EstimateList(val projectId: Int) : Route
     @Serializable
-    data class CreateEstimatePosition(val projectId: Int) : Route
+    data class CreateEstimatePosition(val projectId: Int = 0, val amount: Int = 0) : Route
 
     @Serializable
     data class RoomList(val projectId: Int) : Route
@@ -45,4 +45,7 @@ sealed interface Route : NavKey {
         @Serializable data class CreateForm(val projectId: Int) : CreateRoom
         @Serializable data class CreatePlan(val projectId: Int) : CreateRoom
     }
+
+    @Serializable
+    data class Wallpaper(val projectId: Int, val roomId: Int) : Route
 }

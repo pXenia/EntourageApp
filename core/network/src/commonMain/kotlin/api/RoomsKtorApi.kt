@@ -7,6 +7,7 @@ import com.entourageapp.core.network.dto.RoomCreatedDto
 import com.entourageapp.core.network.dto.RoomDto
 import com.entourageapp.core.network.dto.RoomTypeDto
 import com.entourageapp.core.network.dto.WallAddDto
+import com.entourageapp.core.network.dto.WallDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -39,4 +40,7 @@ class RoomsKtorApi(private val client: HttpClient) : RoomsApi {
             contentType(ContentType.Application.Json)
             setBody(offset)
         }.body()
+
+    override suspend fun getWalls(projectId: Int, roomId: Int): List<WallDto> =
+        client.get("projects/$projectId/rooms/$roomId/walls/").body()
 }

@@ -12,4 +12,5 @@ actual fun createSettings(): Settings {
     )
 }
 
-actual fun getBaseUrl(): String = "http://192.168.1.101:8000/"
+actual fun getBaseUrl(): String = "http://10.0.2.2:8000/"
+//actual fun getBaseUrl(): String = "http://192.168.1.101:8000/"
