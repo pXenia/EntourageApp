@@ -66,7 +66,7 @@ fun SelectWallsDialog(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Стена ${index + 1}, ${((wall.len * 100).toInt())} см",
+                                text = "Стена ${index + 1}, ${((wall.length * 100).toInt())} см",
                                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
                             )
                             if (isSelected) {

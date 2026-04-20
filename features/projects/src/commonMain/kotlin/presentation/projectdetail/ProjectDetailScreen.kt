@@ -21,6 +21,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -343,12 +344,13 @@ private fun CostProgress() {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         LinearProgressIndicator(
-            progress = 0.5f,
+            progress = { 0.5f },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(32.dp),
             color = EntourageBlack,
-            trackColor = EntourageBlack.copy(alpha = 0.2f)
+            trackColor = EntourageBlack.copy(alpha = 0.2f),
+            strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
         )
         Row(
             modifier = Modifier.fillMaxWidth(),

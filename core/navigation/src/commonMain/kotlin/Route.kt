@@ -37,7 +37,7 @@ sealed interface Route : NavKey {
     @Serializable
     data class RoomList(val projectId: Int) : Route
     @Serializable
-    data class RoomInfo(val projectId: Int) : Route
+    data class RoomInfo(val projectId: Int, val roomId: Int) : Route
 
     @Serializable
     data class RoomGraph(val projectId: Int) : Route

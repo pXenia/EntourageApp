@@ -19,7 +19,7 @@ class WallpaperVM(
 
     fun handleIntent(intent: WallpaperIntent) {
         when (intent) {
-            is WallpaperIntent.LoadWalls -> loadWalls(intent.projectId, intent.roomId)
+            is WallpaperIntent.LoadParams -> loadParams(intent.projectId, intent.roomId)
             is WallpaperIntent.UpdateCeilingHeight -> _state.update { it.copy(ceilingHeight = intent.value) }
             is WallpaperIntent.UpdateRollLength -> _state.update { it.copy(rollLength = intent.value) }
             is WallpaperIntent.UpdateRollWidth -> _state.update { it.copy(rollWidth = intent.value) }
@@ -44,12 +44,12 @@ class WallpaperVM(
         }
     }
 
-    private fun loadWalls(projectId: Int, roomId: Int) {
+    private fun loadParams(projectId: Int, roomId: Int) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                val walls = repository.getWalls(projectId, roomId)
-                _state.update { it.copy(isLoading = false, walls = walls) }
+                val params = repository.getParams(projectId, roomId)
+                _state.update { it.copy(isLoading = false, walls = params.walls, ceilingHeight = (params.ceilingHeight ?: 0).toString()) }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.message) }
             }
@@ -87,7 +87,7 @@ class WallpaperVM(
         } else {
             s.walls
                 .filter { it.id in s.selectedWallIds }
-                .map { it.len.toDouble() }
+                .map { it.length.toDouble() }
         }
 
         if (wallLengthsCm.isEmpty()) return

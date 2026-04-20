@@ -5,20 +5,16 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.entourageapp.core.navigation.Navigator
 import com.entourageapp.core.navigation.Route
-import com.entourageapp.features.rooms.presentation.createroom.CreateRoomIntent
-import com.entourageapp.features.rooms.presentation.createroom.CreateRoomPlanScreen
-import com.entourageapp.features.rooms.presentation.createroom.CreateRoomScreen
-import com.entourageapp.features.rooms.presentation.createroom.CreateRoomVM
+import com.entourageapp.features.rooms.presentation.roomdetil.RoomDetailScreen
 import com.entourageapp.features.rooms.presentation.roomlist.RoomListScreen
-import org.koin.compose.viewmodel.koinViewModel
 
 
 fun EntryProviderScope<NavKey>.roomsEntryBuilder(navigator: Navigator) {
     entry<Route.RoomList> {
         RoomListScreen(
             projectId = it.projectId,
-            onAddRoomClick = { navigator.navigate(Route.RoomGraph(it))
-            },
+            onAddRoomClick = { navigator.navigate(Route.RoomGraph(it)) },
+            onRoomClick = { projectId, roomId -> navigator.navigate(Route.RoomInfo(projectId,roomId)) },
             onBackClick = { navigator.goBack() }
         )
     }
@@ -26,6 +22,15 @@ fun EntryProviderScope<NavKey>.roomsEntryBuilder(navigator: Navigator) {
         CreateRoomNavigation(
             projectId = route.projectId,
             onBack = { navigator.goBack() }
+        )
+    }
+
+    entry<Route.RoomInfo> { route ->
+        RoomDetailScreen(
+            projectId = route.projectId,
+            roomId = route.roomId,
+            onBackClick = { navigator.goBack() },
+            onEstimateClick = { projectId, roomId -> navigator.navigate(Route.CreateEstimatePosition(projectId, roomId))}
         )
     }
 }

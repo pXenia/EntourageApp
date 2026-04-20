@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -16,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,12 +59,16 @@ fun CustomTextBar(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
-    // Выбор трансформации
     val visualTransformation = when {
         isPassword -> PasswordVisualTransformation()
         isNumeric -> ThousandsSeparatorTransformation()
         else -> VisualTransformation.None
     }
+
+    val customTextSelectionColors = TextSelectionColors(
+        handleColor = EntourageTeal,
+        backgroundColor = EntourageTeal.copy(alpha = 0.4f)
+    )
 
     val colors = OutlinedTextFieldDefaults.colors(
         focusedContainerColor = EntourageWhite.copy(alpha = 0.6f),
@@ -74,10 +81,6 @@ fun CustomTextBar(
         errorContainerColor = EntourageWhite.copy(alpha = 0.6f),
         cursorColor = EntourageTeal,
         errorCursorColor = EntourageTeal,
-        selectionColors = androidx.compose.foundation.text.selection.TextSelectionColors(
-            handleColor = EntourageTeal,
-            backgroundColor = EntourageTeal.copy(alpha = 0.2f)
-        )
     )
 
     Column(modifier = modifier) {
@@ -89,91 +92,92 @@ fun CustomTextBar(
                 modifier = Modifier.padding(start = 20.dp, bottom = 2.dp)
             )
         }
-
-        BasicTextField(
-            value = value,
-            onValueChange = { newValue ->
-                if (isNumeric) {
-                    if (newValue.all { it.isDigit() }) {
+        CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
+            BasicTextField(
+                value = value,
+                onValueChange = { newValue ->
+                    if (isNumeric) {
+                        if (newValue.all { it.isDigit() }) {
+                            onValueChange(newValue)
+                        }
+                    } else {
                         onValueChange(newValue)
                     }
-                } else {
-                    onValueChange(newValue)
-                }
-            },
-            modifier = barModifier.fillMaxWidth(),
-            singleLine = isSingleLine,
-            textStyle = MaterialTheme.typography.bodySmall.copy(
-                fontSize = 16.sp,
-                textAlign = textAlign,
-                color = EntourageBlack
-            ),
-            interactionSource = interactionSource,
-            enabled = isEnable,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = if (isNumeric) KeyboardType.Number else KeyboardType.Text
-            ),
-            visualTransformation = visualTransformation,
-            cursorBrush = SolidColor(EntourageTeal),
-            decorationBox = { innerTextField ->
-                OutlinedTextFieldDefaults.DecorationBox(
-                    value = value,
-                    innerTextField = innerTextField,
-                    enabled = isEnable,
-                    singleLine = isSingleLine,
-                    visualTransformation = visualTransformation,
-                    interactionSource = interactionSource,
-                    isError = errorText != null,
-                    placeholder = {
-                        Text(
-                            text = placeholder,
-                            modifier = Modifier.fillMaxWidth(),
-                            color = EntourageBlack.copy(alpha = 0.7f),
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontSize = 16.sp,
-                                textAlign = textAlign
+                },
+                modifier = barModifier.fillMaxWidth(),
+                singleLine = isSingleLine,
+                textStyle = MaterialTheme.typography.bodySmall.copy(
+                    fontSize = 16.sp,
+                    textAlign = textAlign,
+                    color = EntourageBlack
+                ),
+                interactionSource = interactionSource,
+                enabled = isEnable,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = if (isNumeric) KeyboardType.Number else KeyboardType.Text
+                ),
+                visualTransformation = visualTransformation,
+                cursorBrush = SolidColor(EntourageTeal),
+                decorationBox = { innerTextField ->
+                    OutlinedTextFieldDefaults.DecorationBox(
+                        value = value,
+                        innerTextField = innerTextField,
+                        enabled = isEnable,
+                        singleLine = isSingleLine,
+                        visualTransformation = visualTransformation,
+                        interactionSource = interactionSource,
+                        isError = errorText != null,
+                        placeholder = {
+                            Text(
+                                text = placeholder,
+                                modifier = Modifier.fillMaxWidth(),
+                                color = EntourageBlack.copy(alpha = 0.7f),
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = 16.sp,
+                                    textAlign = textAlign
+                                )
                             )
-                        )
-                    },
-                    trailingIcon = if (trailingIcon != null) {
-                        {
-                            IconButton(
-                                onClick = onTrailingIconClick,
-                                modifier = Modifier.padding(end = 4.dp),
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = EntouragePeach.copy(alpha = 0.4f)
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(trailingIcon),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
+                        },
+                        trailingIcon = if (trailingIcon != null) {
+                            {
+                                IconButton(
+                                    onClick = onTrailingIconClick,
+                                    modifier = Modifier.padding(end = 4.dp),
+                                    colors = IconButtonDefaults.iconButtonColors(
+                                        containerColor = EntouragePeach.copy(alpha = 0.4f)
+                                    )
+                                ) {
+                                    Icon(
+                                        painter = painterResource(trailingIcon),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
                             }
+                        } else null,
+                        colors = colors,
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                        container = {
+                            OutlinedTextFieldDefaults.Container(
+                                enabled = isEnable,
+                                isError = errorText != null,
+                                interactionSource = interactionSource,
+                                colors = colors,
+                                shape = RoundedCornerShape(32.dp)
+                            )
                         }
-                    } else null,
-                    colors = colors,
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-                    container = {
-                        OutlinedTextFieldDefaults.Container(
-                            enabled = isEnable,
-                            isError = errorText != null,
-                            interactionSource = interactionSource,
-                            colors = colors,
-                            shape = RoundedCornerShape(32.dp)
-                        )
-                    }
+                    )
+                }
+            )
+
+            if (errorText != null) {
+                Text(
+                    modifier = Modifier.padding(start = 20.dp, top = 2.dp),
+                    text = errorText,
+                    color = EntourageRed,
+                    fontSize = 14.sp
                 )
             }
-        )
-
-        if (errorText != null) {
-            Text(
-                modifier = Modifier.padding(start = 20.dp, top = 2.dp),
-                text = errorText,
-                color = EntourageRed,
-                fontSize = 14.sp
-            )
         }
     }
 }

@@ -19,7 +19,7 @@ data class WallpaperState(
 )
 
 sealed class WallpaperIntent {
-    data class LoadWalls(val projectId: Int, val roomId: Int) : WallpaperIntent()
+    data class LoadParams(val projectId: Int, val roomId: Int) : WallpaperIntent()
     data class UpdateCeilingHeight(val value: String) : WallpaperIntent()
     data class UpdateRollLength(val value: String) : WallpaperIntent()
     data class UpdateRollWidth(val value: String) : WallpaperIntent()

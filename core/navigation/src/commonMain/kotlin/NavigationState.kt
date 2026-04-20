@@ -40,7 +40,7 @@ class NavigationState(
         get() = backStacks[topLevelRoute]?.lastOrNull() ?: topLevelRoute
 
     private val authRoutes = setOf(Route.Login, Route.Registration)
-    private val topLevelRoutes = setOf(Route.ProjectList, Route.CalculatorsList, Route.UserProfile)
+    private val topLevelRoutes = setOf(Route.ProjectList, Route.CalculatorsList(0,0), Route.UserProfile)
 
     val shouldShowBottomBar: Boolean
         get() = (currentRoute !in authRoutes) && (currentRoute in topLevelRoutes)
