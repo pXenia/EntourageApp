@@ -19,7 +19,6 @@ fun EntryProviderScope<NavKey>.estimatesEntryBuilder(navigator: Navigator) {
         CreatePositionScreen(
             projectId =  it.projectId,
             roomId = it.roomId,
-            amount = it.amount,
             onBackClick = { navigator.goBack() },
             onCalculateClick = { projectId, roomId -> navigator.navigate(Route.CalculatorsList(projectId, roomId))}
         )

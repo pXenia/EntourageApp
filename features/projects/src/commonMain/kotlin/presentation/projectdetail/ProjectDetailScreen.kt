@@ -56,9 +56,9 @@ fun ProjectDetailScreen(
     onBackClick: () -> Unit = {},
     onEstimateClick: (Int) -> Unit = {},
     onRoomListClick: (Int) -> Unit = {},
-    onProjectInfoClick: () -> Unit = {}
+    onProjectInfoClick: () -> Unit = {},
+    viewModel: ProjectDetailVM = koinViewModel()
 ) {
-    val viewModel: ProjectDetailVM = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {

@@ -4,6 +4,7 @@ import com.entourageapp.core.network.dto.MessageDto
 import com.entourageapp.core.network.dto.OffsetAddDto
 import com.entourageapp.core.network.dto.RoomAddDto
 import com.entourageapp.core.network.dto.RoomCreatedDto
+import com.entourageapp.core.network.dto.RoomDetailDto
 import com.entourageapp.core.network.dto.RoomDto
 import com.entourageapp.core.network.dto.RoomParamsDto
 import com.entourageapp.core.network.dto.RoomTypeDto
@@ -15,6 +16,7 @@ interface RoomsApi {
     suspend fun createRoom(projectId: Int, room: RoomAddDto): RoomCreatedDto
     suspend fun addWall(projectId: Int, roomId: Int, wall: WallAddDto): MessageDto
     suspend fun addOffset(projectId: Int, roomId: Int, offset: OffsetAddDto): MessageDto
-
     suspend fun getParams(projectId: Int, roomId: Int): RoomParamsDto
+    suspend fun getRoomById(projectId: Int, roomId: Int): RoomDetailDto
+
 }

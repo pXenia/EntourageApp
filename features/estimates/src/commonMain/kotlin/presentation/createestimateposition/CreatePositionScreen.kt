@@ -59,7 +59,6 @@ import org.koin.compose.viewmodel.koinViewModel
 fun CreatePositionScreen(
     projectId: Int,
     roomId: Int,
-    amount: Int,
     onBackClick: () -> Unit,
     onCalculateClick: (Int, Int) -> Unit,
     viewModel: CreatePositionVM = koinViewModel(),
@@ -70,9 +69,6 @@ fun CreatePositionScreen(
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(CreatePositionIntent.LoadDictionaries(projectId))
-    }
-    LaunchedEffect(amount) {
-        viewModel.handleIntent(CreatePositionIntent.UpdateQuantity(amount.toString()))
     }
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) onBackClick()

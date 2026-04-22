@@ -2,6 +2,8 @@ package com.entourageapp.features.estimates.presentation.createestimateposition
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.entourageapp.core.navigation.NavigationResult
+import com.entourageapp.core.navigation.NavigationResults
 import com.entourageapp.core.network.dto.EstimateItemCreateDto
 import com.entourageapp.features.estimates.domain.EstimateRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +29,18 @@ class CreatePositionVM(
             is CreatePositionIntent.SelectRoom -> _state.update { it.copy(selectedRoom = intent.room) }
             is CreatePositionIntent.ClearRoom -> _state.update { it.copy(selectedRoom = null) }
             is CreatePositionIntent.Submit -> submitPosition(intent.projectId)
+        }
+    }
+
+    init {
+        viewModelScope.launch {
+            NavigationResults.results.collect { result ->
+                when (result) {
+                    is NavigationResult.CalculatorResult -> {
+                        _state.update { it.copy(quantity = result.amount.toString()) }
+                    }
+                }
+            }
         }
     }
 

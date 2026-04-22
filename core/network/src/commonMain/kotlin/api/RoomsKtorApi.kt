@@ -4,6 +4,7 @@ import com.entourageapp.core.network.dto.MessageDto
 import com.entourageapp.core.network.dto.OffsetAddDto
 import com.entourageapp.core.network.dto.RoomAddDto
 import com.entourageapp.core.network.dto.RoomCreatedDto
+import com.entourageapp.core.network.dto.RoomDetailDto
 import com.entourageapp.core.network.dto.RoomDto
 import com.entourageapp.core.network.dto.RoomParamsDto
 import com.entourageapp.core.network.dto.RoomTypeDto
@@ -43,4 +44,7 @@ class RoomsKtorApi(private val client: HttpClient) : RoomsApi {
 
     override suspend fun getParams(projectId: Int, roomId: Int): RoomParamsDto =
         client.get("projects/$projectId/rooms/$roomId/params/").body()
+
+    override suspend fun getRoomById(projectId: Int, roomId: Int): RoomDetailDto =
+        client.get("projects/$projectId/rooms/$roomId/").body()
 }
