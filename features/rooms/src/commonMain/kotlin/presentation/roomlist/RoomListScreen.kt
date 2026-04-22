@@ -29,6 +29,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun RoomListScreen(
     projectId: Int,
     modifier: Modifier = Modifier,
+    onRoomClick: (Int, Int) -> Unit,
     onBackClick: () -> Unit = {},
     onAddRoomClick: (Int) -> Unit = {},
     viewModel: RoomListVM = koinViewModel()
@@ -76,7 +77,8 @@ fun RoomListScreen(
                     modifier = Modifier.fillMaxWidth(),
                     icon = room.icon,
                     roomTitle = room.title,
-                    square = room.square
+                    square = room.square,
+                    onCardClick = { onRoomClick(projectId, room.id) }
                 )
             }
 

@@ -117,6 +117,7 @@ fun CreateProjectScreen(
                     modifier = Modifier.weight(1f).padding(end = 4.dp),
                     value = if (state.isCalculatedSquare) "--" else state.square,
                     isEnable = !state.isCalculatedSquare,
+                    isNumeric = true,
                     onValueChange = { viewModel.handleIntent(CreateProjectIntent.UpdateSquare(it)) },
                 )
                 SquareCheckbox(
@@ -133,6 +134,7 @@ fun CreateProjectScreen(
                 label = "Планируемый бюджет, ₽",
                 placeholder = "Например, 2 700 000",
                 value = state.budget,
+                isNumeric = true,
                 onValueChange = { viewModel.handleIntent(CreateProjectIntent.UpdateBudget(it)) },
             )
 

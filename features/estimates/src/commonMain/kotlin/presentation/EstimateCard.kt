@@ -1,4 +1,4 @@
-package presentation
+package com.entourageapp.features.estimates.presentation
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -28,10 +28,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
-import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.components.Badge
@@ -42,6 +42,14 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun EstimateCard(
     modifier: Modifier = Modifier,
+    number: Int = 0,
+    type: String,
+    name: String,
+    units: String,
+    price: String,
+    quantity: String,
+    total: String,
+    room: String
 ) {
     var expandedState by remember { mutableStateOf(false) }
     val rotationState by animateFloatAsState(
@@ -63,7 +71,8 @@ fun EstimateCard(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Headline(
-                text = "материал",
+                text = type,
+                number = number,
                 onClick = { expandedState = !expandedState },
                 rotationState = rotationState
             )
@@ -80,37 +89,36 @@ fun EstimateCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Обои флизелиновые Palitra Home Taina Lesa зеленые",
+                    text = name,
                     modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
                 Text(
-                    text = "12 500₽",
+                    text = "$total ₽",
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
                     color = EntourageTeal
                 )
             }
 
             if (expandedState) {
-                Row(
+                Column (
                     modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     InfoCard(
                         text = "Ед. измерения",
-                        value = "рулон",
-                        modifier = Modifier.weight(1f)
+                        value = units,
+                        modifier = Modifier.fillMaxWidth()
                     )
                     InfoCard(
                         text = "Кол-во",
-                        value = "20",
-                        modifier = Modifier.weight(1f)
+                        value = quantity,
+                        modifier = Modifier.fillMaxWidth()
                     )
                     InfoCard(
                         text = "Цена ед.",
-                        value = "1800₽",
-                        modifier = Modifier.weight(1f)
+                        value = price,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
                 Row(
@@ -121,9 +129,8 @@ fun EstimateCard(
                         text = "Комната:",
                         style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                     )
-                    Badge(tag, "Спальня")
+                    Badge(tag, room)
                 }
-
             }
         }
     }
@@ -181,19 +188,19 @@ private fun InfoCard(
 ) {
     Surface(
         modifier = modifier,
-        color = EntouragePeach.copy(alpha = 0.3f),
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, EntourageBlack)
+        color = Color.Transparent,
+        shape = RoundedCornerShape(24.dp),
+        border = BorderStroke(1.dp, EntourageTeal)
     ) {
-        Column(
+        Row (
             modifier = Modifier
-                .padding(12.dp)
-                .wrapContentSize(Alignment.Center),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = text,
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp),
                 color = EntourageBlack.copy(alpha = 0.8f)
             )
             Text(

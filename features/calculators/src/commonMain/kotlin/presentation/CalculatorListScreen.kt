@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,9 +31,10 @@ import com.entourageapp.features.calculators.presentation.components.CalculatorC
 @Composable
 fun CalculatorListScreen(
     modifier: Modifier = Modifier,
-    onCardClick: () -> Unit = {}
+    projectId: Int,
+    roomId: Int,
+    onWallpaperClick: (Int, Int) -> Unit,
 ) {
-    val isSelected = remember { mutableIntStateOf(1) }
     val scrollState = rememberLazyListState()
     val isCollapsed by remember {
         derivedStateOf { scrollState.firstVisibleItemIndex > 0 || scrollState.firstVisibleItemScrollOffset > 50 }
@@ -63,17 +63,16 @@ fun CalculatorListScreen(
             verticalArrangement = Arrangement.spacedBy(4.dp),
             contentPadding = PaddingValues(bottom = 80.dp)
         ) {
-            items(
-                count = 26,
-                key = { it }
-            ) { index ->
+            item{
                 CalculatorCard(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .animateItem(
                             fadeInSpec = tween(500),
                             placementSpec = spring(stiffness = Spring.StiffnessLow)
                         ),
-                    onCardClick = onCardClick
+                    onCardClick = { onWallpaperClick(projectId, roomId) },
+                    title = "Обои"
                 )
             }
         }

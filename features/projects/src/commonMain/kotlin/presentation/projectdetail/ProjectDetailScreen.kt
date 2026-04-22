@@ -21,6 +21,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,11 +54,11 @@ fun ProjectDetailScreen(
     projectId: Int,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
-    onEstimateClick: () -> Unit = {},
+    onEstimateClick: (Int) -> Unit = {},
     onRoomListClick: (Int) -> Unit = {},
-    onProjectInfoClick: () -> Unit = {}
+    onProjectInfoClick: () -> Unit = {},
+    viewModel: ProjectDetailVM = koinViewModel()
 ) {
-    val viewModel: ProjectDetailVM = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
@@ -132,7 +133,7 @@ fun ProjectDetailScreen(
                     )
                     SectionButton(
                         modifier = Modifier.weight(1f),
-                        onClick = onEstimateClick,
+                        onClick = { onEstimateClick(projectId) },
                         title = "Смета",
                         icon = folder
                     )
@@ -343,12 +344,13 @@ private fun CostProgress() {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         LinearProgressIndicator(
-            progress = 0.5f,
+            progress = { 0.5f },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(32.dp),
             color = EntourageBlack,
-            trackColor = EntourageBlack.copy(alpha = 0.2f)
+            trackColor = EntourageBlack.copy(alpha = 0.2f),
+            strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -391,10 +393,10 @@ private fun SectionButton(
     Surface(
         color = EntourageTeal.copy(alpha = 0.2f),
         shape = RoundedCornerShape(32.dp),
-        modifier = modifier.clickable { onClick() }
+        modifier = modifier
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp),
+            modifier = Modifier.clickable { onClick() }.padding(vertical = 24.dp, horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

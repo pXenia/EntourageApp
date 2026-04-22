@@ -1,4 +1,4 @@
-package presentation.login
+package com.entourageapp.features.auth.presentation.login
 
 data class LoginState(
     val email: String = "",

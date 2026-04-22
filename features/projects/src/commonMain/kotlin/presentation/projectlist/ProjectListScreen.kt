@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -144,6 +145,9 @@ fun ProjectListScreen(
                     .align(Alignment.BottomEnd)
                     .padding(bottom = 80.dp)
                     .size(64.dp),
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 0.dp
+                ),
                 shape = CircleShape
             ) {
                 Icon(

@@ -51,13 +51,14 @@ kotlin {
 
             implementation(projects.core.ui)
             implementation(projects.core.navigation)
+            implementation(projects.core.network)
+            implementation(projects.core.database)
             implementation(projects.features.projects)
             implementation(projects.features.calculators)
             implementation(projects.features.userprofile)
             implementation(projects.features.estimates)
             implementation(projects.features.rooms)
             implementation(projects.features.auth)
-            implementation(projects.core.network)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -57,7 +57,6 @@ private const val HIT_RADIUS = 36f  // радиус касания
 fun CreateRoomPlanScreen(
     viewModel: CreateRoomVM,
     onBackClick: () -> Unit = {},
-    modifier: Modifier = Modifier,
     cellSizeDp: Dp = 8.dp,
 ) {
     val state by viewModel.planState.collectAsState()
@@ -235,7 +234,16 @@ fun CreateRoomPlanScreen(
             modifier = Modifier.fillMaxWidth()
                 .padding(top = 4.dp)
                 .height(48.dp),
-            onClick = onBackClick,
+            onClick = {
+                viewModel.handleIntent(
+                    CreateRoomIntent.OnPlanSaved(
+                        points = state.points,
+                        walls = state.walls,
+                        square = state.square
+                    )
+                )
+                onBackClick()
+            },
             text = "готово",
             containerColor = EntouragePeachAlpha80,
             contentColor = EntourageBlack

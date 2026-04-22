@@ -1,8 +1,8 @@
-package presentation.register
+package com.entourageapp.features.auth.presentation.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import domain.AuthRepository
+import com.entourageapp.features.auth.domain.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

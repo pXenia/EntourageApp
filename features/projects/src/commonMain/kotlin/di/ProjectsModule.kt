@@ -22,5 +22,4 @@ val projectsModule = module {
     viewModel { ProjectListVM(get()) }
     viewModel { CreateProjectVM(get()) }
     viewModel { ProjectDetailVM(get()) }
-
 }
