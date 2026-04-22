@@ -48,6 +48,7 @@ import com.entourageapp.core.ui.add
 import com.entourageapp.core.ui.arrowLeft
 import com.entourageapp.core.ui.components.ScreenTitleTwoButtons
 import com.entourageapp.core.ui.components.SearchBar
+import com.entourageapp.core.ui.filter
 import com.entourageapp.core.ui.print
 import com.entourageapp.core.ui.tools.formatTwoDecimals
 import com.entourageapp.features.estimates.presentation.EstimateCard
@@ -112,7 +113,8 @@ fun EstimateListScreen(
         SearchBar(
             modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
             text = state.searchQuery,
-            onTextChange = { viewModel.handleIntent(EstimateListIntent.UpdateSearch(it)) }
+            onTextChange = { viewModel.handleIntent(EstimateListIntent.UpdateSearch(it)) },
+            iconSecond = filter
         )
         Box(modifier = Modifier.fillMaxSize()) {
 

@@ -59,6 +59,8 @@ kotlin {
             implementation(projects.features.estimates)
             implementation(projects.features.rooms)
             implementation(projects.features.auth)
+            implementation(projects.features.projectdocuments)
+
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

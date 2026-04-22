@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
-import com.entourageapp.core.ui.filter
 import com.entourageapp.core.ui.search
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -30,9 +30,10 @@ fun SearchBar(
     text: String = "",
     onTextChange: (String) -> Unit = {},
     onSearchClick: () -> Unit = {},
-    onFilterClick: () -> Unit = {},
+    onIconSecondClick: () -> Unit = {},
     color: Color = Color.Transparent,
-    borderColor: Color = EntourageBlack
+    borderColor: Color = EntourageBlack,
+    iconSecond: DrawableResource
 ) {
     Column(modifier = modifier) {
         OutlinedTextField(
@@ -67,11 +68,11 @@ fun SearchBar(
                         )
                     }
                     IconButton(
-                        onClick = onFilterClick,
+                        onClick = onIconSecondClick,
                         modifier = Modifier.size(20.dp)
                     ) {
                         Icon(
-                            painter = painterResource(filter),
+                            painter = painterResource(iconSecond),
                             contentDescription = "Filter",
                             modifier = Modifier.size(height = 16.dp, width = 20.dp),
                             tint = EntourageBlack

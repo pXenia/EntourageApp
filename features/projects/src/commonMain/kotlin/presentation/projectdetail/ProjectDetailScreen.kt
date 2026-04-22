@@ -55,6 +55,7 @@ fun ProjectDetailScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onEstimateClick: (Int) -> Unit = {},
+    onDocumentsClick: (Int) -> Unit = {},
     onRoomListClick: (Int) -> Unit = {},
     onProjectInfoClick: () -> Unit = {},
     viewModel: ProjectDetailVM = koinViewModel()
@@ -122,7 +123,7 @@ fun ProjectDetailScreen(
                 ) {
                     SectionButton(
                         modifier = Modifier.weight(1f),
-                        onClick = onProjectInfoClick,
+                        onClick = { onDocumentsClick(projectId) },
                         title = "Документ",
                         icon = document
                     )

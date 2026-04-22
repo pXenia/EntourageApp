@@ -4,8 +4,8 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.entourageapp.core.navigation.Navigator
 import com.entourageapp.core.navigation.Route
-import com.entourageapp.features.projects.presentation.projectdetail.ProjectDetailScreen
 import com.entourageapp.features.projects.presentation.createproject.CreateProjectScreen
+import com.entourageapp.features.projects.presentation.projectdetail.ProjectDetailScreen
 import com.entourageapp.features.projects.presentation.projectlist.ProjectListScreen
 
 fun EntryProviderScope<NavKey>.projectsEntryBuilder(navigator: Navigator) {
@@ -21,6 +21,7 @@ fun EntryProviderScope<NavKey>.projectsEntryBuilder(navigator: Navigator) {
             projectId = it.projectId,
             onBackClick = { navigator.goBack() },
             onEstimateClick = { navigator.navigate(Route.EstimateList(it)) },
+            onDocumentsClick = { navigator.navigate(Route.Documents(it)) },
             onRoomListClick = { navigator.navigate(Route.RoomList(it)) },
             onProjectInfoClick = { }
         )
