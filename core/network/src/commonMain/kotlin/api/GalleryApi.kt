@@ -1,0 +1,18 @@
+package com.entourageapp.core.network.api
+
+import com.entourageapp.core.network.dto.ImageDto
+import com.entourageapp.core.network.dto.ImageUploadedDto
+import com.entourageapp.core.network.dto.MessageDto
+
+interface GalleryApi {
+    suspend fun getImages(projectId: Int, roomId: Int? = null): List<ImageDto>
+    suspend fun uploadImage(
+        projectId: Int,
+        fileBytes: ByteArray,
+        fileName: String,
+        mimeType: String,
+        roomId: Int? = null,
+        note: String? = null
+    ): ImageUploadedDto
+    suspend fun deleteImage(projectId: Int, imageId: Int): MessageDto
+}

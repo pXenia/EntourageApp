@@ -4,6 +4,7 @@ import com.entourageapp.core.network.networkModule
 import com.entourageapp.features.auth.di.authModule
 import com.entourageapp.features.calculators.di.calculatorsModule
 import com.entourageapp.features.estimates.di.estimateModule
+import com.entourageapp.features.gallery.di.galleryModule
 import com.entourageapp.features.projectdocuments.di.documentsModule
 import com.entourageapp.features.projects.di.projectsModule
 import com.entourageapp.features.rooms.di.roomsModule
@@ -20,7 +21,8 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             authModule,
             estimateModule,
             calculatorsModule,
-            documentsModule
+            documentsModule,
+            galleryModule
         )
     }
 }

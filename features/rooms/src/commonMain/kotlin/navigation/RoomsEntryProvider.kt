@@ -30,7 +30,8 @@ fun EntryProviderScope<NavKey>.roomsEntryBuilder(navigator: Navigator) {
             projectId = route.projectId,
             roomId = route.roomId,
             onBackClick = { navigator.goBack() },
-            onEstimateClick = { projectId, roomId -> navigator.navigate(Route.CreateEstimatePosition(projectId, roomId))}
+            onEstimateClick = { projectId, roomId -> navigator.navigate(Route.CreateEstimatePosition(projectId, roomId))},
+            onGalleryClick = { projectId, roomId -> navigator.navigate(Route.Gallery(projectId, roomId))}
         )
     }
 }

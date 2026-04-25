@@ -59,6 +59,7 @@ fun RoomDetailScreen(
     roomId: Int,
     onBackClick: () -> Unit = {},
     onEstimateClick: (Int, Int) -> Unit,
+    onGalleryClick: (Int, Int) -> Unit,
     viewModel: RoomDetailVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -109,7 +110,7 @@ fun RoomDetailScreen(
                     text = "N этапов и N задач"
                 )
                 CardButton(
-                    onClick = { },
+                    onClick = { onGalleryClick(projectId, roomId) },
                     title = "Галерея идей",
                     text = "N идей"
                 )

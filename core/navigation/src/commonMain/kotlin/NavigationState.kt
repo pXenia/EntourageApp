@@ -98,6 +98,7 @@ private val config = SavedStateConfiguration {
             subclass(Route.EstimateList::class, Route.EstimateList.serializer())
             subclass(Route.Wallpaper::class, Route.Wallpaper.serializer())
             subclass(Route.Documents::class, Route.Documents.serializer())
+            subclass(Route.Gallery::class, Route.Gallery.serializer())
         }
     }
 }

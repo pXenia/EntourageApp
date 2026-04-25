@@ -51,4 +51,7 @@ sealed interface Route : NavKey {
 
     @Serializable
     data class Documents(val projectId: Int) : Route
+
+    @Serializable
+    data class Gallery(val projectId: Int, val roomId: Int) : Route
 }

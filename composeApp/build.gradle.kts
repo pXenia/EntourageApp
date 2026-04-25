@@ -60,7 +60,7 @@ kotlin {
             implementation(projects.features.rooms)
             implementation(projects.features.auth)
             implementation(projects.features.projectdocuments)
-
+            implementation(projects.features.gallery)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

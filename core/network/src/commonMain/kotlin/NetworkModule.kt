@@ -6,6 +6,8 @@ import com.entourageapp.core.network.api.DocumentsApi
 import com.entourageapp.core.network.api.DocumentsKtorApi
 import com.entourageapp.core.network.api.EstimateApi
 import com.entourageapp.core.network.api.EstimateKtorApi
+import com.entourageapp.core.network.api.GalleryApi
+import com.entourageapp.core.network.api.GalleryKtorApi
 import com.entourageapp.core.network.api.ProjectsApi
 import com.entourageapp.core.network.api.ProjectsKtorApi
 import com.entourageapp.core.network.api.RoomsApi
@@ -97,4 +99,5 @@ val networkModule = module {
     single<RoomsApi> { RoomsKtorApi(get()) }
     single<EstimateApi> { EstimateKtorApi(get()) }
     single<DocumentsApi> { DocumentsKtorApi(get()) }
+    single<GalleryApi> { GalleryKtorApi(get()) }
 }

@@ -28,6 +28,7 @@ import com.entourageapp.features.auth.presentation.AuthState
 import com.entourageapp.features.auth.presentation.AuthVM
 import com.entourageapp.features.calculators.navigation.calculatorsListEntryBuilder
 import com.entourageapp.features.estimates.navigation.estimatesEntryBuilder
+import com.entourageapp.features.gallery.navigation.galleryEntryBuilder
 import com.entourageapp.features.projectdocuments.navigation.documentsEntryBuilder
 import com.entourageapp.features.projects.navigation.projectsEntryBuilder
 import com.entourageapp.features.rooms.navigation.roomsEntryBuilder
@@ -104,6 +105,7 @@ fun NavRoot(
                     estimatesEntryBuilder(navigator)
                     roomsEntryBuilder(navigator)
                     documentsEntryBuilder(navigator)
+                    galleryEntryBuilder(navigator)
                 }
             )
         )
