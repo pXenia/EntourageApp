@@ -49,6 +49,7 @@ class GalleryVM(
                     roomId = intent.roomId,
                     note = intent.note
                 )
+                _state.update { it.copy(isUploading = false, error = null) }
                 loadImages(intent.projectId, intent.roomId)
             } catch (e: Exception) {
                 _state.update { it.copy(isUploading = false, error = e.message) }
