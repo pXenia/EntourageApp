@@ -9,7 +9,9 @@ data class GalleryState(
     val isAddImageVisible: Boolean = false,
     val selectedImageData: SelectedImageData? = null,
     val selectedIds: Set<Int> = emptySet(),
-    val isSelectionMode: Boolean = false
+    val isSelectionMode: Boolean = false,
+    val searchQuery: String = "",
+    val isSearchVisible: Boolean = false
 ) {
     sealed interface GalleryStatus {
         object Loading : GalleryStatus
@@ -43,5 +45,7 @@ sealed class GalleryIntent {
     data class DeleteSelectedImages(val projectId: Int) : GalleryIntent()
     data class ToggleSelection(val id: Int) : GalleryIntent()
     object ClearSelection : GalleryIntent()
+    data class ChangeSearchVisibility(val isVisible: Boolean) : GalleryIntent()
+    data class ChangeSearchQuery(val query: String) : GalleryIntent()
     data class SetSelectedImage(val data: GalleryState.SelectedImageData?) : GalleryIntent()
 }

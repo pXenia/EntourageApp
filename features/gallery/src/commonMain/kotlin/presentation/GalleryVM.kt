@@ -26,6 +26,8 @@ class GalleryVM(
             is GalleryIntent.DeleteSelectedImages -> deleteSelectedImages(intent.projectId)
             is GalleryIntent.ToggleSelection -> toggleSelection(intent.id)
             is GalleryIntent.ClearSelection -> _state.update { it.copy(isSelectionMode = false, selectedIds = emptySet()) }
+            is GalleryIntent.ChangeSearchVisibility -> _state.update { it.copy(isSearchVisible = intent.isVisible, searchQuery = if (!intent.isVisible) "" else it.searchQuery) }
+            is GalleryIntent.ChangeSearchQuery -> _state.update { it.copy(searchQuery = intent.query) }
             is GalleryIntent.ChangeAddImageVisibility -> _state.update { it.copy(isAddImageVisible = intent.isVisible) }
             is GalleryIntent.SetSelectedImage -> _state.update { it.copy(selectedImageData = intent.data) }
         }
