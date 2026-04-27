@@ -18,6 +18,8 @@ class GalleryVM(
 
     fun handleIntent(intent: GalleryIntent) {
         when (intent) {
+            is GalleryIntent.ChangeStatus -> _state.update { it.copy(status = intent.status) }
+            is GalleryIntent.ChangeSelectedImageId -> _state.update { it.copy(selectedImageId = intent.id) }
             is GalleryIntent.LoadImages -> loadImages(intent.projectId, intent.roomId)
             is GalleryIntent.UploadImage -> uploadImage(intent)
             is GalleryIntent.DeleteImage -> deleteImage(intent.projectId, intent.imageId)
@@ -26,20 +28,19 @@ class GalleryVM(
 
     private fun loadImages(projectId: Int, roomId: Int?) {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
+            _state.update { it.copy(status = GalleryState.GalleryStatus.Loading) }
             repository.getImages(projectId, roomId)
                 .catch { e ->
-                    _state.update { it.copy(isLoading = false, error = e.message) }
+                    _state.update { it.copy(status = GalleryState.GalleryStatus.Error) }
                 }
                 .collect { images ->
-                    _state.update { it.copy(isLoading = false, images = images) }
+                    _state.update { it.copy(status = GalleryState.GalleryStatus.List, images = images) }
                 }
         }
     }
 
     private fun uploadImage(intent: GalleryIntent.UploadImage) {
         viewModelScope.launch {
-            _state.update { it.copy(isUploading = true, error = null) }
             try {
                 repository.uploadImage(
                     projectId = intent.projectId,
@@ -49,10 +50,8 @@ class GalleryVM(
                     roomId = intent.roomId,
                     note = intent.note
                 )
-                _state.update { it.copy(isUploading = false, error = null) }
                 loadImages(intent.projectId, intent.roomId)
             } catch (e: Exception) {
-                _state.update { it.copy(isUploading = false, error = e.message) }
             }
         }
     }
@@ -63,7 +62,6 @@ class GalleryVM(
                 repository.deleteImage(projectId, imageId)
                 _state.update { it.copy(images = it.images.filter { img -> img.id != imageId }) }
             } catch (e: Exception) {
-                _state.update { it.copy(error = e.message) }
             }
         }
     }
