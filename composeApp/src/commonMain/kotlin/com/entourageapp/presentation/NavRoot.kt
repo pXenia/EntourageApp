@@ -89,9 +89,6 @@ fun NavRoot(
         modifier = modifier
             .fillMaxSize()
             .appBackground()
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .padding(horizontal = 16.dp)
     ) {
         NavDisplay(
             modifier = modifier.fillMaxSize(),
