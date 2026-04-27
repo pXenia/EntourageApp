@@ -41,7 +41,8 @@ class GalleryVM(
                     _state.update { it.copy(status = GalleryState.GalleryStatus.Error) }
                 }
                 .collect { images ->
-                    _state.update { it.copy(status = GalleryState.GalleryStatus.List, images = images) }
+                    if (images.isEmpty()) { _state.update { it.copy(status = GalleryState.GalleryStatus.IsEmpty) }
+                    } else { _state.update { it.copy(status = GalleryState.GalleryStatus.List, images = images) } }
                 }
         }
     }

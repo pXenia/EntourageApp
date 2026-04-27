@@ -148,23 +148,31 @@ internal fun GalleryGrid(
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 18.dp, end = 8.dp)
         ) {
-            FloatingActionButton(
-                onClick = { onAddClick() },
-                containerColor = EntourageTeal.copy(alpha = 0.9f),
-                modifier = Modifier.size(64.dp),
-                elevation = elevation(
-                    defaultElevation = 0.dp
-                ),
-                shape = CircleShape
-            ) {
-                Icon(
-                    painter = painterResource(add),
-                    modifier = Modifier.size(12.dp),
-                    contentDescription = null,
-                    tint = EntourageWhite
-                )
-            }
+            AddButton(onAddClick)
         }
+    }
+}
+
+@Composable
+internal fun AddButton(
+    onAddClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    FloatingActionButton(
+        onClick = { onAddClick() },
+        containerColor = EntourageTeal.copy(alpha = 0.9f),
+        modifier = modifier.size(64.dp),
+        elevation = elevation(
+            defaultElevation = 0.dp
+        ),
+        shape = CircleShape
+    ) {
+        Icon(
+            painter = painterResource(add),
+            modifier = Modifier.size(12.dp),
+            contentDescription = null,
+            tint = EntourageWhite
+        )
     }
 }
 

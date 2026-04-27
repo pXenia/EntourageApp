@@ -15,4 +15,5 @@ interface GalleryRepository {
         note: String? = null
     ): ImageUploadedDto
     suspend fun deleteImage(projectId: Int, imageId: Int)
+    suspend fun updateImage(projectId: Int, imageId: Int, note: String? = null, roomId: Int? = null)
 }

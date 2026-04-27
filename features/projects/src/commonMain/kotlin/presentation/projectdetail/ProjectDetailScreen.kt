@@ -59,6 +59,7 @@ fun ProjectDetailScreen(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onEstimateClick: (Int) -> Unit = {},
+    onGalleryClick: (Int) -> Unit = {},
     onDocumentsClick: (Int) -> Unit = {},
     onRoomListClick: (Int) -> Unit = {},
     onProjectInfoClick: () -> Unit = {},
@@ -137,6 +138,7 @@ fun ProjectDetailScreen(
                     )
                     SectionButton(
                         modifier = Modifier.weight(1f),
+                        onClick = { onGalleryClick(projectId) },
                         title = "Галерея",
                         icon = gallery
                     )

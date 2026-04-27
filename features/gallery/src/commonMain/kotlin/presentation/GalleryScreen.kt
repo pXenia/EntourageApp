@@ -88,16 +88,18 @@ fun GalleryScreen(
         viewModel.handleIntent(
             GalleryIntent.SetSelectedImage(
                 GalleryState.SelectedImageData(
-                    fileBytes = bytes,
-                    fileName = fileName,
-                    mimeType = mime
+                    fileBytes = bytes, fileName = fileName, mimeType = mime
                 )
             )
         )
     }
 
     LaunchedEffect(Unit) {
-        viewModel.handleIntent(GalleryIntent.LoadImages(projectId, roomId))
+        viewModel.handleIntent(
+            GalleryIntent.LoadImages(
+                projectId, if (roomId == 0) null else roomId
+            )
+        )
     }
 
 
@@ -116,42 +118,34 @@ fun GalleryScreen(
 
     if (state.isAddImageVisible) {
         AddImageDialog(
-            imageData = state.selectedImageData,
-            onDismiss = {
+            imageData = state.selectedImageData, onDismiss = {
                 viewModel.handleIntent(GalleryIntent.ChangeAddImageVisibility(isVisible = false))
                 viewModel.handleIntent(GalleryIntent.SetSelectedImage(null))
-            },
-            onConfirm = { note ->
+            }, onConfirm = { note ->
                 state.selectedImageData?.let { data ->
                     viewModel.handleIntent(
                         GalleryIntent.UploadImage(
                             projectId = projectId,
                             image = data,
-                            roomId = roomId,
+                            roomId = if (roomId == 0) null else roomId,
                             note = note
                         )
                     )
                 }
-            },
-            launcher = launcher
+            }, launcher = launcher
         )
     }
 
     SharedTransitionLayout {
         AnimatedContent(
-            targetState = state.status,
-            label = "gallery_transition",
-            transitionSpec = {
+            targetState = state.status, label = "gallery_transition", transitionSpec = {
                 fadeIn(tween(300)) togetherWith fadeOut(tween(300))
-            }
-        ) { status ->
+            }) { status ->
             when (status) {
                 GalleryStatus.ViewPager -> {
-                    val pagerState = rememberPagerState(
-                        initialPage = state.images.indexOfFirst { it.id == state.selectedImageId }
-                            .coerceAtLeast(0),
-                        pageCount = { state.images.size }
-                    )
+                    val pagerState =
+                        rememberPagerState(initialPage = state.images.indexOfFirst { it.id == state.selectedImageId }
+                            .coerceAtLeast(0), pageCount = { state.images.size })
                     GalleryViewPager(
                         images = state.images,
                         pagerState = pagerState,
@@ -159,8 +153,7 @@ fun GalleryScreen(
                             val currentImage = state.images[pagerState.currentPage]
                             viewModel.handleIntent(
                                 GalleryIntent.DeleteImage(
-                                    projectId,
-                                    currentImage.id
+                                    projectId, currentImage.id
                                 )
                             )
                         },
@@ -178,9 +171,7 @@ fun GalleryScreen(
 
                 else -> {
                     Column(
-                        modifier = modifier
-                            .fillMaxSize()
-                            .systemBarsPadding()
+                        modifier = modifier.fillMaxSize().systemBarsPadding()
                             .padding(horizontal = 8.dp)
                     ) {
                         ScreenTitleTwoButtons(
@@ -205,8 +196,7 @@ fun GalleryScreen(
                                 } else {
                                     viewModel.handleIntent(GalleryIntent.ChangeSearchVisibility(!state.isSearchVisible))
                                 }
-                            }
-                        )
+                            })
 
                         AnimatedVisibility(
                             visible = state.isSearchVisible,
@@ -214,24 +204,31 @@ fun GalleryScreen(
                             exit = shrinkVertically() + fadeOut()
                         ) {
                             Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth()
                                     .padding(vertical = 12.dp, horizontal = 8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 GallerySearchField(
                                     searchQuery = state.searchQuery,
-                                    onQueryChange = { viewModel.handleIntent(GalleryIntent.ChangeSearchQuery(it)) },
+                                    onQueryChange = {
+                                        viewModel.handleIntent(
+                                            GalleryIntent.ChangeSearchQuery(it)
+                                        )
+                                    },
                                     modifier = Modifier.weight(1f)
                                 )
 
                                 Spacer(modifier = Modifier.width(8.dp))
 
                                 IconButton(
-                                    onClick = { viewModel.handleIntent(GalleryIntent.ChangeSearchVisibility(false)) },
-                                    modifier = Modifier
-                                        .size(48.dp)
-                                        .clip(CircleShape)
+                                    onClick = {
+                                        viewModel.handleIntent(
+                                            GalleryIntent.ChangeSearchVisibility(
+                                                false
+                                            )
+                                        )
+                                    },
+                                    modifier = Modifier.size(48.dp).clip(CircleShape)
                                         .background(EntourageBlack.copy(alpha = 0.05f))
                                 ) {
                                     Icon(
@@ -257,9 +254,24 @@ fun GalleryScreen(
                             GalleryStatus.IsEmpty -> {
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
                                 ) {
-                                    Text(text = "Нет изображений", color = EntourageBlack)
+                                    Text(
+                                        text = "Нет изображений",
+                                        modifier = Modifier.align(Alignment.Center),
+                                        color = EntourageBlack
+                                    )
+                                    AddButton(
+                                        onAddClick = {
+                                            viewModel.handleIntent(
+                                                GalleryIntent.ChangeAddImageVisibility(
+                                                    isVisible = true
+                                                )
+                                            )
+                                        },
+                                        modifier = Modifier
+                                            .align(Alignment.BottomEnd)
+                                            .padding(bottom = 18.dp, end = 8.dp)
+                                    )
                                 }
                             }
 
@@ -317,37 +329,31 @@ fun GalleryScreen(
 
 @Composable
 private fun GallerySearchField(
-    searchQuery: String,
-    onQueryChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-){
+    searchQuery: String, onQueryChange: (String) -> Unit, modifier: Modifier = Modifier
+) {
     val customTextSelectionColors = TextSelectionColors(
-        handleColor = EntourageTeal,
-        backgroundColor = EntourageTeal.copy(alpha = 0.4f)
+        handleColor = EntourageTeal, backgroundColor = EntourageTeal.copy(alpha = 0.4f)
     )
 
     CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
         BasicTextField(
             value = searchQuery,
             onValueChange = { onQueryChange(it) },
-            modifier = modifier
-                .height(48.dp)
+            modifier = modifier.height(48.dp)
                 .background(Color.Transparent, RoundedCornerShape(24.dp))
                 .border(1.dp, EntourageBlack, RoundedCornerShape(24.dp))
                 .padding(horizontal = 16.dp),
             singleLine = true,
             cursorBrush = SolidColor(EntourageBlack),
             textStyle = MaterialTheme.typography.bodyMedium.copy(
-                color = EntourageBlack,
-                fontSize = 16.sp
+                color = EntourageBlack, fontSize = 16.sp
             ),
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.Sentences
             ),
             decorationBox = { innerTextField ->
                 Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.CenterStart
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart
                 ) {
                     if (searchQuery.isEmpty()) {
                         Text(

@@ -15,4 +15,5 @@ interface GalleryApi {
         note: String? = null
     ): ImageUploadedDto
     suspend fun deleteImage(projectId: Int, imageId: Int): MessageDto
+    suspend fun updateImage(projectId: Int, imageId: Int, note: String?, roomId: Int?): MessageDto
 }

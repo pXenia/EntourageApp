@@ -1,6 +1,7 @@
 package com.entourageapp.core.network.api
 
 import com.entourageapp.core.network.dto.ImageDto
+import com.entourageapp.core.network.dto.ImageUpdateDto
 import com.entourageapp.core.network.dto.ImageUploadedDto
 import com.entourageapp.core.network.dto.MessageDto
 import io.ktor.client.HttpClient
@@ -10,6 +11,7 @@ import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.Headers
@@ -19,7 +21,7 @@ class GalleryKtorApi(private val client: HttpClient) : GalleryApi {
 
     override suspend fun getImages(projectId: Int, roomId: Int?): List<ImageDto> =
         client.get("projects/$projectId/images/") {
-            roomId?.let { parameter("room_id", null) }
+            roomId?.let { parameter("room_id", it) }
         }.body()
 
     override suspend fun uploadImage(
@@ -54,4 +56,14 @@ class GalleryKtorApi(private val client: HttpClient) : GalleryApi {
 
     override suspend fun deleteImage(projectId: Int, imageId: Int): MessageDto =
         client.delete("projects/$projectId/images/$imageId").body()
+
+    override suspend fun updateImage(
+        projectId: Int,
+        imageId: Int,
+        note: String?,
+        roomId: Int?
+    ): MessageDto =
+        client.patch("projects/$projectId/images/$imageId") {
+            setBody(ImageUpdateDto(note = note, roomId = roomId))
+        }.body()
 }

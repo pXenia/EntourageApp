@@ -29,4 +29,13 @@ class GalleryRepositoryImpl(
     override suspend fun deleteImage(projectId: Int, imageId: Int) {
         api.deleteImage(projectId, imageId)
     }
+
+    override suspend fun updateImage(
+        projectId: Int,
+        imageId: Int,
+        note: String?,
+        roomId: Int?
+    ) {
+        api.updateImage(projectId, imageId, note, roomId)
+    }
 }
