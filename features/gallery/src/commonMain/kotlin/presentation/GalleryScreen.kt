@@ -1,6 +1,7 @@
 package com.entourageapp.features.gallery.presentation
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -8,6 +9,8 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -43,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -54,6 +58,9 @@ import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.entourageapp.core.network.dto.ImageDto
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageTeal
@@ -302,7 +309,10 @@ private fun GalleryViewPager(
         ) { index ->
             with(sharedTransitionScope) {
                 AsyncImage(
-                    model = images[index].url,
+                    model = ImageRequest.Builder(LocalPlatformContext.current)
+                        .data(images[index].url)
+                        .crossfade(true)
+                        .build(),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
@@ -372,7 +382,7 @@ private fun GalleryGrid(
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().clipToBounds()
     ) {
         LazyVerticalGrid(
             state = scrollState,
@@ -442,24 +452,30 @@ private fun GalleryGrid(
             }
 
         }
-        FloatingActionButton(
-            onClick = { onAddClick() },
-            containerColor = EntourageTeal.copy(alpha = 0.9f),
+        AnimatedVisibility(
+            visible = !scrollState.isScrollInProgress,
+            enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 24.dp, end = 8.dp)
-                .size(64.dp),
-            elevation = elevation(
-                defaultElevation = 0.dp
-            ),
-            shape = CircleShape
+                .padding(bottom = 18.dp, end = 8.dp)
         ) {
-            Icon(
-                painter = painterResource(add),
-                modifier = Modifier.size(12.dp),
-                contentDescription = null,
-                tint = EntourageWhite
-            )
+            FloatingActionButton(
+                onClick = { onAddClick() },
+                containerColor = EntourageTeal.copy(alpha = 0.9f),
+                modifier = Modifier.size(64.dp),
+                elevation = elevation(
+                    defaultElevation = 0.dp
+                ),
+                shape = CircleShape
+            ) {
+                Icon(
+                    painter = painterResource(add),
+                    modifier = Modifier.size(12.dp),
+                    contentDescription = null,
+                    tint = EntourageWhite
+                )
+            }
         }
     }
 }
@@ -483,6 +499,7 @@ private fun ItemImage(
             .fillMaxWidth()
             .aspectRatio(width / heigh)
             .clip(RoundedCornerShape(8.dp))
+            .background(EntourageBlack.copy(alpha = 0.05f))
             .combinedClickable(
                 onClick = { onImageClick(id) },
                 onLongClick = { onImageLongClick(id) }
@@ -490,7 +507,10 @@ private fun ItemImage(
     ) {
         with(sharedTransitionScope) {
             AsyncImage(
-                model = imageUrl,
+                model = ImageRequest.Builder(LocalPlatformContext.current)
+                    .data(imageUrl)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = note,
                 modifier = Modifier
                     .fillMaxSize()
