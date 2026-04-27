@@ -1,5 +1,14 @@
 package com.entourageapp.features.gallery.presentation
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,9 +23,12 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -56,6 +68,7 @@ private val OverlayGrad = Brush.verticalGradient(
     1f to Color(0xCC000000)
 )
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun GalleryScreen(
     projectId: Int,
@@ -65,6 +78,7 @@ fun GalleryScreen(
 ) {
     val viewModel: GalleryVM = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val scrollState = rememberLazyGridState()
 
     val launcher = rememberImagePickerLauncher { bytes, fileName, mime ->
         viewModel.handleIntent(
@@ -84,80 +98,93 @@ fun GalleryScreen(
 
     NavigationBackHandler(
         state = rememberNavigationEventState(NavigationEventInfo.None),
-        isBackEnabled = state.status == GalleryStatus.ViewPager,
-        onBackCompleted = {
-            viewModel.handleIntent(GalleryIntent.ChangeStatus(GalleryStatus.List))
-        }
-    )
+        isBackEnabled = state.status == GalleryStatus.ViewPager
+    ) {
+        viewModel.handleIntent(GalleryIntent.ChangeStatus(GalleryStatus.List))
+    }
 
-
-    when (state.status) {
-        GalleryStatus.ViewPager -> GalleryViewPager(
-            state.images,
-            state.selectedImageId,
-            {},
-            { viewModel.handleIntent(GalleryIntent.ChangeStatus(GalleryStatus.List)) }
-        )
-
-        else -> {
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-                    .statusBarsPadding()
-                    .padding(horizontal = 8.dp)
-            ) {
-                ScreenTitleTwoButtons(
-                    title = "Галерея",
-                    leftIcon = arrowLeft,
-                    rightIcon = add,
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    onLeftButtonClick = onBackClick,
-                    onRightButtonClick = { launcher() }
+    SharedTransitionLayout {
+        AnimatedContent(
+            targetState = state.status,
+            label = "gallery_transition",
+            transitionSpec = {
+                fadeIn(tween(300)) togetherWith fadeOut(tween(300))
+            }
+        ) { status ->
+            when (status) {
+                GalleryStatus.ViewPager -> GalleryViewPager(
+                    images = state.images,
+                    selectedImageId = state.selectedImageId,
+                    onDeleteClick = {},
+                    onClosesClick = { viewModel.handleIntent(GalleryIntent.ChangeStatus(GalleryStatus.List)) },
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedVisibilityScope = this@AnimatedContent
                 )
 
-                when (state.status) {
-                    GalleryStatus.Loading -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(color = EntourageBlack)
-                        }
-                    }
+                else -> {
+                    Column(
+                        modifier = modifier
+                            .fillMaxSize()
+                            .statusBarsPadding()
+                            .padding(horizontal = 8.dp)
+                    ) {
+                        ScreenTitleTwoButtons(
+                            title = "Галерея",
+                            leftIcon = arrowLeft,
+                            rightIcon = add,
+                            modifier = Modifier.padding(horizontal = 12.dp),
+                            onLeftButtonClick = onBackClick,
+                            onRightButtonClick = { launcher() }
+                        )
 
-                    GalleryStatus.IsEmpty -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = "Нет изображений", color = EntourageBlack)
-                        }
-                    }
+                        when (status) {
+                            GalleryStatus.Loading -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(color = EntourageBlack)
+                                }
+                            }
 
-                    GalleryStatus.List -> {
-                        GalleyGrid(
-                            images = state.images,
-                            onImageClick = { id ->
-                                viewModel.handleIntent(GalleryIntent.ChangeSelectedImageId(id = id))
-                                viewModel.handleIntent(GalleryIntent.ChangeStatus(GalleryStatus.ViewPager))
-                            },
-                            onDeleteClick = {
-                                viewModel.handleIntent(
-                                    GalleryIntent.DeleteImage(
-                                        projectId = projectId,
-                                        imageId = state.images[state.selectedImageId].id
-                                    )
+                            GalleryStatus.IsEmpty -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(text = "Нет изображений", color = EntourageBlack)
+                                }
+                            }
+
+                            GalleryStatus.List -> {
+                                GalleryGrid(
+                                    images = state.images,
+                                    onImageClick = { id ->
+                                        viewModel.handleIntent(
+                                            GalleryIntent.ChangeSelectedImageId(
+                                                id = id
+                                            )
+                                        )
+                                        viewModel.handleIntent(
+                                            GalleryIntent.ChangeStatus(
+                                                GalleryStatus.ViewPager
+                                            )
+                                        )
+                                    },
+                                    scrollState = scrollState,
+                                    sharedTransitionScope = this@SharedTransitionLayout,
+                                    animatedVisibilityScope = this@AnimatedContent
                                 )
                             }
-                        )
-                    }
 
-                    else -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(text = "Ошибка", color = EntourageBlack)
+                            else -> {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(text = "Ошибка", color = EntourageBlack)
+                                }
+                            }
                         }
                     }
                 }
@@ -166,12 +193,15 @@ fun GalleryScreen(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun GalleryViewPager(
     images: List<ImageDto>,
     selectedImageId: Int,
     onDeleteClick: () -> Unit,
     onClosesClick: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val initialPage = images.indexOfFirst { it.id == selectedImageId }.coerceAtLeast(0)
 
@@ -187,38 +217,56 @@ private fun GalleryViewPager(
                 .fillMaxSize()
                 .clip(RoundedCornerShape(8.dp))
         ) { index ->
-            AsyncImage(
-                model = images[index].url,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .align(Alignment.Center)
-                    .clip(RoundedCornerShape(8.dp)),
-                contentScale = ContentScale.FillWidth
-            )
+            with(sharedTransitionScope) {
+                AsyncImage(
+                    model = images[index].url,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .align(Alignment.Center)
+                        .sharedElement(
+                            rememberSharedContentState(key = "image_${images[index].id}"),
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.FillWidth
+                )
+            }
         }
 
-        Icon(
-            painter = painterResource(cross),
-            contentDescription = null,
+        Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .systemBarsPadding()
                 .padding(16.dp)
-                .size(24.dp)
+                .clip(CircleShape)
+                .background(EntourageWhite.copy(alpha = 0.6f))
                 .clickable { onClosesClick() },
-            tint = EntourageBlack,
-        )
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(cross),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(16.dp),
+                tint = EntourageBlack,
+            )
+        }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun GalleyGrid(
+private fun GalleryGrid(
     images: List<ImageDto>,
     onImageClick: (Int) -> Unit,
-    onDeleteClick: () -> Unit
+    scrollState: LazyGridState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     LazyVerticalGrid(
+        state = scrollState,
         columns = GridCells.Fixed(3),
         modifier = Modifier.padding(top = 12.dp).fillMaxSize()
             .clip(RoundedCornerShape(8.dp)),
@@ -232,7 +280,6 @@ private fun GalleyGrid(
                     when (index % 9) {
                         0 -> GridItemSpan(3)
                         4 -> GridItemSpan(2)
-                        5 -> GridItemSpan(1)
                         else -> GridItemSpan(1)
                     }
                 }
@@ -245,8 +292,9 @@ private fun GalleyGrid(
                             note = image.note,
                             heigh = 9f,
                             width = 16f,
-                            onDeleteClick = onDeleteClick,
-                            onImageClick = onImageClick
+                            onImageClick = onImageClick,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope
                         )
                     }
 
@@ -257,8 +305,9 @@ private fun GalleyGrid(
                             note = image.note,
                             heigh = 2.0375f,
                             width = 1f,
-                            onDeleteClick = onDeleteClick,
-                            onImageClick = onImageClick
+                            onImageClick = onImageClick,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope
                         )
                     }
 
@@ -267,8 +316,9 @@ private fun GalleyGrid(
                             id = image.id,
                             imageUrl = image.url ?: "",
                             note = image.note,
-                            onDeleteClick = onDeleteClick,
-                            onImageClick = onImageClick
+                            onImageClick = onImageClick,
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope
                         )
                     }
                 }
@@ -277,6 +327,7 @@ private fun GalleyGrid(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun ItemImage(
     id: Int,
@@ -285,7 +336,8 @@ private fun ItemImage(
     heigh: Float = 1f,
     width: Float = 1f,
     onImageClick: (Int) -> Unit,
-    onDeleteClick: () -> Unit
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     Box(
         modifier = Modifier
@@ -294,12 +346,19 @@ private fun ItemImage(
             .clip(RoundedCornerShape(8.dp))
             .clickable { onImageClick(id) }
     ) {
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = note,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
+        with(sharedTransitionScope) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = note,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .sharedElement(
+                        rememberSharedContentState(key = "image_$id"),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    ),
+                contentScale = ContentScale.Crop
+            )
+        }
         if (!note.isNullOrBlank()) {
             Box(modifier = Modifier.fillMaxSize().background(OverlayGrad))
             Text(
