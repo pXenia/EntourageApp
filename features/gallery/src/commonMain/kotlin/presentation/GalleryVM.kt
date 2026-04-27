@@ -23,6 +23,8 @@ class GalleryVM(
             is GalleryIntent.LoadImages -> loadImages(intent.projectId, intent.roomId)
             is GalleryIntent.UploadImage -> uploadImage(intent)
             is GalleryIntent.DeleteImage -> deleteImage(intent.projectId, intent.imageId)
+            is GalleryIntent.ChangeAddImageVisibility -> _state.update { it.copy(isAddImageVisible = intent.isVisible) }
+            is GalleryIntent.SetSelectedImage -> _state.update { it.copy(selectedImageData = intent.data) }
         }
     }
 
@@ -42,16 +44,18 @@ class GalleryVM(
     private fun uploadImage(intent: GalleryIntent.UploadImage) {
         viewModelScope.launch {
             try {
+                _state.update { it.copy(isAddImageVisible = false, selectedImageData = null) }
                 repository.uploadImage(
                     projectId = intent.projectId,
-                    fileBytes = intent.fileBytes,
-                    fileName = intent.fileName,
-                    mimeType = intent.mimeType,
+                    fileBytes = intent.image.fileBytes,
+                    fileName = intent.image.fileName,
+                    mimeType = intent.image.mimeType,
                     roomId = intent.roomId,
                     note = intent.note
                 )
                 loadImages(intent.projectId, intent.roomId)
             } catch (e: Exception) {
+                _state.update { it.copy(status = GalleryState.GalleryStatus.Error) }
             }
         }
     }
@@ -62,6 +66,7 @@ class GalleryVM(
                 repository.deleteImage(projectId, imageId)
                 _state.update { it.copy(images = it.images.filter { img -> img.id != imageId }) }
             } catch (e: Exception) {
+                _state.update { it.copy(status = GalleryState.GalleryStatus.Error) }
             }
         }
     }

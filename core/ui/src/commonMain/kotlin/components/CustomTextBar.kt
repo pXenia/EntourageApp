@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -114,7 +115,8 @@ fun CustomTextBar(
                 interactionSource = interactionSource,
                 enabled = isEnable,
                 keyboardOptions = KeyboardOptions(
-                    keyboardType = if (isNumeric) KeyboardType.Number else KeyboardType.Text
+                    keyboardType = if (isNumeric) KeyboardType.Number else KeyboardType.Text,
+                    capitalization = KeyboardCapitalization.Sentences
                 ),
                 visualTransformation = visualTransformation,
                 cursorBrush = SolidColor(EntourageTeal),

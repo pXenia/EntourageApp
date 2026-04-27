@@ -5,7 +5,9 @@ import com.entourageapp.core.network.dto.ImageDto
 data class GalleryState(
     val images: List<ImageDto> = emptyList(),
     val selectedImageId: Int = -1,
-    val status: GalleryStatus = GalleryStatus.Loading
+    val status: GalleryStatus = GalleryStatus.Loading,
+    val isAddImageVisible: Boolean = false,
+    val selectedImageData: SelectedImageData? = null
 ) {
     sealed interface GalleryStatus {
         object Loading : GalleryStatus
@@ -14,21 +16,27 @@ data class GalleryState(
         object List : GalleryStatus
         object ViewPager : GalleryStatus
     }
+
+    data class SelectedImageData(
+        val fileBytes: ByteArray,
+        val fileName: String,
+        val mimeType: String
+    )
 }
 
 sealed class GalleryIntent {
+    data class ChangeAddImageVisibility(val isVisible: Boolean) : GalleryIntent()
     data class ChangeStatus(val status: GalleryState.GalleryStatus) : GalleryIntent()
     data class ChangeSelectedImageId(val id: Int) : GalleryIntent()
 
     data class LoadImages(val projectId: Int, val roomId: Int? = null) : GalleryIntent()
     data class UploadImage(
         val projectId: Int,
-        val fileBytes: ByteArray,
-        val fileName: String,
-        val mimeType: String,
+        val image: GalleryState.SelectedImageData,
         val roomId: Int? = null,
         val note: String? = null
     ) : GalleryIntent()
 
     data class DeleteImage(val projectId: Int, val imageId: Int) : GalleryIntent()
+    data class SetSelectedImage(val data: GalleryState.SelectedImageData?) : GalleryIntent()
 }

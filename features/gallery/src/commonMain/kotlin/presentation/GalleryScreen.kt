@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -74,19 +73,20 @@ fun GalleryScreen(
     projectId: Int,
     roomId: Int,
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    viewModel: GalleryVM = koinViewModel()
 ) {
-    val viewModel: GalleryVM = koinViewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scrollState = rememberLazyGridState()
 
     val launcher = rememberImagePickerLauncher { bytes, fileName, mime ->
         viewModel.handleIntent(
-            GalleryIntent.UploadImage(
-                projectId = projectId,
-                fileBytes = bytes,
-                fileName = fileName,
-                mimeType = mime
+            GalleryIntent.SetSelectedImage(
+                GalleryState.SelectedImageData(
+                    fileBytes = bytes,
+                    fileName = fileName,
+                    mimeType = mime
+                )
             )
         )
     }
@@ -101,6 +101,29 @@ fun GalleryScreen(
         isBackEnabled = state.status == GalleryStatus.ViewPager
     ) {
         viewModel.handleIntent(GalleryIntent.ChangeStatus(GalleryStatus.List))
+    }
+    
+    if (state.isAddImageVisible){
+        AddImageDialog(
+            imageData = state.selectedImageData,
+            onDismiss = { 
+                viewModel.handleIntent(GalleryIntent.ChangeAddImageVisibility(false))
+                viewModel.handleIntent(GalleryIntent.SetSelectedImage(null))
+            },
+            onConfirm = { note ->
+                state.selectedImageData?.let { data ->
+                    viewModel.handleIntent(
+                        GalleryIntent.UploadImage(
+                            projectId = projectId,
+                            image = data,
+                            roomId = roomId,
+                            note = note
+                        )
+                    )
+                }
+            },
+            launcher = { launcher() }
+        )
     }
 
     SharedTransitionLayout {
@@ -125,7 +148,7 @@ fun GalleryScreen(
                     Column(
                         modifier = modifier
                             .fillMaxSize()
-                            .statusBarsPadding()
+                            .systemBarsPadding()
                             .padding(horizontal = 8.dp)
                     ) {
                         ScreenTitleTwoButtons(
@@ -134,7 +157,7 @@ fun GalleryScreen(
                             rightIcon = add,
                             modifier = Modifier.padding(horizontal = 12.dp),
                             onLeftButtonClick = onBackClick,
-                            onRightButtonClick = { launcher() }
+                            onRightButtonClick = { viewModel.handleIntent(GalleryIntent.ChangeAddImageVisibility(true)) }
                         )
 
                         when (status) {
