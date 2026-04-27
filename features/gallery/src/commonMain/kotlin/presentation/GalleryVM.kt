@@ -23,6 +23,9 @@ class GalleryVM(
             is GalleryIntent.LoadImages -> loadImages(intent.projectId, intent.roomId)
             is GalleryIntent.UploadImage -> uploadImage(intent)
             is GalleryIntent.DeleteImage -> deleteImage(intent.projectId, intent.imageId)
+            is GalleryIntent.DeleteSelectedImages -> deleteSelectedImages(intent.projectId)
+            is GalleryIntent.ToggleSelection -> toggleSelection(intent.id)
+            is GalleryIntent.ClearSelection -> _state.update { it.copy(isSelectionMode = false, selectedIds = emptySet()) }
             is GalleryIntent.ChangeAddImageVisibility -> _state.update { it.copy(isAddImageVisible = intent.isVisible) }
             is GalleryIntent.SetSelectedImage -> _state.update { it.copy(selectedImageData = intent.data) }
         }
@@ -64,7 +67,49 @@ class GalleryVM(
         viewModelScope.launch {
             try {
                 repository.deleteImage(projectId, imageId)
-                _state.update { it.copy(images = it.images.filter { img -> img.id != imageId }) }
+                _state.update {
+                    it.copy(
+                        images = it.images.filter { img -> img.id != imageId },
+                        status = if (it.images.size <= 1) GalleryState.GalleryStatus.IsEmpty else GalleryState.GalleryStatus.List,
+                        selectedIds = it.selectedIds - imageId
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(status = GalleryState.GalleryStatus.Error) }
+            }
+        }
+    }
+
+    private fun toggleSelection(id: Int) {
+        _state.update {
+            val newSelected = if (it.selectedIds.contains(id)) {
+                it.selectedIds - id
+            } else {
+                it.selectedIds + id
+            }
+            it.copy(
+                selectedIds = newSelected,
+                isSelectionMode = newSelected.isNotEmpty()
+            )
+        }
+    }
+
+    private fun deleteSelectedImages(projectId: Int) {
+        viewModelScope.launch {
+            val idsToDelete = _state.value.selectedIds
+            try {
+                idsToDelete.forEach { id ->
+                    repository.deleteImage(projectId, id)
+                }
+                _state.update { state ->
+                    val remainingImages = state.images.filter { !idsToDelete.contains(it.id) }
+                    state.copy(
+                        images = remainingImages,
+                        isSelectionMode = false,
+                        selectedIds = emptySet(),
+                        status = if (remainingImages.isEmpty()) GalleryState.GalleryStatus.IsEmpty else GalleryState.GalleryStatus.List
+                    )
+                }
             } catch (e: Exception) {
                 _state.update { it.copy(status = GalleryState.GalleryStatus.Error) }
             }

@@ -28,6 +28,7 @@ import entourageapp.core.ui.generated.resources.stage_theatre
 import entourageapp.core.ui.generated.resources.stats
 import entourageapp.core.ui.generated.resources.tags
 import entourageapp.core.ui.generated.resources.teddy_bear
+import entourageapp.core.ui.generated.resources.trash
 import entourageapp.core.ui.generated.resources.user
 
 val folder = Res.drawable.folder
@@ -58,3 +59,4 @@ val room = Res.drawable.house_plan
 val hallway = Res.drawable.door_open
 val coins = Res.drawable.coins
 val print = Res.drawable.print
+val delete = Res.drawable.trash

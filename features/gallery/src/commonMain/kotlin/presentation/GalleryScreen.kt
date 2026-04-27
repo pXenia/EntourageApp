@@ -9,8 +9,10 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +32,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults.elevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -52,19 +56,22 @@ import androidx.navigationevent.compose.rememberNavigationEventState
 import coil3.compose.AsyncImage
 import com.entourageapp.core.network.dto.ImageDto
 import com.entourageapp.core.ui.EntourageBlack
+import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.add
 import com.entourageapp.core.ui.appBackground
 import com.entourageapp.core.ui.arrowLeft
 import com.entourageapp.core.ui.components.ScreenTitleTwoButtons
 import com.entourageapp.core.ui.cross
+import com.entourageapp.core.ui.delete
+import com.entourageapp.core.ui.search
 import com.entourageapp.features.gallery.presentation.GalleryState.GalleryStatus
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 private val OverlayGrad = Brush.verticalGradient(
     0f to Color.Transparent,
-    1f to Color(0xCC000000)
+    1f to EntourageBlack,
 )
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -98,16 +105,20 @@ fun GalleryScreen(
 
     NavigationBackHandler(
         state = rememberNavigationEventState(NavigationEventInfo.None),
-        isBackEnabled = state.status == GalleryStatus.ViewPager
+        isBackEnabled = state.status == GalleryStatus.ViewPager || state.isSelectionMode
     ) {
-        viewModel.handleIntent(GalleryIntent.ChangeStatus(GalleryStatus.List))
+        if (state.isSelectionMode) {
+            viewModel.handleIntent(GalleryIntent.ClearSelection)
+        } else {
+            viewModel.handleIntent(GalleryIntent.ChangeStatus(GalleryStatus.List))
+        }
     }
-    
-    if (state.isAddImageVisible){
+
+    if (state.isAddImageVisible) {
         AddImageDialog(
             imageData = state.selectedImageData,
-            onDismiss = { 
-                viewModel.handleIntent(GalleryIntent.ChangeAddImageVisibility(false))
+            onDismiss = {
+                viewModel.handleIntent(GalleryIntent.ChangeAddImageVisibility(isVisible = false))
                 viewModel.handleIntent(GalleryIntent.SetSelectedImage(null))
             },
             onConfirm = { note ->
@@ -122,7 +133,7 @@ fun GalleryScreen(
                     )
                 }
             },
-            launcher = { launcher() }
+            launcher = launcher
         )
     }
 
@@ -135,14 +146,35 @@ fun GalleryScreen(
             }
         ) { status ->
             when (status) {
-                GalleryStatus.ViewPager -> GalleryViewPager(
-                    images = state.images,
-                    selectedImageId = state.selectedImageId,
-                    onDeleteClick = {},
-                    onClosesClick = { viewModel.handleIntent(GalleryIntent.ChangeStatus(GalleryStatus.List)) },
-                    sharedTransitionScope = this@SharedTransitionLayout,
-                    animatedVisibilityScope = this@AnimatedContent
-                )
+                GalleryStatus.ViewPager -> {
+                    val pagerState = rememberPagerState(
+                        initialPage = state.images.indexOfFirst { it.id == state.selectedImageId }
+                            .coerceAtLeast(0),
+                        pageCount = { state.images.size }
+                    )
+                    GalleryViewPager(
+                        images = state.images,
+                        pagerState = pagerState,
+                        onDeleteClick = {
+                            val currentImage = state.images[pagerState.currentPage]
+                            viewModel.handleIntent(
+                                GalleryIntent.DeleteImage(
+                                    projectId,
+                                    currentImage.id
+                                )
+                            )
+                        },
+                        onClosesClick = {
+                            viewModel.handleIntent(
+                                GalleryIntent.ChangeStatus(
+                                    GalleryStatus.List
+                                )
+                            )
+                        },
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedVisibilityScope = this@AnimatedContent
+                    )
+                }
 
                 else -> {
                     Column(
@@ -152,12 +184,27 @@ fun GalleryScreen(
                             .padding(horizontal = 8.dp)
                     ) {
                         ScreenTitleTwoButtons(
-                            title = "Галерея",
-                            leftIcon = arrowLeft,
-                            rightIcon = add,
-                            modifier = Modifier.padding(horizontal = 12.dp),
-                            onLeftButtonClick = onBackClick,
-                            onRightButtonClick = { viewModel.handleIntent(GalleryIntent.ChangeAddImageVisibility(true)) }
+                            title = if (state.isSelectionMode) "Выбрано: ${state.selectedIds.size}" else "Галерея",
+                            leftIcon = if (state.isSelectionMode) cross else arrowLeft,
+                            rightIcon = if (state.isSelectionMode) delete else search,
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            onLeftButtonClick = {
+                                if (state.isSelectionMode) {
+                                    viewModel.handleIntent(GalleryIntent.ClearSelection)
+                                } else {
+                                    onBackClick()
+                                }
+                            },
+                            onRightButtonClick = {
+                                if (state.isSelectionMode) {
+                                    viewModel.handleIntent(
+                                        GalleryIntent.DeleteSelectedImages(
+                                            projectId
+                                        )
+                                    )
+                                } else {
+                                }
+                            }
                         )
 
                         when (status) {
@@ -182,15 +229,30 @@ fun GalleryScreen(
                             GalleryStatus.List -> {
                                 GalleryGrid(
                                     images = state.images,
+                                    selectedIds = state.selectedIds,
                                     onImageClick = { id ->
-                                        viewModel.handleIntent(
-                                            GalleryIntent.ChangeSelectedImageId(
-                                                id = id
+                                        if (state.isSelectionMode) {
+                                            viewModel.handleIntent(GalleryIntent.ToggleSelection(id))
+                                        } else {
+                                            viewModel.handleIntent(
+                                                GalleryIntent.ChangeSelectedImageId(
+                                                    id
+                                                )
                                             )
-                                        )
+                                            viewModel.handleIntent(
+                                                GalleryIntent.ChangeStatus(
+                                                    GalleryStatus.ViewPager
+                                                )
+                                            )
+                                        }
+                                    },
+                                    onImageLongClick = { id ->
+                                        viewModel.handleIntent(GalleryIntent.ToggleSelection(id))
+                                    },
+                                    onAddClick = {
                                         viewModel.handleIntent(
-                                            GalleryIntent.ChangeStatus(
-                                                GalleryStatus.ViewPager
+                                            GalleryIntent.ChangeAddImageVisibility(
+                                                isVisible = true
                                             )
                                         )
                                     },
@@ -220,21 +282,19 @@ fun GalleryScreen(
 @Composable
 private fun GalleryViewPager(
     images: List<ImageDto>,
-    selectedImageId: Int,
+    pagerState: androidx.compose.foundation.pager.PagerState,
     onDeleteClick: () -> Unit,
     onClosesClick: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    val initialPage = images.indexOfFirst { it.id == selectedImageId }.coerceAtLeast(0)
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .appBackground()
     ) {
         HorizontalPager(
-            state = rememberPagerState(initialPage = initialPage, pageCount = { images.size }),
+            state = pagerState,
             key = { images[it].id },
             modifier = Modifier
                 .fillMaxSize()
@@ -255,6 +315,26 @@ private fun GalleryViewPager(
                     contentScale = ContentScale.FillWidth
                 )
             }
+        }
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .systemBarsPadding()
+                .padding(16.dp)
+                .clip(CircleShape)
+                .background(EntourageWhite.copy(alpha = 0.6f))
+                .clickable { onDeleteClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(delete),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(16.dp),
+                tint = Color.Red,
+            )
         }
 
         Box(
@@ -283,74 +363,108 @@ private fun GalleryViewPager(
 @Composable
 private fun GalleryGrid(
     images: List<ImageDto>,
+    selectedIds: Set<Int>,
     onImageClick: (Int) -> Unit,
+    onImageLongClick: (Int) -> Unit,
+    onAddClick: () -> Unit,
     scrollState: LazyGridState,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    LazyVerticalGrid(
-        state = scrollState,
-        columns = GridCells.Fixed(3),
-        modifier = Modifier.padding(top = 12.dp).fillMaxSize()
-            .clip(RoundedCornerShape(8.dp)),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        images.forEachIndexed { index, image ->
-            item(
-                key = image.id,
-                span = {
+        LazyVerticalGrid(
+            state = scrollState,
+            columns = GridCells.Fixed(3),
+            modifier = Modifier.padding(top = 12.dp).fillMaxSize()
+                .clip(RoundedCornerShape(8.dp)),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            images.forEachIndexed { index, image ->
+                item(
+                    key = image.id,
+                    span = {
+                        when (index % 9) {
+                            0 -> GridItemSpan(3)
+                            4 -> GridItemSpan(2)
+                            else -> GridItemSpan(1)
+                        }
+                    }
+                ) {
+                    val isSelected = selectedIds.contains(image.id)
                     when (index % 9) {
-                        0 -> GridItemSpan(3)
-                        4 -> GridItemSpan(2)
-                        else -> GridItemSpan(1)
-                    }
-                }
-            ) {
-                when (index % 9) {
-                    0 -> {
-                        ItemImage(
-                            id = image.id,
-                            imageUrl = image.url ?: "",
-                            note = image.note,
-                            heigh = 9f,
-                            width = 16f,
-                            onImageClick = onImageClick,
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedVisibilityScope = animatedVisibilityScope
-                        )
-                    }
+                        0 -> {
+                            ItemImage(
+                                id = image.id,
+                                imageUrl = image.url ?: "",
+                                note = image.note,
+                                heigh = 9f,
+                                width = 16f,
+                                isSelected = isSelected,
+                                onImageClick = onImageClick,
+                                onImageLongClick = onImageLongClick,
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
+                        }
 
-                    5 -> {
-                        ItemImage(
-                            id = image.id,
-                            imageUrl = image.url ?: "",
-                            note = image.note,
-                            heigh = 2.0375f,
-                            width = 1f,
-                            onImageClick = onImageClick,
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedVisibilityScope = animatedVisibilityScope
-                        )
-                    }
+                        5 -> {
+                            ItemImage(
+                                id = image.id,
+                                imageUrl = image.url ?: "",
+                                note = image.note,
+                                heigh = 2.0375f,
+                                width = 1f,
+                                isSelected = isSelected,
+                                onImageClick = onImageClick,
+                                onImageLongClick = onImageLongClick,
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
+                        }
 
-                    else -> {
-                        ItemImage(
-                            id = image.id,
-                            imageUrl = image.url ?: "",
-                            note = image.note,
-                            onImageClick = onImageClick,
-                            sharedTransitionScope = sharedTransitionScope,
-                            animatedVisibilityScope = animatedVisibilityScope
-                        )
+                        else -> {
+                            ItemImage(
+                                id = image.id,
+                                imageUrl = image.url ?: "",
+                                note = image.note,
+                                isSelected = isSelected,
+                                onImageClick = onImageClick,
+                                onImageLongClick = onImageLongClick,
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
+                        }
                     }
                 }
             }
+
+        }
+        FloatingActionButton(
+            onClick = { onAddClick() },
+            containerColor = EntourageTeal.copy(alpha = 0.9f),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 24.dp, end = 8.dp)
+                .size(64.dp),
+            elevation = elevation(
+                defaultElevation = 0.dp
+            ),
+            shape = CircleShape
+        ) {
+            Icon(
+                painter = painterResource(add),
+                modifier = Modifier.size(12.dp),
+                contentDescription = null,
+                tint = EntourageWhite
+            )
         }
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalFoundationApi::class)
 @Composable
 private fun ItemImage(
     id: Int,
@@ -358,7 +472,9 @@ private fun ItemImage(
     note: String?,
     heigh: Float = 1f,
     width: Float = 1f,
+    isSelected: Boolean = false,
     onImageClick: (Int) -> Unit,
+    onImageLongClick: (Int) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
@@ -367,7 +483,10 @@ private fun ItemImage(
             .fillMaxWidth()
             .aspectRatio(width / heigh)
             .clip(RoundedCornerShape(8.dp))
-            .clickable { onImageClick(id) }
+            .combinedClickable(
+                onClick = { onImageClick(id) },
+                onLongClick = { onImageLongClick(id) }
+            )
     ) {
         with(sharedTransitionScope) {
             AsyncImage(
@@ -381,6 +500,30 @@ private fun ItemImage(
                     ),
                 contentScale = ContentScale.Crop
             )
+        }
+
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White.copy(alpha = 0.4f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(EntourageWhite),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(delete),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = EntourageBlack
+                    )
+                }
+            }
         }
         if (!note.isNullOrBlank()) {
             Box(modifier = Modifier.fillMaxSize().background(OverlayGrad))
