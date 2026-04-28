@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -57,7 +58,6 @@ private val OverlayGrad = Brush.verticalGradient(
     1f to EntourageBlack,
 )
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun GalleryGrid(
     images: List<ImageDto>,
@@ -165,8 +165,15 @@ internal fun GalleryGrid(
         }
         AnimatedVisibility(
             visible = !scrollState.isScrollInProgress,
-            enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(),
+            enter = slideInVertically(
+                animationSpec = tween(durationMillis = 300),
+                initialOffsetY = { it }
+            ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+
+            exit = slideOutVertically(
+                animationSpec = tween(durationMillis = 300),
+                targetOffsetY = { it }
+            ) + fadeOut(animationSpec = tween(durationMillis = 300)),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 18.dp, end = 8.dp)
