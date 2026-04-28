@@ -52,6 +52,7 @@ import com.entourageapp.core.ui.components.CustomDropdownBar
 import com.entourageapp.core.ui.components.CustomTextBar
 import com.entourageapp.core.ui.components.ScreenTitle
 import com.entourageapp.core.ui.cross
+import com.entourageapp.core.ui.dialogs.SelectRoomDialog
 import com.entourageapp.core.ui.tag
 import com.entourageapp.core.ui.tools.formatTwoDecimals
 import org.jetbrains.compose.resources.painterResource

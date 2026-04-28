@@ -3,6 +3,7 @@ package com.entourageapp.features.gallery.data
 import com.entourageapp.core.network.api.GalleryApi
 import com.entourageapp.core.network.dto.ImageDto
 import com.entourageapp.core.network.dto.ImageUploadedDto
+import com.entourageapp.core.network.dto.RoomShortDto
 import com.entourageapp.features.gallery.domain.GalleryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -38,4 +39,7 @@ class GalleryRepositoryImpl(
     ) {
         api.updateImage(projectId, imageId, note, roomId)
     }
+
+    override suspend fun getRooms(projectId: Int): List<RoomShortDto> =
+        api.getRooms(projectId)
 }

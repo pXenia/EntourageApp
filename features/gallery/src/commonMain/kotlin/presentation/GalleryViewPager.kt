@@ -5,20 +5,31 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -26,23 +37,33 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.entourageapp.core.network.dto.ImageDto
+import com.entourageapp.core.network.dto.RoomShortDto
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.appBackground
 import com.entourageapp.core.ui.cross
-import com.entourageapp.core.ui.delete
 import org.jetbrains.compose.resources.painterResource
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 @Composable
 internal fun GalleryViewPager(
     images: List<ImageDto>,
-    pagerState: androidx.compose.foundation.pager.PagerState,
-    onDeleteClick: () -> Unit,
-    onClosesClick: () -> Unit,
+    pagerState: PagerState,
+    availableRooms: List<RoomShortDto>,
+    onIntent: (GalleryIntent) -> Unit,
+    projectId: Int,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
+    var isEditing by remember { mutableStateOf(false) }
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val currentImage = images.getOrNull(pagerState.currentPage)
+
+    LaunchedEffect(pagerState.currentPage) {
+        isEditing = false
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -53,7 +74,8 @@ internal fun GalleryViewPager(
             key = { images[it].id },
             modifier = Modifier
                 .fillMaxSize()
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(8.dp)),
+            userScrollEnabled = !isEditing
         ) { index ->
             with(sharedTransitionScope) {
                 AsyncImage(
@@ -75,43 +97,45 @@ internal fun GalleryViewPager(
             }
         }
 
-        Box(
+        Row(
             modifier = Modifier
-                .align(Alignment.TopStart)
+                .fillMaxWidth()
                 .systemBarsPadding()
-                .padding(16.dp)
-                .clip(CircleShape)
-                .background(EntourageWhite.copy(alpha = 0.6f))
-                .clickable { onDeleteClick() },
-            contentAlignment = Alignment.Center
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = painterResource(delete),
-                contentDescription = null,
+            Spacer(modifier = Modifier.size(16.dp))
+
+            Box(
                 modifier = Modifier
-                    .padding(8.dp)
-                    .size(16.dp),
-                tint = Color.Red,
-            )
+                    .clip(CircleShape)
+                    .background(EntourageWhite.copy(alpha = 0.6f))
+                    .clickable { onIntent(GalleryIntent.CloseViewPager) },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(cross),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .size(16.dp),
+                    tint = EntourageBlack,
+                )
+            }
         }
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .systemBarsPadding()
-                .padding(16.dp)
-                .clip(CircleShape)
-                .background(EntourageWhite.copy(alpha = 0.6f))
-                .clickable { onClosesClick() },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(cross),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(16.dp),
-                tint = EntourageBlack,
+        if (currentImage != null) {
+            UpdateImageBottomSheet(
+                image = currentImage,
+                availableRooms = availableRooms,
+                projectId = projectId,
+                sheetState = sheetState,
+                onIntent = onIntent,
+                onDismissRequest = {
+                    showBottomSheet = false
+                },
+                onEditingChange = { isEditing = it }
             )
         }
     }

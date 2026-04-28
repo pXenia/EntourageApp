@@ -60,7 +60,9 @@ import com.entourageapp.core.ui.components.ScreenTitleTwoButtons
 import com.entourageapp.core.ui.cross
 import com.entourageapp.core.ui.delete
 import com.entourageapp.core.ui.search
+import com.entourageapp.core.ui.tools.showToast
 import com.entourageapp.features.gallery.presentation.GalleryState.GalleryStatus
+import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -85,8 +87,8 @@ fun GalleryScreen(
     }
 
     val launcher = rememberImagePickerLauncher { bytes, fileName, mime ->
-        viewModel.handleIntent(
-            GalleryIntent.SetSelectedImage(
+        viewModel.onIntent(
+            GalleryIntent.SetSelectedImageData(
                 GalleryState.SelectedImageData(
                     fileBytes = bytes, fileName = fileName, mimeType = mime
                 )
@@ -95,35 +97,44 @@ fun GalleryScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.handleIntent(
-            GalleryIntent.LoadImages(
-                projectId, if (roomId == 0) null else roomId
-            )
-        )
+        viewModel.onIntent(GalleryIntent.LoadImages(projectId, if (roomId == 0) null else roomId))
+        viewModel.onIntent(GalleryIntent.LoadRooms(projectId))
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collectLatest { effect ->
+            when (effect) {
+                is GallerySideEffect.ShowError -> {
+                    showToast(effect.message)
+                }
+                GallerySideEffect.NavigateBack -> onBackClick()
+            }
+        }
+    }
 
     NavigationBackHandler(
         state = rememberNavigationEventState(NavigationEventInfo.None),
         isBackEnabled = state.status == GalleryStatus.ViewPager || state.isSelectionMode || state.isSearchVisible
     ) {
         if (state.isSelectionMode) {
-            viewModel.handleIntent(GalleryIntent.ClearSelection)
+            viewModel.onIntent(GalleryIntent.ClearSelection)
         } else if (state.isSearchVisible) {
-            viewModel.handleIntent(GalleryIntent.ChangeSearchVisibility(false))
+            viewModel.onIntent(GalleryIntent.SetSearchVisibility(false))
         } else {
-            viewModel.handleIntent(GalleryIntent.ChangeStatus(GalleryStatus.List))
+            viewModel.onIntent(GalleryIntent.CloseViewPager)
         }
     }
 
     if (state.isAddImageVisible) {
         AddImageDialog(
-            imageData = state.selectedImageData, onDismiss = {
-                viewModel.handleIntent(GalleryIntent.ChangeAddImageVisibility(isVisible = false))
-                viewModel.handleIntent(GalleryIntent.SetSelectedImage(null))
-            }, onConfirm = { note ->
+            imageData = state.selectedImageData,
+            onDismiss = {
+                viewModel.onIntent(GalleryIntent.SetAddImageVisibility(isVisible = false))
+                viewModel.onIntent(GalleryIntent.SetSelectedImageData(null))
+            },
+            onConfirm = { note ->
                 state.selectedImageData?.let { data ->
-                    viewModel.handleIntent(
+                    viewModel.onIntent(
                         GalleryIntent.UploadImage(
                             projectId = projectId,
                             image = data,
@@ -132,38 +143,35 @@ fun GalleryScreen(
                         )
                     )
                 }
-            }, launcher = launcher
+            },
+            launcher = launcher
         )
     }
 
     SharedTransitionLayout {
         AnimatedContent(
-            targetState = state.status, label = "gallery_transition", transitionSpec = {
+            targetState = state.status,
+            label = "gallery_transition",
+            transitionSpec = {
                 fadeIn(tween(300)) togetherWith fadeOut(tween(300))
-            }) { status ->
+            }
+        ) { status ->
             when (status) {
                 GalleryStatus.ViewPager -> {
-                    val pagerState =
-                        rememberPagerState(initialPage = state.images.indexOfFirst { it.id == state.selectedImageId }
-                            .coerceAtLeast(0), pageCount = { state.images.size })
+                    val initialPage = remember(state.images, state.selectedImageId) {
+                        state.images.indexOfFirst { it.id == state.selectedImageId }.coerceAtLeast(0)
+                    }
+                    val pagerState = rememberPagerState(
+                        initialPage = initialPage,
+                        pageCount = { state.images.size }
+                    )
+                    
                     GalleryViewPager(
                         images = state.images,
                         pagerState = pagerState,
-                        onDeleteClick = {
-                            val currentImage = state.images[pagerState.currentPage]
-                            viewModel.handleIntent(
-                                GalleryIntent.DeleteImage(
-                                    projectId, currentImage.id
-                                )
-                            )
-                        },
-                        onClosesClick = {
-                            viewModel.handleIntent(
-                                GalleryIntent.ChangeStatus(
-                                    GalleryStatus.List
-                                )
-                            )
-                        },
+                        availableRooms = state.availableRooms,
+                        onIntent = viewModel::onIntent,
+                        projectId = projectId,
                         sharedTransitionScope = this@SharedTransitionLayout,
                         animatedVisibilityScope = this@AnimatedContent
                     )
@@ -181,22 +189,19 @@ fun GalleryScreen(
                             modifier = Modifier.padding(horizontal = 8.dp),
                             onLeftButtonClick = {
                                 if (state.isSelectionMode) {
-                                    viewModel.handleIntent(GalleryIntent.ClearSelection)
+                                    viewModel.onIntent(GalleryIntent.ClearSelection)
                                 } else {
                                     onBackClick()
                                 }
                             },
                             onRightButtonClick = {
                                 if (state.isSelectionMode) {
-                                    viewModel.handleIntent(
-                                        GalleryIntent.DeleteSelectedImages(
-                                            projectId
-                                        )
-                                    )
+                                    viewModel.onIntent(GalleryIntent.DeleteSelectedImages(projectId))
                                 } else {
-                                    viewModel.handleIntent(GalleryIntent.ChangeSearchVisibility(!state.isSearchVisible))
+                                    viewModel.onIntent(GalleryIntent.SetSearchVisibility(!state.isSearchVisible))
                                 }
-                            })
+                            }
+                        )
 
                         AnimatedVisibility(
                             visible = state.isSearchVisible,
@@ -211,9 +216,7 @@ fun GalleryScreen(
                                 GallerySearchField(
                                     searchQuery = state.searchQuery,
                                     onQueryChange = {
-                                        viewModel.handleIntent(
-                                            GalleryIntent.ChangeSearchQuery(it)
-                                        )
+                                        viewModel.onIntent(GalleryIntent.UpdateSearchQuery(it))
                                     },
                                     modifier = Modifier.weight(1f)
                                 )
@@ -222,11 +225,7 @@ fun GalleryScreen(
 
                                 IconButton(
                                     onClick = {
-                                        viewModel.handleIntent(
-                                            GalleryIntent.ChangeSearchVisibility(
-                                                false
-                                            )
-                                        )
+                                        viewModel.onIntent(GalleryIntent.SetSearchVisibility(false))
                                     },
                                     modifier = Modifier.size(48.dp).clip(CircleShape)
                                         .background(EntourageBlack.copy(alpha = 0.05f))
@@ -262,11 +261,7 @@ fun GalleryScreen(
                                     )
                                     AddButton(
                                         onAddClick = {
-                                            viewModel.handleIntent(
-                                                GalleryIntent.ChangeAddImageVisibility(
-                                                    isVisible = true
-                                                )
-                                            )
+                                            viewModel.onIntent(GalleryIntent.SetAddImageVisibility(isVisible = true))
                                         },
                                         modifier = Modifier
                                             .align(Alignment.BottomEnd)
@@ -279,32 +274,8 @@ fun GalleryScreen(
                                 GalleryGrid(
                                     images = filteredImages,
                                     selectedIds = state.selectedIds,
-                                    onImageClick = { id ->
-                                        if (state.isSelectionMode) {
-                                            viewModel.handleIntent(GalleryIntent.ToggleSelection(id))
-                                        } else {
-                                            viewModel.handleIntent(
-                                                GalleryIntent.ChangeSelectedImageId(
-                                                    id
-                                                )
-                                            )
-                                            viewModel.handleIntent(
-                                                GalleryIntent.ChangeStatus(
-                                                    GalleryStatus.ViewPager
-                                                )
-                                            )
-                                        }
-                                    },
-                                    onImageLongClick = { id ->
-                                        viewModel.handleIntent(GalleryIntent.ToggleSelection(id))
-                                    },
-                                    onAddClick = {
-                                        viewModel.handleIntent(
-                                            GalleryIntent.ChangeAddImageVisibility(
-                                                isVisible = true
-                                            )
-                                        )
-                                    },
+                                    isSelectionMode = state.isSelectionMode,
+                                    onIntent = viewModel::onIntent,
                                     scrollState = scrollState,
                                     sharedTransitionScope = this@SharedTransitionLayout,
                                     animatedVisibilityScope = this@AnimatedContent
@@ -329,7 +300,9 @@ fun GalleryScreen(
 
 @Composable
 private fun GallerySearchField(
-    searchQuery: String, onQueryChange: (String) -> Unit, modifier: Modifier = Modifier
+    searchQuery: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val customTextSelectionColors = TextSelectionColors(
         handleColor = EntourageTeal, backgroundColor = EntourageTeal.copy(alpha = 0.4f)

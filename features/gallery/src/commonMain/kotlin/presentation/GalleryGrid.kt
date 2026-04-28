@@ -62,9 +62,8 @@ private val OverlayGrad = Brush.verticalGradient(
 internal fun GalleryGrid(
     images: List<ImageDto>,
     selectedIds: Set<Int>,
-    onImageClick: (Int) -> Unit,
-    onImageLongClick: (Int) -> Unit,
-    onAddClick: () -> Unit,
+    isSelectionMode: Boolean,
+    onIntent: (GalleryIntent) -> Unit,
     scrollState: LazyGridState,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
@@ -101,8 +100,16 @@ internal fun GalleryGrid(
                                 heigh = 9f,
                                 width = 16f,
                                 isSelected = isSelected,
-                                onImageClick = onImageClick,
-                                onImageLongClick = onImageLongClick,
+                                onImageClick = { id ->
+                                    if (isSelectionMode) {
+                                        onIntent(GalleryIntent.ToggleSelection(id))
+                                    } else {
+                                        onIntent(GalleryIntent.SelectImage(id))
+                                    }
+                                },
+                                onImageLongClick = { id ->
+                                    onIntent(GalleryIntent.ToggleSelection(id))
+                                },
                                 sharedTransitionScope = sharedTransitionScope,
                                 animatedVisibilityScope = animatedVisibilityScope
                             )
@@ -116,8 +123,16 @@ internal fun GalleryGrid(
                                 heigh = 2.0375f,
                                 width = 1f,
                                 isSelected = isSelected,
-                                onImageClick = onImageClick,
-                                onImageLongClick = onImageLongClick,
+                                onImageClick = { id ->
+                                    if (isSelectionMode) {
+                                        onIntent(GalleryIntent.ToggleSelection(id))
+                                    } else {
+                                        onIntent(GalleryIntent.SelectImage(id))
+                                    }
+                                },
+                                onImageLongClick = { id ->
+                                    onIntent(GalleryIntent.ToggleSelection(id))
+                                },
                                 sharedTransitionScope = sharedTransitionScope,
                                 animatedVisibilityScope = animatedVisibilityScope
                             )
@@ -129,8 +144,16 @@ internal fun GalleryGrid(
                                 imageUrl = image.url ?: "",
                                 note = image.note,
                                 isSelected = isSelected,
-                                onImageClick = onImageClick,
-                                onImageLongClick = onImageLongClick,
+                                onImageClick = { id ->
+                                    if (isSelectionMode) {
+                                        onIntent(GalleryIntent.ToggleSelection(id))
+                                    } else {
+                                        onIntent(GalleryIntent.SelectImage(id))
+                                    }
+                                },
+                                onImageLongClick = { id ->
+                                    onIntent(GalleryIntent.ToggleSelection(id))
+                                },
                                 sharedTransitionScope = sharedTransitionScope,
                                 animatedVisibilityScope = animatedVisibilityScope
                             )
@@ -148,7 +171,7 @@ internal fun GalleryGrid(
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 18.dp, end = 8.dp)
         ) {
-            AddButton(onAddClick)
+            AddButton(onAddClick = { onIntent(GalleryIntent.SetAddImageVisibility(true)) })
         }
     }
 }

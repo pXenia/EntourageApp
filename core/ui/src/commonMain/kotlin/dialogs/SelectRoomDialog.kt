@@ -1,4 +1,4 @@
-package com.entourageapp.features.estimates.presentation.createestimateposition
+package com.entourageapp.core.ui.dialogs
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
