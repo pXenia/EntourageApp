@@ -1,17 +1,16 @@
 package com.entourageapp.features.gallery.presentation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,21 +26,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.innerShadow
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.network.dto.ImageDto
 import com.entourageapp.core.network.dto.RoomShortDto
 import com.entourageapp.core.ui.EntourageBlack
+import com.entourageapp.core.ui.EntourageLightBlueGray
 import com.entourageapp.core.ui.EntouragePeachAlpha30
+import com.entourageapp.core.ui.EntourageRed
+import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.add
-import com.entourageapp.core.ui.components.AccentButton
 import com.entourageapp.core.ui.components.Badge
 import com.entourageapp.core.ui.components.CustomTextBar
 import com.entourageapp.core.ui.cross
 import com.entourageapp.core.ui.delete
 import com.entourageapp.core.ui.dialogs.SelectRoomDialog
+import com.entourageapp.core.ui.done
+import com.entourageapp.core.ui.edit
 import com.entourageapp.core.ui.tag
 import org.jetbrains.compose.resources.painterResource
 
@@ -58,7 +63,7 @@ internal fun UpdateImageBottomSheet(
 ) {
     var isEditing by remember { mutableStateOf(false) }
     var showRoomDialog by remember { mutableStateOf(false) }
-    
+
     var editedNote by remember(image.id) { mutableStateOf(image.note ?: "") }
     var editedRoomId by remember(image.id) { mutableStateOf(image.roomId) }
 
@@ -72,7 +77,6 @@ internal fun UpdateImageBottomSheet(
             }
         )
     }
-
     ModalBottomSheet(
         onDismissRequest = {
             isEditing = false
@@ -80,47 +84,120 @@ internal fun UpdateImageBottomSheet(
             onDismissRequest()
         },
         sheetState = sheetState,
-        containerColor = EntourageWhite,
-        dragHandle = {
-            Box(
-                modifier = Modifier
-                    .padding(vertical = 12.dp)
-                    .width(40.dp)
-                    .height(4.dp)
-                    .clip(CircleShape)
-                    .background(EntourageBlack.copy(alpha = 0.2f))
-            )
-        }
+        tonalElevation = 2.dp,
+        containerColor = EntourageLightBlueGray,
+        dragHandle = {},
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .padding(bottom = 32.dp),
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 32.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.Top
             ) {
-                Text(
-                    text = if (isEditing) "Редактирование" else "Детали изображения",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = EntourageBlack
-                )
-
                 if (!isEditing) {
+                    Icon(
+                        painter = painterResource(edit),
+                        contentDescription = "Редактировать",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .innerShadow(
+                                shape = RoundedCornerShape(20.dp),
+                                shadow = Shadow(
+                                    radius = 5.dp,
+                                    spread = 5.dp,
+                                    color = EntourageWhite.copy(alpha = 0.5f),
+                                    offset = DpOffset(x = 0.dp, 0.dp)
+                                )
+                            )
+                            .clickable {
+                                isEditing = true
+                                onEditingChange(true)
+                            }
+                            .padding(12.dp)
+                            .size(24.dp),
+                    )
+                    Spacer(Modifier.width(12.dp))
                     Icon(
                         painter = painterResource(delete),
                         contentDescription = "Удалить",
                         modifier = Modifier
-                            .size(24.dp)
+                            .clip(CircleShape)
+                            .innerShadow(
+                                shape = CircleShape,
+                                shadow = Shadow(
+                                    radius = 5.dp,
+                                    spread = 5.dp,
+                                    color = EntourageWhite.copy(alpha = 0.5f),
+                                    offset = DpOffset(x = 0.dp, 0.dp)
+                                )
+                            )
                             .clickable {
                                 onDismissRequest()
                                 onIntent(GalleryIntent.DeleteImage(projectId, image.id))
-                            },
-                        tint = Color.Red
+                            }
+                            .padding(12.dp)
+                            .size(24.dp),
+                        tint = EntourageRed
+                    )
+                } else {
+                    Icon(
+                        painter = painterResource(cross),
+                        contentDescription = "Отмена",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .innerShadow(
+                                shape = CircleShape,
+                                shadow = Shadow(
+                                    radius = 5.dp,
+                                    spread = 5.dp,
+                                    color = EntourageWhite.copy(alpha = 0.5f),
+                                    offset = DpOffset(x = 0.dp, 0.dp)
+                                )
+                            )
+                            .clickable {
+                                isEditing = false
+                                onEditingChange(false)
+                                editedNote = image.note ?: ""
+                                editedRoomId = image.roomId
+                            }
+                            .padding(8.dp)
+                            .size(24.dp),
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Icon(
+                        painter = painterResource(done),
+                        contentDescription = "Сохранить",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .innerShadow(
+                                shape = RoundedCornerShape(20.dp),
+                                shadow = Shadow(
+                                    radius = 5.dp,
+                                    spread = 5.dp,
+                                    color = EntourageWhite.copy(alpha = 0.5f),
+                                    offset = DpOffset(x = 0.dp, 0.dp)
+                                )
+                            )
+                            .clickable {
+                                onIntent(
+                                    GalleryIntent.UpdateImage(
+                                        projectId,
+                                        image.id,
+                                        editedNote,
+                                        editedRoomId
+                                    )
+                                )
+                                isEditing = false
+                                onEditingChange(false)
+                            }
+                            .padding(8.dp)
+                            .size(24.dp),
+                        tint = EntourageTeal
                     )
                 }
             }
@@ -130,7 +207,8 @@ internal fun UpdateImageBottomSheet(
                     value = editedNote,
                     onValueChange = { editedNote = it },
                     label = "Заметка",
-                    placeholder = "Добавьте описание..."
+                    placeholder = "Добавьте описание...",
+                    isSingleLine = false
                 )
 
                 Row(
@@ -160,40 +238,13 @@ internal fun UpdateImageBottomSheet(
                     ) {
                         Icon(
                             modifier = Modifier.padding(8.dp).size(16.dp),
-                            painter = if (editedRoomId != null) painterResource(cross) else painterResource(add),
+                            painter = if (editedRoomId != null) painterResource(cross) else painterResource(
+                                add
+                            ),
                             contentDescription = null,
                             tint = EntourageBlack
                         )
                     }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    AccentButton(
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        onClick = {
-                            isEditing = false
-                            onEditingChange(false)
-                            editedNote = image.note ?: ""
-                            editedRoomId = image.roomId
-                        },
-                        text = "Отмена",
-                        containerColor = EntourageWhite,
-                        contentColor = EntourageBlack
-                    )
-                    AccentButton(
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        onClick = {
-                            onIntent(GalleryIntent.UpdateImage(projectId, image.id, editedNote, editedRoomId))
-                            isEditing = false
-                            onEditingChange(false)
-                        },
-                        text = "Сохранить",
-                        containerColor = EntourageBlack,
-                        contentColor = EntourageWhite
-                    )
                 }
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -223,17 +274,6 @@ internal fun UpdateImageBottomSheet(
                         )
                     }
                 }
-
-                AccentButton(
-                    modifier = Modifier.fillMaxWidth().height(48.dp),
-                    onClick = { 
-                        isEditing = true 
-                        onEditingChange(true)
-                    },
-                    text = "Редактировать",
-                    containerColor = EntourageBlack,
-                    contentColor = EntourageWhite
-                )
             }
         }
     }

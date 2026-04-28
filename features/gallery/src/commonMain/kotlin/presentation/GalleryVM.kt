@@ -51,9 +51,12 @@ class GalleryVM(
                     _sideEffect.emit(GallerySideEffect.ShowError("Ошибка при загрузке изображений"))
                 }
                 .collect { images ->
-                    _state.update { 
+                    _state.update {
                         if (images.isEmpty()) {
-                            it.copy(status = GalleryState.GalleryStatus.IsEmpty, images = emptyList())
+                            it.copy(
+                                status = GalleryState.GalleryStatus.IsEmpty,
+                                images = emptyList()
+                            )
                         } else {
                             it.copy(status = GalleryState.GalleryStatus.List, images = images)
                         }
@@ -91,7 +94,12 @@ class GalleryVM(
     }
 
     private fun selectImage(imageId: Int) {
-        _state.update { it.copy(selectedImageId = imageId, status = GalleryState.GalleryStatus.ViewPager) }
+        _state.update {
+            it.copy(
+                selectedImageId = imageId,
+                status = GalleryState.GalleryStatus.ViewPager
+            )
+        }
     }
 
     private fun closeViewPager() {
@@ -107,18 +115,19 @@ class GalleryVM(
                     note = intent.note,
                     roomId = intent.roomId
                 )
-                _state.update { state ->
-                    val updatedImages = state.images.map { img ->
-                        if (img.id == intent.imageId) {
-                            img.copy(note = intent.note, roomId = intent.roomId)
-                        } else {
-                            img
+                _state.update {
+                    it.copy(
+                        images = it.images.map { image ->
+                            if (image.id == intent.imageId) {
+                                image.copy(note = intent.note, roomId = intent.roomId)
+                            } else {
+                                image
+                            }
                         }
-                    }
-                    state.copy(images = updatedImages)
+                    )
                 }
             } catch (e: Exception) {
-                _sideEffect.emit(GallerySideEffect.ShowError("Ошибка при обновлении изображения"))
+                _sideEffect.emit(GallerySideEffect.ShowError("$e"))
             }
         }
     }
@@ -164,7 +173,12 @@ class GalleryVM(
     }
 
     private fun setSearchVisibility(isVisible: Boolean) {
-        _state.update { it.copy(isSearchVisible = isVisible, searchQuery = if (!isVisible) "" else it.searchQuery) }
+        _state.update {
+            it.copy(
+                isSearchVisible = isVisible,
+                searchQuery = if (!isVisible) "" else it.searchQuery
+            )
+        }
     }
 
     private fun updateSearchQuery(query: String) {

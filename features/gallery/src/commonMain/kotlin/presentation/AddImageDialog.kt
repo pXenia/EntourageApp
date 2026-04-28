@@ -95,7 +95,8 @@ fun AddImageDialog(
             CustomTextBar(
                 label = "Заметка",
                 onValueChange = { note = it },
-                value = note
+                value = note,
+                 isSingleLine = false
             )
 
             Spacer(modifier = Modifier.height(16.dp))

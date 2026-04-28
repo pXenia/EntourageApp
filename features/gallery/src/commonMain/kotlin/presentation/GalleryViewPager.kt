@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -68,6 +69,14 @@ internal fun GalleryViewPager(
         modifier = Modifier
             .fillMaxSize()
             .appBackground()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) {
+                if (!isEditing) {
+                    showBottomSheet = !showBottomSheet
+                }
+            }
     ) {
         HorizontalPager(
             state = pagerState,
@@ -125,7 +134,7 @@ internal fun GalleryViewPager(
             }
         }
 
-        if (currentImage != null) {
+        if (showBottomSheet && currentImage != null) {
             UpdateImageBottomSheet(
                 image = currentImage,
                 availableRooms = availableRooms,

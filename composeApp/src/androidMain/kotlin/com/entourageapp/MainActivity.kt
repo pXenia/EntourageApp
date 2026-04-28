@@ -13,8 +13,9 @@ import com.entourageapp.presentation.NavRoot
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge(
-            navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+            navigationBarStyle = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT)
         )
         setContent {
             EntourageTheme {
@@ -23,6 +24,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+
 
 @Preview
 @Composable

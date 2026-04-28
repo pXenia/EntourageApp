@@ -15,8 +15,10 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
+import io.ktor.http.contentType
 
 class GalleryKtorApi(private val client: HttpClient) : GalleryApi {
 
@@ -65,6 +67,7 @@ class GalleryKtorApi(private val client: HttpClient) : GalleryApi {
         roomId: Int?
     ): MessageDto =
         client.patch("projects/$projectId/images/$imageId") {
+            contentType(ContentType.Application.Json)
             setBody(ImageUpdateDto(note = note, roomId = roomId))
         }.body()
 

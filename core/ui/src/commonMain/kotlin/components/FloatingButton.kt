@@ -1,6 +1,5 @@
 package com.entourageapp.core.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -12,6 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.innerShadow
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.entourageapp.core.ui.EntourageWhite
 import org.jetbrains.compose.resources.DrawableResource
@@ -28,7 +30,15 @@ fun FloatingButton(
         modifier = Modifier
             .size(56.dp)
             .clip(RoundedCornerShape(28.dp))
-            .background(EntourageWhite.copy(alpha = 0.6f))
+            .innerShadow(
+                shape = RoundedCornerShape(28.dp),
+                shadow = Shadow(
+                    radius = 20.dp,
+                    spread = 4.dp,
+                    color = EntourageWhite.copy(alpha = 0.6f),
+                    offset = DpOffset(x = 0.dp, 0.dp)
+                )
+            )
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
