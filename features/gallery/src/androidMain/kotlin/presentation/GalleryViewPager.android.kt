@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -59,6 +61,7 @@ actual fun GalleryViewPager(
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val currentImage = images.getOrNull(pagerState.currentPage)
+    var totalDragY by remember { mutableStateOf(0f) }
 
     LaunchedEffect(pagerState.currentPage) {
         isEditing = false
@@ -68,6 +71,24 @@ actual fun GalleryViewPager(
         modifier = Modifier
             .fillMaxSize()
             .appBackground()
+            .pointerInput(isEditing) {
+                if (!isEditing) {
+                    detectDragGestures(
+                        onDrag = { change, dragAmount ->
+                            totalDragY += dragAmount.y
+                        },
+                        onDragEnd = {
+                            if (totalDragY > 200f) {
+                                onIntent(GalleryIntent.CloseViewPager)
+                            }
+                            totalDragY = 0f
+                        },
+                        onDragCancel = {
+                            totalDragY = 0f
+                        }
+                    )
+                }
+            }
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null

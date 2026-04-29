@@ -150,7 +150,7 @@ actual fun GalleryScreen(
             targetState = state.status,
             label = "gallery_transition",
             transitionSpec = {
-                fadeIn(tween(300)) togetherWith fadeOut(tween(300))
+                fadeIn(tween(600)) togetherWith fadeOut(tween(600))
             }
         ) { status ->
             when (status) {
