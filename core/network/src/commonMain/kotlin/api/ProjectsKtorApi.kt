@@ -1,0 +1,41 @@
+package com.entourageapp.core.network.api
+
+import com.entourageapp.core.network.dto.ProjectCreateDto
+import com.entourageapp.core.network.dto.ProjectDto
+import com.entourageapp.core.network.dto.ProjectMemberAddDto
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonPrimitive
+
+class ProjectsKtorApi(private val client: HttpClient) : ProjectsApi {
+    override suspend fun getProjects(): List<ProjectDto> {
+        return client.get("projects/").body()
+    }
+
+    override suspend fun getProjectById(projectId: Int): ProjectDto {
+        return client.get("projects/$projectId").body()
+    }
+
+    override suspend fun createProject(project: ProjectCreateDto): Int {
+        val response = client.post("projects/add/") {
+            contentType(ContentType.Application.Json)
+            setBody(project)
+        }.body<JsonObject>()
+        return response["project_id"]?.jsonPrimitive?.int
+            ?: throw Exception("Не удалось получить id проекта")
+    }
+
+    override suspend fun addProjectMember(projectId: Int, email: String, roleCode: String) {
+        client.post("projects/$projectId/members/") {
+            contentType(ContentType.Application.Json)
+            setBody(ProjectMemberAddDto(email = email, roleCode = roleCode))
+        }
+    }
+}

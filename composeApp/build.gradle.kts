@@ -1,4 +1,3 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -31,7 +30,11 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.koin.android)
+            implementation(libs.koin.androidx.compose)
+            implementation(libs.androidx.core.splashscreen)
         }
+
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
@@ -39,8 +42,26 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.material.icons.core)
+            implementation(libs.jetbrains.material3.adaptiveNavigation3)
+            implementation(libs.jetbrains.navigation3.ui)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+
+            implementation(projects.core.ui)
+            implementation(projects.core.navigation)
+            implementation(projects.core.network)
+            implementation(projects.core.database)
+            implementation(projects.features.projects)
+            implementation(projects.features.calculators)
+            implementation(projects.features.userprofile)
+            implementation(projects.features.estimates)
+            implementation(projects.features.rooms)
+            implementation(projects.features.auth)
+            implementation(projects.features.projectdocuments)
+            implementation(projects.features.gallery)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

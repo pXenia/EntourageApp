@@ -1,0 +1,9 @@
+package com.entourageapp.core.network.dto
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class RoomShortDto(
+    val id: Int,
+    val title: String
+)
