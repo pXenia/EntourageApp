@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Card
@@ -25,12 +26,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.innerShadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeach
+import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 
 @Composable
@@ -47,11 +54,20 @@ fun ProjectCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(32.dp))
+            .innerShadow(
+                shape = RoundedCornerShape(32.dp),
+                shadow = Shadow(
+                    radius = 36.dp,
+                    spread = 8.dp,
+                    color = EntourageWhite.copy(alpha = 0.2f),
+                    offset = DpOffset(x = 10.dp, 10.dp)
+                )
+            )
             .clickable{ onCardClick() },
         colors = CardDefaults.cardColors(containerColor = EntourageBlack.copy(alpha = 0.1f))
     ) {
         Column(
-            modifier = Modifier.padding(18.dp),
+            modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
@@ -74,12 +90,14 @@ fun ProjectCard(
                 InfoBox(
                     value = participants.toString(),
                     label = "участники",
-                    backgroundColor = Color.Transparent
+                    backgroundColor = Color.Transparent,
+                    shape = RoundedCornerShape(16.dp)
                 )
                 InfoBox(
                     value = rooms.toString(),
                     label = "комнат",
-                    backgroundColor = EntouragePeach.copy(alpha = 0.8f)
+                    backgroundColor = EntouragePeach.copy(alpha = 0.8f),
+                    shape = RoundedCornerShape(16.dp)
                 )
             }
         }
@@ -91,10 +109,11 @@ private fun InfoBox(
     modifier: Modifier = Modifier,
     value: String,
     label: String,
-    backgroundColor: Color
+    backgroundColor: Color,
+    shape: Shape,
 ) {
     Surface(
-        shape = RoundedCornerShape(8.dp),
+        shape = shape,
         color = backgroundColor,
         border = BorderStroke(1.dp, EntourageBlack)
     ) {
@@ -124,8 +143,8 @@ private fun DateBox(
 ) {
     Box(
         modifier = modifier
-            .background(Color.Transparent, RoundedCornerShape(8.dp))
-            .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
+            .background(Color.Transparent, RoundedCornerShape(16.dp))
+            .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
             .padding(horizontal = 24.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -163,11 +182,11 @@ private fun CardTitle(
 }
 
 @Composable
-private fun SquareBadge (
+private fun SquareBadge(
     area: String
 ){
     Surface(
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(16.dp),
         color = EntourageWhite.copy(alpha = 0.3f),
     ) {
         Column(

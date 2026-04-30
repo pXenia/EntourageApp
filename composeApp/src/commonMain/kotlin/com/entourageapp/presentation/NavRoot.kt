@@ -111,6 +111,7 @@ fun NavRoot(
             CustomBottomBar(
                 modifier = modifier
                     .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp)
                     .navigationBarsPadding()
                     .align(Alignment.BottomCenter),
                 items = topLevelNavItems as Map<Route, TopLevelNavigationItem>,

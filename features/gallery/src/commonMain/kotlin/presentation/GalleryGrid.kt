@@ -50,6 +50,7 @@ import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.add
+import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.delete
 import org.jetbrains.compose.resources.painterResource
 
@@ -178,31 +179,10 @@ internal fun GalleryGrid(
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 18.dp, end = 8.dp)
         ) {
-            AddButton(onAddClick = { onIntent(GalleryIntent.SetAddImageVisibility(true)) })
+            AddRoundButton(
+                onClick = { onIntent(GalleryIntent.SetAddImageVisibility(true)) },
+            )
         }
-    }
-}
-
-@Composable
-internal fun AddButton(
-    onAddClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    FloatingActionButton(
-        onClick = { onAddClick() },
-        containerColor = EntourageTeal.copy(alpha = 0.9f),
-        modifier = modifier.size(64.dp),
-        elevation = elevation(
-            defaultElevation = 0.dp
-        ),
-        shape = CircleShape
-    ) {
-        Icon(
-            painter = painterResource(add),
-            modifier = Modifier.size(12.dp),
-            contentDescription = null,
-            tint = EntourageWhite
-        )
     }
 }
 

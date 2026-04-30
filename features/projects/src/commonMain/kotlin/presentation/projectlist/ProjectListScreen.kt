@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.add
+import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.components.TabButton
 import com.entourageapp.core.ui.components.TopScreenTitle
 import com.entourageapp.features.projects.presentation.components.ProjectCard
@@ -143,25 +144,13 @@ fun ProjectListScreen(
                 }
             }
 
-            FloatingActionButton(
-                onClick = onAddProjectClick,
-                containerColor = EntourageTeal.copy(alpha = 0.9f),
+            AddRoundButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = 80.dp)
-                    .size(64.dp),
-                elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 0.dp
-                ),
-                shape = CircleShape
-            ) {
-                Icon(
-                    painter = painterResource(add),
-                    modifier = Modifier.size(12.dp),
-                    contentDescription = null,
-                    tint = EntourageWhite
-                )
-            }
+                    .navigationBarsPadding()
+                    .padding(bottom = 80.dp),
+                onClick = onAddProjectClick
+            )
         }
     }
 }
