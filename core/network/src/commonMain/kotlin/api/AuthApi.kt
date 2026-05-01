@@ -9,4 +9,7 @@ interface AuthApi {
     suspend fun refreshToken()
     suspend fun logout()
     suspend fun getMe(): UserDto
+    suspend fun updateName(name: String): MessageDto
+    suspend fun updatePassword(current: String, new: String): MessageDto
+    suspend fun deleteAccount(password: String): MessageDto
 }
