@@ -1,4 +1,4 @@
-package com.entourageapp.features.userprofile.presentation
+package com.entourageapp.features.userprofile.presentation.editprofile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +53,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun UserProfileScreen(
     modifier: Modifier = Modifier,
     onNavigateToLogin: () -> Unit = {},
+    onManageProjectsClick: () -> Unit = {},
     viewModel: UserProfileVM = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
@@ -110,7 +111,8 @@ fun UserProfileScreen(
                     UserProjectsButton(
                         modifier = Modifier.fillMaxWidth().height(64.dp),
                         text = "Управление участием в проектах",
-                        icon = folder
+                        icon = folder,
+                        onClick = { onManageProjectsClick() }
                     )
                     HorizontalDivider(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),

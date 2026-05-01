@@ -2,7 +2,7 @@ package com.entourageapp.features.userprofile.di
 
 import com.entourageapp.features.userprofile.data.UserProfileRepositoryImpl
 import com.entourageapp.features.userprofile.domain.UserProfileRepository
-import com.entourageapp.features.userprofile.presentation.UserProfileVM
+import com.entourageapp.features.userprofile.presentation.editprofile.UserProfileVM
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf

@@ -1,4 +1,4 @@
-package com.entourageapp.features.userprofile.presentation
+package com.entourageapp.features.userprofile.presentation.editprofile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

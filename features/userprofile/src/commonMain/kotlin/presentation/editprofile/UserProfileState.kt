@@ -1,4 +1,4 @@
-package com.entourageapp.features.userprofile.presentation
+package com.entourageapp.features.userprofile.presentation.editprofile
 
 data class UserProfileState(
     val name: String = "Пётр Петров",
