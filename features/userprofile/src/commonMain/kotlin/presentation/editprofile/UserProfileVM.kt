@@ -139,7 +139,7 @@ class UserProfileVM(
         viewModelScope.launch {
             try {
                 repository.logout()
-                _sideEffect.emit(UserProfileSideEffect.NavigateToLogin)
+                _sideEffect.emit(UserProfileSideEffect.ShowMessage("Вы вышли из аккаунта"))
             } catch (e: Exception) {
                 _sideEffect.emit(UserProfileSideEffect.ShowError("Ошибка при выходе из аккаунта"))
             }
@@ -154,7 +154,7 @@ class UserProfileVM(
         viewModelScope.launch {
             try {
                 repository.deleteAccount(_state.value.deleteConfirmPassword)
-                _sideEffect.emit(UserProfileSideEffect.NavigateToLogin)
+                _sideEffect.emit(UserProfileSideEffect.ShowMessage("Аккаунт успешно удалён"))
             } catch (e: Exception) {
                 _sideEffect.emit(UserProfileSideEffect.ShowError("Ошибка при удалении аккаунта"))
             }

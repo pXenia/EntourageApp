@@ -10,13 +10,12 @@ import com.entourageapp.features.userprofile.presentation.projectmanagement.Proj
 fun EntryProviderScope<NavKey>.userProfileEntryBuilder(navigator: Navigator) {
     entry<Route.UserProfile> {
         UserProfileScreen(
-            onNavigateToLogin = { navigator.navigate(Route.Login) },
             onManageProjectsClick = { navigator.navigate(Route.ManageProjects) }
         )
     }
     entry<Route.ManageProjects> {
         ProjectManagementScreen(
-            onBackClick = { navigator.goBack() },
+            onBackClick = { navigator.goBack() }
         )
     }
 }

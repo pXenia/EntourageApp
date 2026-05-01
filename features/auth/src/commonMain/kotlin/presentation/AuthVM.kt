@@ -7,7 +7,6 @@ import com.entourageapp.features.auth.domain.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class AuthVM(
@@ -19,11 +18,13 @@ class AuthVM(
     val state: StateFlow<AuthState> = _state.asStateFlow()
 
     init {
-        checkAuth()
-
         viewModelScope.launch {
             tokenStore.hasAccessToken.collect { hasToken ->
-                if (!hasToken && _state.value is AuthState.Authenticated) {
+                if (hasToken) {
+                    if (_state.value !is AuthState.Authenticated) {
+                        checkAuth()
+                    }
+                } else {
                     _state.value = AuthState.NotAuthenticated
                 }
             }
@@ -32,13 +33,7 @@ class AuthVM(
 
     private fun checkAuth() {
         viewModelScope.launch {
-            val hasToken = tokenStore.hasAccessToken.first()
-
-            if (!hasToken) {
-                _state.value = AuthState.NotAuthenticated
-                return@launch
-            }
-
+            // Перед проверкой убеждаемся, что токен все еще на месте
             authRepository.getMe()
                 .onSuccess {
                     _state.value = AuthState.Authenticated

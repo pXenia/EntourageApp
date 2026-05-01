@@ -46,5 +46,4 @@ sealed interface UserProfileIntent {
 sealed interface UserProfileSideEffect {
     data class ShowError(val message: String) : UserProfileSideEffect
     data class ShowMessage(val message: String) : UserProfileSideEffect
-    data object NavigateToLogin : UserProfileSideEffect
 }

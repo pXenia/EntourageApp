@@ -52,7 +52,6 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun UserProfileScreen(
     modifier: Modifier = Modifier,
-    onNavigateToLogin: () -> Unit = {},
     onManageProjectsClick: () -> Unit = {},
     viewModel: UserProfileVM = koinViewModel(),
 ) {
@@ -66,7 +65,6 @@ fun UserProfileScreen(
     LaunchedEffect(Unit) {
         viewModel.sideEffect.collect { sideEffect ->
             when (sideEffect) {
-                is UserProfileSideEffect.NavigateToLogin -> onNavigateToLogin()
                 is UserProfileSideEffect.ShowError -> showToast(sideEffect.message)
                 is UserProfileSideEffect.ShowMessage -> showToast(sideEffect.message)
             }

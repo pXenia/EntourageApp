@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
@@ -42,6 +42,7 @@ import com.entourageapp.core.ui.components.CustomDateField
 import com.entourageapp.core.ui.components.CustomTextBar
 import com.entourageapp.core.ui.components.ScreenTitle
 import com.entourageapp.core.ui.cross
+import com.entourageapp.core.ui.tools.showToast
 import com.entourageapp.core.ui.user
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -58,6 +59,14 @@ fun CreateProjectScreen(
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) onBackClick()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+                is CreateProjectSideEffect.ShowError -> showToast(sideEffect.message)
+            }
+        }
     }
 
     if (showAddUserDialog) {
@@ -164,7 +173,7 @@ fun CreateProjectScreen(
             state.pendingParticipants.forEach { participant ->
                 AddUserCard(
                     modifier = Modifier.fillMaxWidth(),
-                    name = participant.email,
+                    name = participant.name,
                     role = when (participant.roleCode) {
                         "editor" -> "редакт."
                         "viewer" -> "читатель"
