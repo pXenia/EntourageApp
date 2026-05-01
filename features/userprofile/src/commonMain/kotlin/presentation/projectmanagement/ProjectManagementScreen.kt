@@ -1,7 +1,11 @@
 package com.entourageapp.features.userprofile.presentation.projectmanagement
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -20,30 +25,51 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.innerShadow
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
-import com.entourageapp.core.ui.EntouragePeachAlpha80
+import com.entourageapp.core.ui.EntourageRed
 import com.entourageapp.core.ui.EntourageTeal
-import com.entourageapp.core.ui.arrowLeft
+import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.calendar
-import com.entourageapp.core.ui.components.AccentButton
-import com.entourageapp.core.ui.components.Avatar
-import com.entourageapp.core.ui.components.FloatingButton
-import com.entourageapp.core.ui.folder
+import com.entourageapp.core.ui.components.ScreenTitle
+import com.entourageapp.core.ui.tools.showToast
 import com.entourageapp.core.ui.user
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProjectManagementScreen(
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    viewModel: ProjectManagementVM = koinViewModel()
 ) {
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.onIntent(ProjectManagementIntent.LoadProjects)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+                is ProjectManagementSideEffect.ShowError -> showToast(sideEffect.message)
+                is ProjectManagementSideEffect.ShowMessage -> showToast(sideEffect.message)
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -51,173 +77,72 @@ fun ProjectManagementScreen(
             .navigationBarsPadding()
             .padding(horizontal = 16.dp)
     ) {
-        ProjectManagementHeader(onBackClick = onBackClick)
+        ScreenTitle(
+            modifier = Modifier.fillMaxWidth(),
+            title = "УПРАВЛЕНИЕ УЧАСТИЕМ\nВ ПРОЕКТАХ",
+            onBackClick = onBackClick
+        )
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(vertical = 16.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(top = 8.dp)
         ) {
-            item {
-                ManagementSection(title = "ПРИГЛАШЕНИЯ") {
-                    InvitationCard(
-                        userName = "Михаил Иванов",
-                        userEmail = "misha901@gmail.com",
-                        projectName = "Квартира на Ленина 42",
-                        participantsCount = 2,
-                        dateRange = "27.06.2025-22.11.2025",
-                        role = "Редактор"
-                    )
-                }
-            }
-
-            item {
-                ManagementSection(title = "УДАЛИТЬ ПРОЕКТ") {
-                    ProjectActionCard(
-                        projectName = "Квартира на Ленинском",
-                        participantsCount = 2,
-                        dateRange = "20.11.2024-12.03.2026",
-                        role = "Владелец",
-                        buttonText = "УДАЛИТЬ",
-                        buttonColor = EntouragePeachAlpha80
-                    )
-                }
-            }
-
-            item {
-                ManagementSection(title = "ВЫЙТИ ИЗ ПРОЕКТА") {
-                    ProjectActionCard(
-                        projectName = "Дача",
-                        participantsCount = 2,
-                        dateRange = "21.06.2023-21.06.2025",
-                        role = "Читатель",
-                        buttonText = "ВЫЙТИ",
-                        buttonColor = EntouragePeachAlpha80
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProjectManagementHeader(onBackClick: () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth().padding(top = 8.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            FloatingButton(
-                onClick = onBackClick,
-                icon = arrowLeft
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Text(
-                text = "УПРАВЛЕНИЕ УЧАСТИЕМ\nВ ПРОЕКТАХ",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    lineHeight = 24.sp
-                )
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider(thickness = 1.dp, color = EntourageBlack.copy(alpha = 0.2f))
-    }
-}
-
-@Composable
-private fun ManagementSection(
-    title: String,
-    content: @Composable () -> Unit
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.labelLarge.copy(
-                color = EntourageTeal,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-        )
-        content()
-    }
-}
-
-@Composable
-private fun InvitationCard(
-    userName: String,
-    userEmail: String,
-    projectName: String,
-    participantsCount: Int,
-    dateRange: String,
-    role: String
-) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        color = EntourageLightBlueGray.copy(alpha = 0.4f)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Avatar(initials = "МИ", size = 48)
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = userName,
-                            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "($userEmail)",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                            color = EntourageBlack.copy(alpha = 0.6f)
-                        )
-                    }
+            if (state.ownedProjects.isNotEmpty()) {
+                item {
                     Text(
-                        text = "приглашает вас",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = EntourageTeal
+                        text = "Удаление проектов",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = EntourageTeal,
+                            fontSize = 18.sp,
+                        )
+                    )
+                }
+                items(state.ownedProjects) { project ->
+                    ProjectActionCard(
+                        projectName = project.title,
+                        participantsCount = project.membersCount,
+                        dateRange = project.years,
+                        role = project.role,
+                        buttonText = "УДАЛИТЬ",
+                        onButtonClick = {
+                            viewModel.onIntent(
+                                ProjectManagementIntent.DeleteProject(
+                                    project.id
+                                )
+                            )
+                        }
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            ProjectInfoRow(icon = folder, text = projectName)
-            ProjectInfoRow(icon = user, text = "$participantsCount участника")
-            ProjectInfoRow(icon = calendar, text = dateRange)
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "Ваша роль",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                RoleBadge(role)
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButtonSimple(text = "Отклонить", onClick = {})
-                Spacer(modifier = Modifier.width(12.dp))
-                AccentButton(
-                    text = "ПРИНЯТЬ",
-                    onClick = {},
-                    containerColor = EntourageTeal.copy(alpha = 0.4f),
-                    contentColor = EntourageBlack,
-                    modifier = Modifier.height(40.dp)
-                )
+            if (state.memberProjects.isNotEmpty()) {
+                item {
+                    Text(
+                        text = "Выход из проектов",
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            color = EntourageTeal,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
+                items(state.memberProjects) { project ->
+                    ProjectActionCard(
+                        projectName = project.title,
+                        participantsCount = project.membersCount,
+                        dateRange = project.years,
+                        role = project.role,
+                        buttonText = "ВЫЙТИ",
+                        onButtonClick = {
+                            viewModel.onIntent(
+                                ProjectManagementIntent.LeaveProject(
+                                    project.id
+                                )
+                            )
+                        }
+                    )
+                }
             }
         }
     }
@@ -230,12 +155,22 @@ private fun ProjectActionCard(
     dateRange: String,
     role: String,
     buttonText: String,
-    buttonColor: Color
+    onButtonClick: () -> Unit,
 ) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        color = EntourageLightBlueGray.copy(alpha = 0.4f)
+        modifier = Modifier
+            .fillMaxWidth()
+            .innerShadow(
+                shape = RoundedCornerShape(32.dp),
+                shadow = Shadow(
+                    radius = 36.dp,
+                    spread = 8.dp,
+                    color = EntourageWhite.copy(alpha = 0.2f),
+                    offset = DpOffset(x = 10.dp, 10.dp)
+                )
+            ),
+        shape = RoundedCornerShape(32.dp),
+        color = EntourageTeal.copy(alpha = 0.2f)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -268,13 +203,19 @@ private fun ProjectActionCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                AccentButton(
-                    text = buttonText,
-                    onClick = {},
-                    containerColor = buttonColor,
-                    contentColor = EntourageBlack,
-                    modifier = Modifier.height(40.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(EntourageRed.copy(alpha = 0.2f))
+                        .clickable(onClick = onButtonClick),
+                ) {
+                    Text(
+                        text = buttonText.uppercase(),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = EntourageRed,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
             }
         }
     }
@@ -311,21 +252,6 @@ private fun RoleBadge(role: String) {
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
             color = EntourageBlack.copy(alpha = 0.7f)
-        )
-    }
-}
-
-@Composable
-private fun TextButtonSimple(text: String, onClick: () -> Unit) {
-    Surface(
-        onClick = onClick,
-        shape = RoundedCornerShape(20.dp),
-        color = EntourageLightBlueGray.copy(alpha = 0.6f)
-    ) {
-        Text(
-            text = text,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

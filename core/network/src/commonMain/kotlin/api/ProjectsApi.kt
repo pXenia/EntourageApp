@@ -8,4 +8,5 @@ interface ProjectsApi {
     suspend fun getProjectById(projectId: Int): ProjectDto
     suspend fun createProject(project: ProjectCreateDto): Int
     suspend fun addProjectMember(projectId: Int, email: String, roleCode: String)
+    suspend fun deleteProject(projectId: Int)
 }
