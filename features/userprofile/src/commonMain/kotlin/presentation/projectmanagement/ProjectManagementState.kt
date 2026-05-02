@@ -5,7 +5,9 @@ import com.entourageapp.features.userprofile.domain.ProjectCard
 data class ProjectManagementState(
     val projects: List<ProjectCard> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val selectedProject: ProjectCard? = null,
+    val isConfirmSheetVisible: Boolean = false
 ) {
     val ownedProjects: List<ProjectCard> get() = projects.filter { it.role == "owner" }
     val memberProjects: List<ProjectCard> get() = projects.filter { it.role != "owner" }
@@ -13,8 +15,9 @@ data class ProjectManagementState(
 
 sealed interface ProjectManagementIntent {
     data object LoadProjects : ProjectManagementIntent
-    data class DeleteProject(val projectId: Int) : ProjectManagementIntent
-    data class LeaveProject(val projectId: Int) : ProjectManagementIntent
+    data class ShowConfirmSheet(val project: ProjectCard) : ProjectManagementIntent
+    data object HideConfirmSheet : ProjectManagementIntent
+    data object ConfirmAction : ProjectManagementIntent
 }
 
 sealed interface ProjectManagementSideEffect {

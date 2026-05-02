@@ -19,43 +19,60 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.innerShadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
+import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageRed
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.calendar
+import com.entourageapp.core.ui.components.AccentButton
 import com.entourageapp.core.ui.components.ScreenTitle
+import com.entourageapp.core.ui.dialogs.DeleteDialog
 import com.entourageapp.core.ui.tools.showToast
 import com.entourageapp.core.ui.user
+import com.entourageapp.features.userprofile.domain.ProjectCard
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProjectManagementScreen(
     onBackClick: () -> Unit = {},
     viewModel: ProjectManagementVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.onIntent(ProjectManagementIntent.LoadProjects)
@@ -68,6 +85,20 @@ fun ProjectManagementScreen(
                 is ProjectManagementSideEffect.ShowMessage -> showToast(sideEffect.message)
             }
         }
+    }
+
+    if (state.isConfirmSheetVisible && state.selectedProject != null) {
+        val isOwner = state.selectedProject!!.role == "owner"
+        DeleteDialog(
+            onDismiss = { viewModel.onIntent(ProjectManagementIntent.HideConfirmSheet) },
+            onOkClick = { viewModel.onIntent(ProjectManagementIntent.HideConfirmSheet)},
+            text = if (isOwner)
+                "Вы действительно хотите удалить проект \"${state.selectedProject!!.title}\"?"
+            else "Вы действительно хотите выйти из проекта \"${state.selectedProject!!.title}\"?",
+            title = if (isOwner) "Удаление проекта" else "Выход из проекта",
+            buttonTitle = if (isOwner) "Удалить" else "Выйти",
+            sheetState =  sheetState
+        )
     }
 
     Column(
@@ -105,12 +136,9 @@ fun ProjectManagementScreen(
                         dateRange = project.years,
                         role = project.role,
                         buttonText = "УДАЛИТЬ",
+                        color = EntourageTeal.copy(alpha = 0.2f),
                         onButtonClick = {
-                            viewModel.onIntent(
-                                ProjectManagementIntent.DeleteProject(
-                                    project.id
-                                )
-                            )
+                            viewModel.onIntent(ProjectManagementIntent.ShowConfirmSheet(project))
                         }
                     )
                 }
@@ -120,10 +148,9 @@ fun ProjectManagementScreen(
                 item {
                     Text(
                         text = "Выход из проектов",
-                        style = MaterialTheme.typography.labelLarge.copy(
+                        style = MaterialTheme.typography.bodyMedium.copy(
                             color = EntourageTeal,
                             fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
                         )
                     )
                 }
@@ -134,12 +161,9 @@ fun ProjectManagementScreen(
                         dateRange = project.years,
                         role = project.role,
                         buttonText = "ВЫЙТИ",
+                        color = EntourageBlack.copy(alpha = 0.1f),
                         onButtonClick = {
-                            viewModel.onIntent(
-                                ProjectManagementIntent.LeaveProject(
-                                    project.id
-                                )
-                            )
+                            viewModel.onIntent(ProjectManagementIntent.ShowConfirmSheet(project))
                         }
                     )
                 }
@@ -156,6 +180,7 @@ private fun ProjectActionCard(
     role: String,
     buttonText: String,
     onButtonClick: () -> Unit,
+    color: Color
 ) {
     Surface(
         modifier = Modifier
@@ -170,7 +195,7 @@ private fun ProjectActionCard(
                 )
             ),
         shape = RoundedCornerShape(32.dp),
-        color = EntourageTeal.copy(alpha = 0.2f)
+        color = color
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
@@ -243,12 +268,19 @@ private fun ProjectInfoRow(icon: DrawableResource, text: String) {
 
 @Composable
 private fun RoleBadge(role: String) {
+    val roleTitle = when (role) {
+        "owner" -> "Владелец"
+        "editor" -> "Редактор"
+        "viewer" -> "Читатель"
+        else -> ""
+    }
+
     Surface(
         color = EntourageLightBlueGray.copy(alpha = 0.6f),
         shape = RoundedCornerShape(12.dp)
     ) {
         Text(
-            text = role,
+            text = roleTitle,
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
             color = EntourageBlack.copy(alpha = 0.7f)

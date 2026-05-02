@@ -21,6 +21,6 @@ data class ProjectDto(
     @SerialName("rooms_count")
     val roomsCount: Int,
     @SerialName("members_count")
-    val membersCount: Int
+    val membersCount: Int,
 )
 

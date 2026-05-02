@@ -26,8 +26,16 @@ class ProjectManagementVM(
     fun onIntent(intent: ProjectManagementIntent) {
         when (intent) {
             is ProjectManagementIntent.LoadProjects -> loadProjects()
-            is ProjectManagementIntent.DeleteProject -> deleteProject(intent.projectId)
-            is ProjectManagementIntent.LeaveProject -> deleteProject(intent.projectId)
+            is ProjectManagementIntent.ShowConfirmSheet -> {
+                _state.update { it.copy(selectedProject = intent.project, isConfirmSheetVisible = true) }
+            }
+            is ProjectManagementIntent.HideConfirmSheet -> {
+                _state.update { it.copy(selectedProject = null, isConfirmSheetVisible = false) }
+            }
+            is ProjectManagementIntent.ConfirmAction -> {
+                _state.value.selectedProject?.id?.let { deleteProject(it) }
+                _state.update { it.copy(selectedProject = null, isConfirmSheetVisible = false) }
+            }
         }
     }
 
