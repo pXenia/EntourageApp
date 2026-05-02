@@ -7,6 +7,7 @@ import com.entourageapp.core.navigation.Route
 import com.entourageapp.features.projects.presentation.createproject.CreateProjectScreen
 import com.entourageapp.features.projects.presentation.projectdetail.ProjectDetailScreen
 import com.entourageapp.features.projects.presentation.projectlist.ProjectListScreen
+import com.entourageapp.features.projects.presentation.statistics.StatisticsScreen
 
 fun EntryProviderScope<NavKey>.projectsEntryBuilder(navigator: Navigator) {
     entry<Route.ProjectList> {
@@ -24,6 +25,7 @@ fun EntryProviderScope<NavKey>.projectsEntryBuilder(navigator: Navigator) {
             onGalleryClick = { navigator.navigate(Route.Gallery(it, 0)) },
             onDocumentsClick = { navigator.navigate(Route.Documents(it)) },
             onRoomListClick = { navigator.navigate(Route.RoomList(it)) },
+            onProjectStatsClick = { navigator.navigate(Route.ProjectsStats(it))},
             onProjectInfoClick = { }
         )
     }
@@ -31,6 +33,13 @@ fun EntryProviderScope<NavKey>.projectsEntryBuilder(navigator: Navigator) {
     entry<Route.CreateProject> {
         CreateProjectScreen(
             onBackClick = { navigator.goBack() }
+        )
+    }
+
+    entry<Route.ProjectsStats> {
+        StatisticsScreen(
+            onBackClick = { navigator.goBack() },
+            projectId = it.projectId
         )
     }
 }
