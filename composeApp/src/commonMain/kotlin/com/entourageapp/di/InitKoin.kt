@@ -8,6 +8,7 @@ import com.entourageapp.features.gallery.di.galleryModule
 import com.entourageapp.features.projectdocuments.di.documentsModule
 import com.entourageapp.features.projects.di.projectsModule
 import com.entourageapp.features.rooms.di.roomsModule
+import com.entourageapp.features.userprofile.di.profileModule
 import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 
@@ -22,7 +23,8 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             estimateModule,
             calculatorsModule,
             documentsModule,
-            galleryModule
+            galleryModule,
+            profileModule
         )
     }
 }

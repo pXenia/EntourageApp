@@ -5,6 +5,7 @@ import com.entourageapp.core.network.dto.ProjectDto
 import com.entourageapp.core.network.dto.ProjectMemberAddDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -37,5 +38,9 @@ class ProjectsKtorApi(private val client: HttpClient) : ProjectsApi {
             contentType(ContentType.Application.Json)
             setBody(ProjectMemberAddDto(email = email, roleCode = roleCode))
         }
+    }
+
+    override suspend fun deleteProject(projectId: Int) {
+        client.delete("projects/$projectId")
     }
 }

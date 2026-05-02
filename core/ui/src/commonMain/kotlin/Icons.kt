@@ -9,6 +9,7 @@ import entourageapp.core.ui.generated.resources.bath
 import entourageapp.core.ui.generated.resources.bed
 import entourageapp.core.ui.generated.resources.blueprint
 import entourageapp.core.ui.generated.resources.calculator
+import entourageapp.core.ui.generated.resources.calendar
 import entourageapp.core.ui.generated.resources.check
 import entourageapp.core.ui.generated.resources.clothes_hanger
 import entourageapp.core.ui.generated.resources.coins
@@ -62,6 +63,6 @@ val hallway = Res.drawable.door_open
 val coins = Res.drawable.coins
 val print = Res.drawable.print
 val delete = Res.drawable.trash
-
 val edit = Res.drawable.pencil
 val done = Res.drawable.check
+val calendar = Res.drawable.calendar

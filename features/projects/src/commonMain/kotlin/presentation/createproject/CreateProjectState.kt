@@ -2,6 +2,7 @@ package com.entourageapp.features.projects.presentation.createproject
 
 data class PendingParticipant(
     val email: String,
+    val name: String,
     val roleCode: String
 )
 
@@ -32,4 +33,8 @@ sealed class CreateProjectIntent {
     data class AddParticipant(val email: String, val allowEdit: Boolean) : CreateProjectIntent()
     data class RemoveParticipant(val email: String) : CreateProjectIntent()
     object Submit : CreateProjectIntent()
+}
+
+sealed interface CreateProjectSideEffect {
+    data class ShowError(val message: String) : CreateProjectSideEffect
 }

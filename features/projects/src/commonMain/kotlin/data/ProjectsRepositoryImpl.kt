@@ -1,7 +1,9 @@
 package com.entourageapp.features.projects.data
 
+import com.entourageapp.core.network.api.AuthApi
 import com.entourageapp.core.network.api.ProjectsApi
 import com.entourageapp.core.network.dto.ProjectCreateDto
+import com.entourageapp.core.network.dto.UserEmailCheckDto
 import com.entourageapp.features.projects.domain.ProjectCard
 import com.entourageapp.features.projects.domain.ProjectDetail
 import com.entourageapp.features.projects.domain.ProjectsRepository
@@ -12,7 +14,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 
 class ProjectsRepositoryImpl(
-    private val api: ProjectsApi
+    private val api: ProjectsApi,
+    private val authApi: AuthApi
 ) : ProjectsRepository {
 
     override fun getProjectsList(): Flow<List<ProjectCard>> = flow {
@@ -32,4 +35,8 @@ class ProjectsRepositoryImpl(
         val response = api.getProjectById(projectId)
         emit(response.toProjectDetail())
     }.catch { e -> throw e }
+
+    override suspend fun checkEmail(email: String): UserEmailCheckDto {
+        return authApi.checkUserEmail(email)
+    }
 }

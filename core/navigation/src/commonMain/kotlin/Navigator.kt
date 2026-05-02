@@ -33,6 +33,9 @@ class Navigator(val state: NavigationState){
             while (currentStack.size > targetSize) {
                 currentStack.removeLastOrNull()
             }
+        } else {
+            currentStack.clear()
+            navigate(route)
         }
     }
 

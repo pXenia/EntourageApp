@@ -1,4 +1,4 @@
-package com.entourageapp.features.userprofile.presentation
+package com.entourageapp.features.userprofile.presentation.editprofile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -11,8 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -24,6 +24,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
-import com.entourageapp.core.ui.EntouragePeach
+import com.entourageapp.core.ui.EntouragePeachAlpha80
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.arrowRight
@@ -40,90 +43,118 @@ import com.entourageapp.core.ui.components.AccentButton
 import com.entourageapp.core.ui.components.Avatar
 import com.entourageapp.core.ui.components.TopScreenTitle
 import com.entourageapp.core.ui.folder
+import com.entourageapp.core.ui.tools.showToast
 import com.entourageapp.core.ui.user
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun UserProfileScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onManageProjectsClick: () -> Unit = {},
+    viewModel: UserProfileVM = koinViewModel(),
 ) {
+    val state by viewModel.state.collectAsState()
     val scrollState = rememberLazyListState()
 
-    LazyColumn(
-        state = scrollState,
-        modifier = modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(32.dp)),
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
-        item {
+    LaunchedEffect(Unit) {
+        viewModel.onIntent(UserProfileIntent.LoadProfile)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+                is UserProfileSideEffect.ShowError -> showToast(sideEffect.message)
+                is UserProfileSideEffect.ShowMessage -> showToast(sideEffect.message)
+            }
+        }
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        LazyColumn(
+            state = scrollState,
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .padding(horizontal = 16.dp)
+                .clip(RoundedCornerShape(32.dp)),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+        ) {
+            item {
                 TopScreenTitle(
                     modifier = Modifier.fillMaxWidth(),
                     title = "профиль".uppercase()
                 )
-        }
+            }
 
-        item {
-            UserTitle(modifier = Modifier.fillMaxWidth())
-        }
+            item {
+                UserTitle(
+                    modifier = Modifier.fillMaxWidth(),
+                    initials = state.initials,
+                    name = state.name,
+                    email = state.email
+                )
+            }
 
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                UserProjectsButton(
-                    modifier = Modifier.fillMaxWidth().height(80.dp),
-                    text = "Редактировать профиль",
-                    icon = user
-                )
-                UserProjectsButton(
-                    modifier = Modifier.fillMaxWidth().height(80.dp),
-                    text = "Управление участием в проектах",
-                    icon = folder
-                )
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                    color = EntourageBlack,
-                    thickness = 1.dp
-                )
-                InfoButton(
-                    modifier = Modifier.fillMaxWidth().height(64.dp),
-                    title = "О приложении",
-                    description = "Версия 1.1.2"
-                )
-                InfoButton(
-                    modifier = Modifier.fillMaxWidth().height(64.dp),
-                    title = "Оценить приложение",
-                    description = "Помогите нам стать лучше!"
-                )
-                InfoButton(
-                    modifier = Modifier.fillMaxWidth().height(64.dp),
-                    title = "Техподдержка",
-                    description = "Связаться с нами"
-                )
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    UserProjectsButton(
+                        modifier = Modifier.fillMaxWidth().height(64.dp),
+                        text = "Редактировать профиль",
+                        icon = user,
+                        onClick = { viewModel.onIntent(UserProfileIntent.SetEditDialogVisibility(isVisible = true)) }
+                    )
+                    UserProjectsButton(
+                        modifier = Modifier.fillMaxWidth().height(64.dp),
+                        text = "Управление участием в проектах",
+                        icon = folder,
+                        onClick = { onManageProjectsClick() }
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                        color = EntourageBlack,
+                        thickness = 1.dp
+                    )
+                }
+            }
+
+            item {
+                Column(
+                    modifier = Modifier.padding(bottom = 80.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    AccentButton(
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        text = "выйти из аккаунта",
+                        containerColor = EntourageBlack,
+                        contentColor = EntourageWhite,
+                        onClick = { viewModel.onIntent(UserProfileIntent.Logout) }
+                    )
+                    AccentButton(
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        text = "удалить аккаунт",
+                        containerColor = EntouragePeachAlpha80,
+                        contentColor = EntourageBlack,
+                        onClick = { viewModel.onIntent(UserProfileIntent.SetDeleteDialogVisibility(isVisible = true)) }
+                    )
+                }
             }
         }
 
-        item {
-            Column(
-                modifier = Modifier.padding(bottom = 80.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                AccentButton(
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    text = "выйти из аккаунта",
-                    containerColor = EntourageBlack,
-                    contentColor = EntourageWhite
-                )
-                AccentButton(
-                    modifier = Modifier.fillMaxWidth().height(56.dp),
-                    text = "удалить аккаунт",
-                    containerColor = EntouragePeach.copy(alpha = 0.5f),
-                    contentColor = EntourageBlack
-                )
-            }
+        if (state.isEditDialogVisible) {
+            EditProfileDialog(
+                state = state,
+                onIntent = viewModel::onIntent
+            )
+        }
+
+        if (state.isDeleteDialogVisible) {
+            DeleteAccountDialog(
+                state = state,
+                onIntent = viewModel::onIntent
+            )
         }
     }
 }
@@ -164,25 +195,25 @@ fun UserProjectsButton(
     Surface(
         onClick = onClick,
         modifier = modifier,
-        shape = RoundedCornerShape(50.dp),
+        shape = RoundedCornerShape(32.dp),
         color = EntourageTeal.copy(alpha = 0.2f)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .size(56.dp)
+                    .size(48.dp)
                     .background(EntourageLightBlueGray, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     painter = painterResource(icon),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(20.dp),
                 )
             }
 
@@ -197,7 +228,7 @@ fun UserProjectsButton(
             Icon(
                 painter = painterResource(arrowRight),
                 contentDescription = null,
-                modifier = Modifier.size(36.dp),
+                modifier = Modifier.size(24.dp),
                 tint = Color.Black
             )
         }

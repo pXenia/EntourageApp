@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entourageapp.core.network.dto.ProjectCreateDto
 import com.entourageapp.features.projects.domain.ProjectsRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
@@ -16,6 +19,9 @@ class CreateProjectVM(
 
     private val _state = MutableStateFlow(CreateProjectState())
     val state: StateFlow<CreateProjectState> = _state
+
+    private val _sideEffect = MutableSharedFlow<CreateProjectSideEffect>()
+    val sideEffect: SharedFlow<CreateProjectSideEffect> = _sideEffect.asSharedFlow()
 
     fun handleIntent(intent: CreateProjectIntent) {
         when (intent) {
@@ -44,19 +50,27 @@ class CreateProjectVM(
                 it.copy(currentParticipantEmail = intent.value)
             }
             is CreateProjectIntent.AddParticipant -> {
-                val roleCode = if (intent.allowEdit) "editor" else "viewer"
-                val participant = PendingParticipant(
-                    email = intent.email,
-                    roleCode = roleCode
-                )
-                _state.update { state ->
-                    if (state.pendingParticipants.any { it.email == intent.email }) {
-                        state.copy(currentParticipantEmail = "")
-                    } else {
-                        state.copy(
-                            pendingParticipants = state.pendingParticipants + participant,
-                            currentParticipantEmail = ""
+                viewModelScope.launch {
+                    try {
+                        val user = repository.checkEmail(intent.email)
+                        val roleCode = if (intent.allowEdit) "editor" else "viewer"
+                        val participant = PendingParticipant(
+                            email = intent.email,
+                            name = user.name,
+                            roleCode = roleCode
                         )
+                        _state.update { state ->
+                            if (state.pendingParticipants.any { it.email == intent.email }) {
+                                state.copy(currentParticipantEmail = "")
+                            } else {
+                                state.copy(
+                                    pendingParticipants = state.pendingParticipants + participant,
+                                    currentParticipantEmail = ""
+                                )
+                            }
+                        }
+                    } catch (e: Exception) {
+                        _sideEffect.emit(CreateProjectSideEffect.ShowError("Пользователь с такой эл. почтой не найден"))
                     }
                 }
             }

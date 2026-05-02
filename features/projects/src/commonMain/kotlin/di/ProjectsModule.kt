@@ -1,7 +1,6 @@
 package com.entourageapp.features.projects.di
 
 import com.entourageapp.features.projects.data.ProjectsRepositoryImpl
-import com.entourageapp.features.projects.domain.ProjectDetail
 import com.entourageapp.features.projects.domain.ProjectsRepository
 import com.entourageapp.features.projects.domain.usecases.GetProjectListUseCase
 import com.entourageapp.features.projects.domain.usecases.GetProjectListUseCaseImpl
@@ -14,7 +13,7 @@ import org.koin.dsl.module
 
 val projectsModule = module {
     single<ProjectsRepositoryImpl>() {
-        ProjectsRepositoryImpl(get())
+        ProjectsRepositoryImpl(get(), get())
     } bind ProjectsRepository::class
     factory<GetProjectListUseCaseImpl>() {
         GetProjectListUseCaseImpl(get())
