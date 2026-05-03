@@ -2,6 +2,7 @@ package com.entourageapp.core.network.api
 
 import com.entourageapp.core.network.dto.ProjectCreateDto
 import com.entourageapp.core.network.dto.ProjectDto
+import com.entourageapp.core.network.dto.ProjectSummaryDto
 
 interface ProjectsApi {
     suspend fun getProjects(): List<ProjectDto>
@@ -9,4 +10,5 @@ interface ProjectsApi {
     suspend fun createProject(project: ProjectCreateDto): Int
     suspend fun addProjectMember(projectId: Int, email: String, roleCode: String)
     suspend fun deleteProject(projectId: Int)
+    suspend fun getProjectSummary(projectId: Int): ProjectSummaryDto
 }

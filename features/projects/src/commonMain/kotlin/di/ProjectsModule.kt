@@ -7,6 +7,7 @@ import com.entourageapp.features.projects.domain.usecases.GetProjectListUseCaseI
 import com.entourageapp.features.projects.presentation.createproject.CreateProjectVM
 import com.entourageapp.features.projects.presentation.projectdetail.ProjectDetailVM
 import com.entourageapp.features.projects.presentation.projectlist.ProjectListVM
+import com.entourageapp.features.projects.presentation.statistics.StatisticsVM
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -21,4 +22,5 @@ val projectsModule = module {
     viewModel { ProjectListVM(get()) }
     viewModel { CreateProjectVM(get()) }
     viewModel { ProjectDetailVM(get()) }
+    viewModel { StatisticsVM(get()) }
 }
