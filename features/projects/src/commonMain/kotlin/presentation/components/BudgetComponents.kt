@@ -31,6 +31,7 @@ import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
+import com.entourageapp.core.ui.components.SectionTitle
 import com.entourageapp.features.projects.presentation.statistics.SummaryItem
 
 @Composable
@@ -229,25 +230,6 @@ fun BudgetSummaryTable(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun SectionTitle(
-    title: String
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(1.dp)
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                color = EntourageTeal,
-                fontSize = 18.sp,
-            ),
-        )
-        HorizontalDivider(thickness = 1.dp, color = EntourageBlack)
     }
 }
 

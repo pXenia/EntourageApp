@@ -101,6 +101,7 @@ private val config = SavedStateConfiguration {
             subclass(Route.Gallery::class, Route.Gallery.serializer())
             subclass(Route.ManageProjects::class, Route.ManageProjects.serializer())
             subclass(Route.ProjectsStats::class, Route.ProjectsStats.serializer())
+            subclass(Route.ProjectInfo::class, Route.ProjectInfo.serializer())
         }
     }
 }

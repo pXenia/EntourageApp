@@ -26,10 +26,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.components.ScreenTitle
+import com.entourageapp.core.ui.components.SectionTitle
 import com.entourageapp.features.projects.presentation.components.BarChart
 import com.entourageapp.features.projects.presentation.components.BudgetOverview
 import com.entourageapp.features.projects.presentation.components.BudgetSummaryTable
-import com.entourageapp.features.projects.presentation.components.SectionTitle
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

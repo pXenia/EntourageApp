@@ -60,7 +60,7 @@ fun ProjectDetailScreen(
     onGalleryClick: (Int) -> Unit = {},
     onDocumentsClick: (Int) -> Unit = {},
     onRoomListClick: (Int) -> Unit = {},
-    onProjectInfoClick: () -> Unit = {},
+    onProjectInfoClick: (Int) -> Unit = {},
     onProjectStatsClick: (Int) -> Unit = {},
     viewModel: ProjectDetailVM = koinViewModel()
 ) {
@@ -101,7 +101,7 @@ fun ProjectDetailScreen(
                     leftIcon = arrowLeft,
                     rightIcon = info,
                     onLeftButtonClick = onBackClick,
-                    onRightButtonClick = {}
+                    onRightButtonClick = { onProjectInfoClick(projectId) }
                 )
 
                 DaysProgress(

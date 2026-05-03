@@ -36,7 +36,7 @@ fun ScreenTitle(
 
             Text(
                 text = title.uppercase(),
-                style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp)
+                style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp)
             )
         }
     }

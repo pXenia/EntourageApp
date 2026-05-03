@@ -3,6 +3,7 @@ package com.entourageapp.core.network.api
 import com.entourageapp.core.network.dto.ProjectCreateDto
 import com.entourageapp.core.network.dto.ProjectDto
 import com.entourageapp.core.network.dto.ProjectMemberAddDto
+import com.entourageapp.core.network.dto.ProjectMemberDto
 import com.entourageapp.core.network.dto.ProjectSummaryDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -47,5 +48,9 @@ class ProjectsKtorApi(private val client: HttpClient) : ProjectsApi {
 
     override suspend fun getProjectSummary(projectId: Int): ProjectSummaryDto {
         return client.get("projects/$projectId/summary").body()
+    }
+
+    override suspend fun getProjectMembers(projectId: Int): List<ProjectMemberDto> {
+        return client.get("projects/$projectId/members").body()
     }
 }
