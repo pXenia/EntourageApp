@@ -50,12 +50,19 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun CreateProjectScreen(
     modifier: Modifier = Modifier,
+    projectId: Int? = null,
     onBackClick: () -> Unit = {},
     viewModel: CreateProjectVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
     var showAddUserDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(projectId) {
+        if (projectId != null) {
+            viewModel.handleIntent(CreateProjectIntent.LoadProject(projectId))
+        }
+    }
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) onBackClick()
@@ -94,7 +101,7 @@ fun CreateProjectScreen(
     ) {
         ScreenTitle(
             modifier = modifier.fillMaxWidth().padding(bottom = 8.dp),
-            title = "Создание проекта",
+            title = if (projectId != null) "Редактирование проекта" else "Создание проекта",
             onBackClick = onBackClick
         )
 
@@ -207,7 +214,11 @@ fun CreateProjectScreen(
             AccentButton(
                 modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth().height(56.dp),
                 onClick = { viewModel.handleIntent(CreateProjectIntent.Submit) },
-                text = if (state.isLoading) "создание..." else "создать",
+                text = if (state.isLoading) {
+                    if (projectId != null) "сохранение..." else "создание..."
+                } else {
+                    if (projectId != null) "сохранить" else "создать"
+                },
                 containerColor = EntourageBlack,
                 contentColor = EntourageWhite,
                 enabled = !state.isLoading

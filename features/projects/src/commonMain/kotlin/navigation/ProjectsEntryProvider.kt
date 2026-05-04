@@ -14,13 +14,13 @@ fun EntryProviderScope<NavKey>.projectsEntryBuilder(navigator: Navigator) {
     entry<Route.ProjectList> {
         ProjectListScreen(
             onCardClick = { navigator.navigate(Route.ProjectDetail(it)) },
-            onAddProjectClick = { navigator.navigate(Route.CreateProject) }
+            onAddProjectClick = { navigator.navigate(Route.CreateProject()) },
         )
     }
 
-    entry<Route.ProjectDetail> {
+    entry<Route.ProjectDetail> { route ->
         ProjectDetailScreen(
-            projectId = it.projectId,
+            projectId = route.projectId,
             onBackClick = { navigator.goBack() },
             onEstimateClick = { navigator.navigate(Route.EstimateList(it)) },
             onGalleryClick = { navigator.navigate(Route.Gallery(it, 0)) },
@@ -31,23 +31,25 @@ fun EntryProviderScope<NavKey>.projectsEntryBuilder(navigator: Navigator) {
         )
     }
 
-    entry<Route.CreateProject> {
+    entry<Route.CreateProject> { route ->
         CreateProjectScreen(
+            projectId = route.projectId,
             onBackClick = { navigator.goBack() }
         )
     }
 
-    entry<Route.ProjectsStats> {
+    entry<Route.ProjectsStats> { route ->
         StatisticsScreen(
             onBackClick = { navigator.goBack() },
-            projectId = it.projectId
+            projectId = route.projectId
         )
     }
 
-    entry<Route.ProjectInfo> {
+    entry<Route.ProjectInfo> { route ->
         ProjectInfoScreen(
-            projectId = it.projectId,
-            onBackClick = { navigator.goBack() }
+            projectId = route.projectId,
+            onBackClick = { navigator.goBack() },
+            onEditClick = { id -> navigator.navigate(Route.CreateProject(id)) }
         )
     }
 }

@@ -36,7 +36,7 @@ sealed interface Route : NavKey {
     data class ProjectInfo(val projectId: Int) : Route
 
     @Serializable
-    data object CreateProject : Route
+    data class CreateProject(val projectId: Int? = null) : Route
 
     @Serializable
     data class EstimateList(val projectId: Int) : Route

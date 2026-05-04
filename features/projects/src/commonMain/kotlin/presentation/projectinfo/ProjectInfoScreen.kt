@@ -43,7 +43,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ProjectInfoScreen(
     projectId: Int,
     onBackClick: () -> Unit = {},
-    onEditClick: () -> Unit = {},
+    onEditClick: (Int) -> Unit = {},
     viewModel: ProjectInfoVM = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
@@ -139,7 +139,7 @@ fun ProjectInfoScreen(
                 AccentButton(
                     modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth().height(56.dp),
                     text = "Редактировать",
-                    onClick = onEditClick,
+                    onClick = { onEditClick(projectId) },
                     elevation = 0.dp,
                     containerColor = EntouragePeachAlpha80,
                     contentColor = EntourageBlack
