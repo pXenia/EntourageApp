@@ -33,6 +33,26 @@ data class WallAddDto(val length: Float)
 data class OffsetAddDto(val x: Float, val y: Float)
 
 @Serializable
+data class OffsetDto(
+    val id: Int,
+    val x: Float,
+    val y: Float
+)
+
+@Serializable
+data class RoomFullUpdateDto(
+    val title: String,
+    @SerialName("type_code")
+    val typeCode: String? = null,
+    val description: String? = null,
+    val square: Float? = null,
+    @SerialName("ceiling_height")
+    val ceilingHeight: Float? = null,
+    val walls: List<WallAddDto> = emptyList(),
+    val offsets: List<OffsetAddDto> = emptyList()
+)
+
+@Serializable
 data class RoomCreatedDto(
     val message: String,
     @SerialName("room_id")

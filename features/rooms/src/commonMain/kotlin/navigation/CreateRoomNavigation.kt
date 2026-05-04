@@ -20,6 +20,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun CreateRoomNavigation(
     projectId: Int,
+    roomId: Int? = null,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -33,7 +34,7 @@ fun CreateRoomNavigation(
                 }
             }
         },
-        Route.CreateRoom.CreateForm(projectId)
+        Route.CreateRoom.CreateForm(projectId, roomId)
     )
 
     val createRoomVM = koinViewModel<CreateRoomVM>()
@@ -53,6 +54,7 @@ fun CreateRoomNavigation(
             entry<Route.CreateRoom.CreateForm> { route ->
                 CreateRoomScreen(
                     projectId = route.projectId,
+                    roomId = route.roomId,
                     viewModel = createRoomVM,
                     onDrawPlanClick = {
                         roomBackStack.add(Route.CreateRoom.CreatePlan(route.projectId))

@@ -3,6 +3,7 @@ package com.entourageapp.features.projects.presentation.createproject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entourageapp.core.network.dto.ProjectCreateDto
+import com.entourageapp.core.network.dto.ProjectMemberAddDto
 import com.entourageapp.features.projects.domain.ProjectsRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -81,7 +82,39 @@ class CreateProjectVM(
                     }
                 )
             }
+            is CreateProjectIntent.LoadProject -> loadProject(intent.projectId)
             is CreateProjectIntent.Submit -> submitProject()
+        }
+    }
+
+    private fun loadProject(projectId: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, projectId = projectId) }
+            try {
+                repository.getProjectById(projectId).collect { project ->
+                    val members = repository.getProjectMembers(projectId)
+                    _state.update { state ->
+                        state.copy(
+                            title = project.title,
+                            startDate = project.startDateFormatted.replace(".", ""),
+                            endDate = project.endDateFormatted?.replace(".", ""),
+                            square = project.square?.toString() ?: "",
+                            budget = project.budget?.toLong()?.toString() ?: "",
+                            description = project.description ?: "",
+                            pendingParticipants = members.filter { it.role != "owner" }.map {
+                                PendingParticipant(
+                                    email = it.email,
+                                    name = it.name,
+                                    roleCode = it.role
+                                )
+                            },
+                            isLoading = false
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false, error = e.message) }
+            }
         }
     }
 
@@ -104,7 +137,7 @@ class CreateProjectVM(
             tryParseDate(currentState.endDate)
         } else null
 
-        if (!currentState.endDate.isNullOrBlank() && parsedEndDate == null) {
+        if (!currentState.endDate.isNullOrBlank() && (parsedEndDate == null)) {
             _state.update { it.copy(error = "Некорректная дата окончания") }
             hasError = true
         }
@@ -129,16 +162,33 @@ class CreateProjectVM(
                     description = currentState.description.trim()
                 )
 
-                val projectId = repository.createProject(dto)
+                if (currentState.projectId != null) {
+                    repository.updateProject(currentState.projectId, dto)
+                    repository.syncProjectMembers(
+                        projectId = currentState.projectId,
+                        members = currentState.pendingParticipants.map {
+                            ProjectMemberAddDto(
+                                email = it.email,
+                                roleCode = when(it.roleCode){
+                                    "Владлец" ->  "owner"
+                                    "Редактор" -> "editor"
+                                    else -> "viewer"
+                                }
+                            )
+                        }
+                    )
+                } else {
+                    val projectId = repository.createProject(dto)
 
-                currentState.pendingParticipants.forEach { participant ->
-                    try {
-                        repository.addProjectMember(
-                            projectId = projectId,
-                            email = participant.email,
-                            roleCode = participant.roleCode
-                        )
-                    } catch (e: Exception) {
+                    currentState.pendingParticipants.forEach { participant ->
+                        try {
+                            repository.addProjectMember(
+                                projectId = projectId,
+                                email = participant.email,
+                                roleCode = participant.roleCode
+                            )
+                        } catch (e: Exception) {
+                        }
                     }
                 }
 

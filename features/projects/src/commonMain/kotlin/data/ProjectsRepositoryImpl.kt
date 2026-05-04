@@ -3,6 +3,10 @@ package com.entourageapp.features.projects.data
 import com.entourageapp.core.network.api.AuthApi
 import com.entourageapp.core.network.api.ProjectsApi
 import com.entourageapp.core.network.dto.ProjectCreateDto
+import com.entourageapp.core.network.dto.ProjectMemberAddDto
+import com.entourageapp.core.network.dto.ProjectMemberDto
+import com.entourageapp.core.network.dto.ProjectMembersSyncDto
+import com.entourageapp.core.network.dto.ProjectSummaryDto
 import com.entourageapp.core.network.dto.UserEmailCheckDto
 import com.entourageapp.features.projects.domain.ProjectCard
 import com.entourageapp.features.projects.domain.ProjectDetail
@@ -27,8 +31,16 @@ class ProjectsRepositoryImpl(
         return api.createProject(project)
     }
 
+    override suspend fun updateProject(projectId: Int, project: ProjectCreateDto) {
+        api.updateProject(projectId, project)
+    }
+
     override suspend fun addProjectMember(projectId: Int, email: String, roleCode: String) {
         api.addProjectMember(projectId, email, roleCode)
+    }
+
+    override suspend fun syncProjectMembers(projectId: Int, members: List<ProjectMemberAddDto>) {
+        api.syncProjectMembers(projectId, ProjectMembersSyncDto(members))
     }
 
     override fun getProjectById(projectId: Int): Flow<ProjectDetail> = flow {
@@ -38,5 +50,13 @@ class ProjectsRepositoryImpl(
 
     override suspend fun checkEmail(email: String): UserEmailCheckDto {
         return authApi.checkUserEmail(email)
+    }
+
+    override fun getProjectSummary(projectId: Int): Flow<ProjectSummaryDto> = flow {
+        emit(api.getProjectSummary(projectId))
+    }.catch { e -> throw e }
+
+    override suspend fun getProjectMembers(projectId: Int): List<ProjectMemberDto> {
+        return api.getProjectMembers(projectId)
     }
 }

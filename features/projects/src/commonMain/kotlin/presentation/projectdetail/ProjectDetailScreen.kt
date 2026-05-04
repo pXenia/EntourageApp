@@ -8,15 +8,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -62,7 +60,8 @@ fun ProjectDetailScreen(
     onGalleryClick: (Int) -> Unit = {},
     onDocumentsClick: (Int) -> Unit = {},
     onRoomListClick: (Int) -> Unit = {},
-    onProjectInfoClick: () -> Unit = {},
+    onProjectInfoClick: (Int) -> Unit = {},
+    onProjectStatsClick: (Int) -> Unit = {},
     viewModel: ProjectDetailVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -102,7 +101,7 @@ fun ProjectDetailScreen(
                     leftIcon = arrowLeft,
                     rightIcon = info,
                     onLeftButtonClick = onBackClick,
-                    onRightButtonClick = {}
+                    onRightButtonClick = { onProjectInfoClick(projectId) }
                 )
 
                 DaysProgress(
@@ -117,7 +116,8 @@ fun ProjectDetailScreen(
 
                 ProjectInfoCard(
                     roomsCount = project.roomsCount,
-                    onRoomListClick = { onRoomListClick(projectId) }
+                    onRoomListClick = { onRoomListClick(projectId) },
+                    onProjectStatsClick = { onProjectStatsClick(projectId) }
                 )
 
                 HorizontalDivider(
@@ -179,7 +179,11 @@ private fun DaysProgress(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             DateBadge(startDate)
-            HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = EntourageBlack)
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth(),
+                thickness = 1.dp,
+                color = EntourageBlack
+            )
             DateBadge(endDate)
         }
     }
@@ -239,7 +243,8 @@ private fun DateBadge(
 @Composable
 private fun ProjectInfoCard(
     roomsCount: Int,
-    onRoomListClick: () -> Unit = {}
+    onRoomListClick: () -> Unit = {},
+    onProjectStatsClick: () -> Unit = {},
 ) {
     Surface(
         color = EntourageBlack.copy(alpha = 0.1f),
@@ -253,9 +258,13 @@ private fun ProjectInfoCard(
                 RoomsInfo(roomsCount = roomsCount)
                 RoomsButton(onClick = onRoomListClick)
                 Spacer(modifier = Modifier.weight(1f))
-                StatsButton(onClick = {})
+                StatsButton(onClick = onProjectStatsClick)
             }
-            HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = EntourageBlack)
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth(),
+                thickness = 1.dp,
+                color = EntourageBlack
+            )
             CostProgress()
         }
     }
@@ -407,7 +416,8 @@ private fun SectionButton(
         modifier = modifier
     ) {
         Column(
-            modifier = Modifier.clickable { onClick() }.padding(vertical = 24.dp, horizontal = 16.dp),
+            modifier = Modifier.clickable { onClick() }
+                .padding(vertical = 24.dp, horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

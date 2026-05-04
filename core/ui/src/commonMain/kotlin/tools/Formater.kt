@@ -27,3 +27,12 @@ fun Double.formatTwoDecimals(): String {
 
     return "$formattedInteger.$formattedDecimal"
 }
+
+fun formatAmountWithCurrency(amount: Double): String {
+    val formatted = amount.toInt().toString()
+        .reversed()
+        .chunked(3)
+        .joinToString(" ")
+        .reversed()
+    return "$formatted ₽"
+}

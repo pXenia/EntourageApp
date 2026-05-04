@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -18,6 +19,7 @@ fun AccentButton(
     text: String,
     containerColor: Color,
     contentColor: Color,
+    elevation: Dp = 2.dp,
     enabled: Boolean = true
 ) {
     Button(
@@ -28,7 +30,7 @@ fun AccentButton(
             containerColor = containerColor,
             contentColor = contentColor
         ),
-        elevation = ButtonDefaults.elevatedButtonElevation(2.dp),
+        elevation = ButtonDefaults.elevatedButtonElevation(elevation),
         enabled = enabled
     ) {
         Text(
