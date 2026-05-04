@@ -24,6 +24,7 @@ import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
+import com.entourageapp.core.ui.tools.drawSegmentText
 import com.entourageapp.core.ui.tools.formatAmountWithCurrency
 
 @Composable
@@ -150,23 +151,4 @@ fun BarChart(
                 )
         )
     }
-}
-
-fun DrawScope.drawSegmentText(
-    width: Float,
-    textLayoutResult: TextLayoutResult,
-    center: Offset
-) {
-    val textWidth = textLayoutResult.size.width
-    val textHeight = textLayoutResult.size.height
-
-    val idealX = center.x - textWidth / 2f
-    val x = idealX.coerceIn(0f, width - textWidth)
-
-    val y = center.y - textHeight / 2f
-
-    drawText(
-        textLayoutResult = textLayoutResult,
-        topLeft = Offset(x, y)
-    )
 }

@@ -33,6 +33,7 @@ import com.entourageapp.core.ui.EntouragePeachAlpha30
 import com.entourageapp.core.ui.EntouragePeachAlpha80
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.components.AccentButton
+import com.entourageapp.core.ui.components.InfoRow
 import com.entourageapp.core.ui.components.ScreenTitle
 import com.entourageapp.core.ui.components.SectionTitle
 import com.entourageapp.core.ui.user
@@ -146,33 +147,6 @@ fun ProjectInfoScreen(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun InfoRow(
-    label: String,
-    value: String
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                color = EntourageTeal,
-                fontSize = 16.sp
-            )
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                color = EntourageBlack,
-                fontSize = 16.sp
-            )
-        )
     }
 }
 

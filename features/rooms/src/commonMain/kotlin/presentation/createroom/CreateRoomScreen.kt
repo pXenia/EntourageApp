@@ -33,6 +33,7 @@ import com.entourageapp.features.rooms.presentation.components.drawplan.fmt
 @Composable
 fun CreateRoomScreen(
     projectId: Int,
+    roomId: Int? = null,
     viewModel: CreateRoomVM,
     onDrawPlanClick: (Int) -> Unit = {},
     onBackClick: () -> Unit = {},
@@ -42,7 +43,11 @@ fun CreateRoomScreen(
     val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) {
-        viewModel.handleIntent(CreateRoomIntent.LoadRoomTypes(projectId))
+        if (roomId == null) {
+            viewModel.handleIntent(CreateRoomIntent.LoadRoomTypes(projectId))
+        } else {
+            viewModel.handleIntent(CreateRoomIntent.LoadRoom(projectId, roomId))
+        }
     }
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) onBackClick()
@@ -59,7 +64,7 @@ fun CreateRoomScreen(
     ) {
         ScreenTitle(
             modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-            title = "Создание комнаты",
+            title = if (roomId == null) "Создание комнаты" else "Редактирование комнаты",
             onBackClick = onBackClick
         )
         CustomTextBar(

@@ -62,6 +62,7 @@ fun RoomDetailScreen(
     onBackClick: () -> Unit = {},
     onEstimateClick: (Int, Int) -> Unit,
     onGalleryClick: (Int, Int) -> Unit,
+    onRoomInfoClick: (Int, Int) -> Unit = { _, _ -> },
     viewModel: RoomDetailVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -100,7 +101,7 @@ fun RoomDetailScreen(
                     leftIcon = arrowLeft,
                     rightIcon = info,
                     onLeftButtonClick = onBackClick,
-                    onRightButtonClick = {}
+                    onRightButtonClick = { onRoomInfoClick(projectId, roomId) }
                 )
                 RoomInfo(
                     percent = room.projectSharePercent.toInt(),

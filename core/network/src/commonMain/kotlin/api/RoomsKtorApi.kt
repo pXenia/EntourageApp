@@ -2,10 +2,12 @@ package com.entourageapp.core.network.api
 
 import com.entourageapp.core.network.dto.MessageDto
 import com.entourageapp.core.network.dto.OffsetAddDto
+import com.entourageapp.core.network.dto.OffsetDto
 import com.entourageapp.core.network.dto.RoomAddDto
 import com.entourageapp.core.network.dto.RoomCreatedDto
 import com.entourageapp.core.network.dto.RoomDetailDto
 import com.entourageapp.core.network.dto.RoomDto
+import com.entourageapp.core.network.dto.RoomFullUpdateDto
 import com.entourageapp.core.network.dto.RoomParamsDto
 import com.entourageapp.core.network.dto.RoomTypeDto
 import com.entourageapp.core.network.dto.WallAddDto
@@ -13,6 +15,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -26,6 +29,12 @@ class RoomsKtorApi(private val client: HttpClient) : RoomsApi {
 
     override suspend fun createRoom(projectId: Int, room: RoomAddDto): RoomCreatedDto =
         client.post("projects/$projectId/rooms/") {
+            contentType(ContentType.Application.Json)
+            setBody(room)
+        }.body()
+
+    override suspend fun updateRoomFull(projectId: Int, roomId: Int, room: RoomFullUpdateDto): MessageDto =
+        client.put("projects/$projectId/rooms/update/$roomId") {
             contentType(ContentType.Application.Json)
             setBody(room)
         }.body()
@@ -47,4 +56,7 @@ class RoomsKtorApi(private val client: HttpClient) : RoomsApi {
 
     override suspend fun getRoomById(projectId: Int, roomId: Int): RoomDetailDto =
         client.get("projects/$projectId/rooms/$roomId/").body()
+
+    override suspend fun getOffsets(projectId: Int, roomId: Int): List<OffsetDto> =
+        client.get("projects/$projectId/rooms/$roomId/offsets/").body()
 }
