@@ -1,5 +1,7 @@
 package com.entourageapp.core.ui.tools
 
+import kotlinx.datetime.LocalDate
+
 fun formatYears(startDate: String, endDate: String?): String {
     val startYear = startDate.take(4)
     val endYear = endDate?.take(4)
@@ -35,4 +37,25 @@ fun formatAmountWithCurrency(amount: Double): String {
         .joinToString(" ")
         .reversed()
     return "$formatted ₽"
+}
+
+fun tryParseDate(uiDate: String): LocalDate? {
+    if (uiDate.length != 8) return null
+    return try {
+        val day = uiDate.substring(0, 2).toInt()
+        val month = uiDate.substring(2, 4).toInt()
+        val year = uiDate.substring(4, 8).toInt()
+        LocalDate(year, month, day)
+    } catch (e: Exception) {
+        null
+    }
+}
+
+fun formatDate(dateString: String): String {
+    return try {
+        val date = LocalDate.parse(dateString)
+        "${date.dayOfMonth.toString().padStart(2, '0')}.${date.monthNumber.toString().padStart(2, '0')}.${date.year}"
+    } catch (e: Exception) {
+        dateString
+    }
 }

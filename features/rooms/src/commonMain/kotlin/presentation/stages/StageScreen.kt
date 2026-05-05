@@ -16,13 +16,11 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -42,7 +40,6 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
-import com.entourageapp.core.ui.EntourageLightBlueGray
 import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
@@ -54,11 +51,11 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun StageScreen(
     onBackClick: () -> Unit = {},
-    onAddTaskClick: () -> Unit = {},
     viewModel: StageVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     var showSheet by remember { mutableStateOf(false) }
+    var showAddDialog by remember { mutableStateOf(false) }
     var selectedStage by remember { mutableStateOf<Stage?>(null) }
     val sheetState = rememberModalBottomSheetState()
 
@@ -68,6 +65,13 @@ fun StageScreen(
             .systemBarsPadding()
             .padding(horizontal = 16.dp),
     ) {
+        if (state.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+                color = EntourageTeal
+            )
+        }
+
         Column {
             ScreenTitle(
                 title = "Список этапов и задач",
@@ -75,6 +79,14 @@ fun StageScreen(
             )
 
             Spacer(modifier = Modifier.height(4.dp))
+
+            if (state.error != null) {
+                Text(
+                    text = state.error ?: "Произошла ошибка",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(vertical = 16.dp).align(Alignment.CenterHorizontally)
+                )
+            }
 
             Column(
                 modifier = Modifier
@@ -103,7 +115,7 @@ fun StageScreen(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 16.dp),
-            onClick = onAddTaskClick
+            onClick = { showAddDialog = true }
         )
 
         if (showSheet) {
@@ -113,11 +125,26 @@ fun StageScreen(
                     viewModel.handleIntent(
                         StageIntent.UpdateStageStatus(id, status)
                     )
+                    showSheet = false
                 },
                 sheetState = sheetState,
                 selectedStage = selectedStage
             )
+        }
 
+        if (showAddDialog) {
+            AddStageTaskDialog(
+                stages = state.stages,
+                onDismiss = { showAddDialog = false },
+                onConfirmStage = { title, deadline ->
+                    viewModel.handleIntent(StageIntent.AddStage(title, deadline))
+                    showAddDialog = false
+                },
+                onConfirmTask = { stageId, title, deadline ->
+                    viewModel.handleIntent(StageIntent.AddTask(stageId, title, deadline))
+                    showAddDialog = false
+                }
+            )
         }
     }
 }
@@ -176,9 +203,9 @@ fun StatusBadge(
     modifier: Modifier = Modifier
 ) {
     val backgroundColor = when (status) {
-        StageStatus.COMPLETED -> EntourageBlack.copy(alpha = 0.25f)
-        StageStatus.IN_PROGRESS -> EntourageTeal.copy(alpha = 0.25f)
-        StageStatus.NOT_STARTED -> EntouragePeach.copy(alpha = 0.5f)
+        StageStatus.NOT_STARTED -> EntourageBlack.copy(alpha = 0.25f)
+        StageStatus.COMPLETED -> EntourageTeal.copy(alpha = 0.25f)
+        StageStatus.IN_PROGRESS -> EntouragePeach.copy(alpha = 0.5f)
     }
 
     Box(
@@ -248,3 +275,4 @@ private fun TaskRow(
         )
     }
 }
+

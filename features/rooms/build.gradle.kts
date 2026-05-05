@@ -37,6 +37,8 @@ kotlin {
             implementation(libs.jetbrains.lifecycle.viewmodelNavigation3)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.kotlinx.datetime)
+
 
             implementation(projects.core.navigation)
             implementation(projects.core.ui)

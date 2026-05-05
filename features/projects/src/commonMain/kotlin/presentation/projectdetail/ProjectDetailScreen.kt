@@ -263,7 +263,7 @@ private fun DateBadge(
         modifier = Modifier
             .clip(RoundedCornerShape(32.dp))
             .innerShadow(
-                shape = CircleShape,
+                shape = RoundedCornerShape(32.dp),
                 shadow = Shadow(
                     radius = 20.dp,
                     spread = 4.dp,

@@ -8,6 +8,7 @@ import com.entourageapp.core.navigation.Route
 import com.entourageapp.features.rooms.presentation.roomInfo.RoomInfoScreen
 import com.entourageapp.features.rooms.presentation.roomdetil.RoomDetailScreen
 import com.entourageapp.features.rooms.presentation.roomlist.RoomListScreen
+import com.entourageapp.features.rooms.presentation.stages.StageScreen
 
 
 fun EntryProviderScope<NavKey>.roomsEntryBuilder(navigator: Navigator) {
@@ -34,7 +35,14 @@ fun EntryProviderScope<NavKey>.roomsEntryBuilder(navigator: Navigator) {
             onBackClick = { navigator.goBack() },
             onEstimateClick = { projectId, roomId -> navigator.navigate(Route.CreateEstimatePosition(projectId, roomId))},
             onGalleryClick = { projectId, roomId -> navigator.navigate(Route.Gallery(projectId, roomId))},
-            onRoomInfoClick = { projectId, roomId -> navigator.navigate(Route.RoomParameters(projectId, roomId)) }
+            onRoomInfoClick = { projectId, roomId -> navigator.navigate(Route.RoomParameters(projectId, roomId)) },
+            onStagesClick = { projectId, roomId -> navigator.navigate(Route.StageList(projectId, roomId)) }
+        )
+    }
+
+    entry<Route.StageList> { route ->
+        StageScreen(
+            onBackClick = { navigator.goBack() }
         )
     }
 

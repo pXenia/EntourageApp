@@ -16,8 +16,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -63,6 +63,7 @@ fun RoomDetailScreen(
     onEstimateClick: (Int, Int) -> Unit,
     onGalleryClick: (Int, Int) -> Unit,
     onRoomInfoClick: (Int, Int) -> Unit = { _, _ -> },
+    onStagesClick: (Int, Int) -> Unit = { _, _ -> },
     viewModel: RoomDetailVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -112,7 +113,7 @@ fun RoomDetailScreen(
                 )
                 HorizontalDivider(thickness = 1.dp, color = EntourageBlack)
                 CardButton(
-                    onClick = { },
+                    onClick = { onStagesClick(projectId, roomId) },
                     title = "Этапы и задачи",
                     text = "N этапов и N задач"
                 )
