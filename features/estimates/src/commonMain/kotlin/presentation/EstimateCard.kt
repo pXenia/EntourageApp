@@ -5,7 +5,9 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,8 +29,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
@@ -56,15 +62,25 @@ fun EstimateCard(
         targetValue = if (expandedState) -180f else 0f, label = "Rotation"
     )
 
-    Surface(
-        modifier = modifier.animateContentSize(
-            animationSpec = tween(
-                durationMillis = 300,
-                easing = LinearOutSlowInEasing
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(32.dp))
+            .background(EntourageBlack.copy(alpha = 0.1f))
+            .innerShadow(
+                shape = RoundedCornerShape(32.dp),
+                shadow = Shadow(
+                    radius = 20.dp,
+                    spread = 8.dp,
+                    color = EntourageWhite.copy(alpha = 0.2f),
+                    offset = DpOffset(x = 8.dp, 4.dp)
+                )
             )
-        ),
-        color = EntourageBlack.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(32.dp)
+            .animateContentSize(
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = LinearOutSlowInEasing
+                )
+            ),
     ) {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 16.dp),
@@ -101,7 +117,7 @@ fun EstimateCard(
             }
 
             if (expandedState) {
-                Column (
+                Column(
                     modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
@@ -192,7 +208,7 @@ private fun InfoCard(
         shape = RoundedCornerShape(24.dp),
         border = BorderStroke(1.dp, EntourageTeal)
     ) {
-        Row (
+        Row(
             modifier = Modifier
                 .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,

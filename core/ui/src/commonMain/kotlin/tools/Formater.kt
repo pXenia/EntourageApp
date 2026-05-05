@@ -59,3 +59,13 @@ fun formatDate(dateString: String): String {
         dateString
     }
 }
+
+fun getPlural(n: Int, one: String, two: String, five: String): String {
+    val n1 = n % 10
+    val n10 = n % 100
+    return when {
+        n1 == 1 && n10 != 11 -> one
+        n1 in 2..4 && n10 !in 12..14 -> two
+        else -> five
+    }
+}

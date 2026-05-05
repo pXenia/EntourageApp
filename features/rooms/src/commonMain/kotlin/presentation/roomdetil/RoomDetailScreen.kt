@@ -1,5 +1,7 @@
 package com.entourageapp.features.rooms.presentation.roomdetil
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,11 +27,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +53,7 @@ import com.entourageapp.core.ui.arrowLeft
 import com.entourageapp.core.ui.components.ScreenTitleTwoButtons
 import com.entourageapp.core.ui.folder
 import com.entourageapp.core.ui.info
+import com.entourageapp.core.ui.tools.getPlural
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.math.roundToInt
@@ -67,9 +70,13 @@ fun RoomDetailScreen(
     viewModel: RoomDetailVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val animationProgress = remember { Animatable(0f) }
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(RoomDetailIntent.LoadRoom(projectId, roomId))
+        animationProgress.animateTo(
+            targetValue = 1f, animationSpec = tween(durationMillis = 1000)
+        )
     }
 
     when {
@@ -110,22 +117,23 @@ fun RoomDetailScreen(
                     componentsTotal = room.componentsTotal,
                     furnitureTotal = room.furnitureTotal,
                     roomTotal = room.roomTotal,
+                    animationP = animationProgress.value
                 )
                 HorizontalDivider(thickness = 1.dp, color = EntourageBlack)
                 CardButton(
                     onClick = { onStagesClick(projectId, roomId) },
                     title = "Этапы и задачи",
-                    text = "N этапов и N задач"
+                    text = "${room.stagesCount} ${getPlural(room.stagesCount, "этап", "этапа", "этапов")} и ${room.tasksCount} ${getPlural(room.tasksCount, "задача", "задачи", "задач")}",
                 )
                 CardButton(
                     onClick = { onGalleryClick(projectId, roomId) },
                     title = "Галерея идей",
-                    text = "N идей"
+                    text = "${room.photoCount} ${getPlural(room.photoCount, "идея", "идеи", "идей")}",
                 )
                 CardButton(
                     onClick = { onEstimateClick(projectId, roomId) },
                     title = "Смета",
-                    text = "N позиций"
+                    text = "${room.estimateItemsCount} ${getPlural(room.estimateItemsCount, "позиция", "позиции", "позиций")}",
                 )
             }
         }
@@ -139,19 +147,39 @@ private fun RoomInfo(
     componentsTotal: Float,
     furnitureTotal: Float,
     roomTotal: Float,
+    animationP: Float
 ) {
-    val workPercent = if (roomTotal > 0) workTotal / roomTotal else 0f
-    val furniturePercent = if (roomTotal > 0) furnitureTotal / roomTotal else 0f
-    val componentsPercent = if (roomTotal > 0) 1f - workPercent - furniturePercent else 0f
+    val workInt: Int
+    val furnitureInt: Int
+    val componentsInt: Int
 
-    val workInt = (workPercent * 100).roundToInt()
-    val furnitureInt = (furniturePercent * 100).roundToInt()
-    val componentsInt = 100 - workInt - furnitureInt
+    if (roomTotal <= 0f) {
+        workInt = 0
+        furnitureInt = 0
+        componentsInt = 0
+    } else {
+        workInt = (workTotal / roomTotal * 100).roundToInt()
+        furnitureInt = (furnitureTotal / roomTotal * 100).roundToInt()
+        componentsInt = (100 - workInt - furnitureInt).coerceAtLeast(0)
+    }
 
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = EntourageBlack.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(32.dp),
+    val workPercent = if (roomTotal > 0) workInt / 100f else 0f
+    val furniturePercent = if (roomTotal > 0) furnitureInt / 100f else 0f
+    val componentsPercent = if (roomTotal > 0) componentsInt / 100f else 0f
+
+    Box(
+        modifier = Modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(32.dp))
+            .background(EntourageBlack.copy(alpha = 0.1f))
+            .innerShadow(
+                shape = RoundedCornerShape(32.dp),
+                shadow = Shadow(
+                    radius = 36.dp,
+                    spread = 8.dp,
+                    color = EntourageWhite.copy(alpha = 0.2f),
+                    offset = DpOffset(x = 10.dp, 10.dp)
+                )
+            )
     ) {
         Row(
             modifier = Modifier
@@ -161,7 +189,7 @@ private fun RoomInfo(
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                RoomPercent(percent)
+                RoomPercent(percent = percent, animationP = animationP)
                 Label(EntourageBlack, "работы")
                 Label(EntourageTeal, "материалы")
                 Label(EntouragePeach, "комплектующие")
@@ -170,9 +198,9 @@ private fun RoomInfo(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                ChartColumn(color = EntourageBlack, percent = workPercent, displayPercent = workInt)
-                ChartColumn(color = EntourageTeal, percent = furniturePercent, displayPercent = furnitureInt)
-                ChartColumn(color = EntouragePeach, percent = componentsPercent, displayPercent = componentsInt)
+                ChartColumn(color = EntourageBlack, percent = workPercent, displayPercent = workInt, animationP = animationP)
+                ChartColumn(color = EntourageTeal, percent = furniturePercent, displayPercent = furnitureInt, animationP = animationP)
+                ChartColumn(color = EntouragePeach, percent = componentsPercent, displayPercent = componentsInt, animationP = animationP)
             }
         }
     }
@@ -182,8 +210,12 @@ private fun RoomInfo(
 private fun ChartColumn(
     percent: Float,
     color: Color,
-    displayPercent: Int = (percent * 100).roundToInt()
+    displayPercent: Int,
+    animationP: Float
 ) {
+    val percentVal = percent * animationP
+    val animatedDisplayPercent = (displayPercent * animationP).toInt()
+
     Box(contentAlignment = Alignment.BottomCenter) {
         Box(
             modifier = Modifier
@@ -197,6 +229,13 @@ private fun ChartColumn(
                     .align(Alignment.BottomCenter)
                     .clip(RoundedCornerShape(56.dp))
                     .background(color)
+                    .fillMaxHeight(percentVal)
+                    .width(35.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(56.dp))
+                    .fillMaxHeight()
                     .innerShadow(
                         shape = RoundedCornerShape(20.dp),
                         shadow = Shadow(
@@ -206,7 +245,6 @@ private fun ChartColumn(
                             offset = DpOffset(x = 6.dp, 7.dp)
                         )
                     )
-                    .fillMaxHeight(percent)
                     .width(35.dp)
             )
         }
@@ -222,7 +260,7 @@ private fun ChartColumn(
                 .offset(x = (-12).dp, y = (-25).dp)
                 .clip(RoundedCornerShape(16.dp))
                 .background(glassBrush)
-                .width(if (displayPercent == 100) 48.dp else 40.dp)
+                .width(if (animatedDisplayPercent == 100) 48.dp else 40.dp)
                 .height(30.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -234,7 +272,7 @@ private fun ChartColumn(
                             color = EntourageBlack
                         ).toSpanStyle()
                     ) {
-                        append("$displayPercent")
+                        append("$animatedDisplayPercent")
                     }
                     withStyle(
                         MaterialTheme.typography.bodyLarge.copy(
@@ -252,7 +290,9 @@ private fun ChartColumn(
 @Composable
 fun RoomPercent(
     percent: Int,
+    animationP: Float
 ) {
+    val animatedPercent = (percent* animationP).toInt()
     Box(
         modifier = Modifier
             .border(1.dp, EntourageBlack, RoundedCornerShape(8.dp))
@@ -272,7 +312,7 @@ fun RoomPercent(
                     style = MaterialTheme.typography.bodyLarge.copy(fontSize = 56.sp)
                         .toSpanStyle()
                 ) {
-                    append("$percent")
+                    append("$animatedPercent")
                 }
                 withStyle(
                     style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp)
@@ -328,14 +368,24 @@ private fun CardButton(
     title: String,
     text: String
 ) {
-    Surface(
+    Box(
         modifier = Modifier
-            .fillMaxWidth(),
-        color = EntourageBlack.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(32.dp),
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(32.dp))
+            .clickable{ onClick() }
+            .background(EntourageBlack.copy(alpha = 0.1f))
+            .innerShadow(
+                shape = RoundedCornerShape(32.dp),
+                shadow = Shadow(
+                    radius = 20.dp,
+                    spread = 8.dp,
+                    color = EntourageWhite.copy(alpha = 0.2f),
+                    offset = DpOffset(x = 8.dp, 6.dp)
+                )
+            ),
     ) {
         Row(
-            Modifier.padding(horizontal = 18.dp, vertical = 24.dp).clickable { onClick() },
+            Modifier.padding(horizontal = 18.dp, vertical = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
