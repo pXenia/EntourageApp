@@ -18,7 +18,7 @@ class ProjectListVM(
     private val _state = MutableStateFlow(ProjectListState())
     val state: StateFlow<ProjectListState> = _state
     private var allProjectCards = emptyList<ProjectCard>()
-    private var currentProjectCards = emptyList<ProjectCard>()
+    private var archiveProjectCards = emptyList<ProjectCard>()
 
 
     fun handleIntent(intent: ProjectListIntent) {
@@ -41,7 +41,7 @@ class ProjectListVM(
                 }
                 .collect { projects ->
                     allProjectCards = projects
-                    currentProjectCards = allProjectCards.filter { !it.isCompleted }
+                    archiveProjectCards = allProjectCards.filter { it.isCompleted }
                     _state.update {
                         it.copy(isLoading = false, projectCards = allProjectCards)
                     }
@@ -52,7 +52,7 @@ class ProjectListVM(
     private fun filterProjects(filter: ProjectFilter) {
         when(filter){
             ProjectFilter.ALL -> _state.update { it.copy(projectFilter = ProjectFilter.ALL, projectCards = allProjectCards) }
-            ProjectFilter.CURRENT -> _state.update { it.copy(projectFilter = ProjectFilter.CURRENT, projectCards = currentProjectCards) }
+            ProjectFilter.ARCHIVE -> _state.update { it.copy(projectFilter = ProjectFilter.ARCHIVE, projectCards = archiveProjectCards) }
         }
     }
 }

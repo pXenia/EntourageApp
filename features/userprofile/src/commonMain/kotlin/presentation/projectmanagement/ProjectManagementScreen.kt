@@ -83,7 +83,7 @@ fun ProjectManagementScreen(
         val isOwner = state.selectedProject!!.role == "owner"
         DeleteDialog(
             onDismiss = { viewModel.onIntent(ProjectManagementIntent.HideConfirmSheet) },
-            onOkClick = { viewModel.onIntent(ProjectManagementIntent.HideConfirmSheet)},
+            onOkClick = { viewModel.onIntent(ProjectManagementIntent.ConfirmAction)},
             text = if (isOwner)
                 "Вы действительно хотите удалить проект \"${state.selectedProject!!.title}\"?"
             else "Вы действительно хотите выйти из проекта \"${state.selectedProject!!.title}\"?",

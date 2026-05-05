@@ -54,6 +54,7 @@ import com.entourageapp.core.ui.folder
 import com.entourageapp.core.ui.gallery
 import com.entourageapp.core.ui.info
 import com.entourageapp.core.ui.stats
+import com.entourageapp.core.ui.tools.formatAmountWithCurrency
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -128,6 +129,8 @@ fun ProjectDetailScreen(
                 ProjectInfoCard(
                     roomsCount = project.roomsCount,
                     animationP = animationProgress.value,
+                    budget = project.budget,
+                    totalSpent = project.totalSpent,
                     onRoomListClick = { onRoomListClick(projectId) },
                     onProjectStatsClick = { onProjectStatsClick(projectId) }
                 )
@@ -257,7 +260,7 @@ private fun CircularDaysProgress(
 
 @Composable
 private fun DateBadge(
-    date: String = "27.02.2022"
+    date: String
 ) {
     Box(
         modifier = Modifier
@@ -286,6 +289,8 @@ private fun DateBadge(
 private fun ProjectInfoCard(
     roomsCount: Int,
     animationP: Float,
+    budget: Float,
+    totalSpent: Float,
     onRoomListClick: () -> Unit = {},
     onProjectStatsClick: () -> Unit = {},
 ) {
@@ -320,7 +325,8 @@ private fun ProjectInfoCard(
                 color = EntourageBlack
             )
             CostProgress(
-                progress = 0.5f,
+                budget = budget,
+                totalSpent = totalSpent,
                 animationP = animationP
             )
         }
@@ -438,9 +444,13 @@ private fun StatsButton(
 
 @Composable
 private fun CostProgress(
-    progress: Float = 0.5f,
+    budget: Float,
+    totalSpent: Float,
     animationP: Float = 0.5f
 ) {
+    val dif = ( budget - totalSpent)
+    val progress = if (budget > 0 ) (totalSpent / budget).coerceIn(0f, 1f) else 1f
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -455,8 +465,8 @@ private fun CostProgress(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            TextMoney("Потрачено", "2,00 млн. ₽")
-            TextMoney("Осталось", "700 тыс. ₽")
+            TextMoney("Потрачено", formatAmountWithCurrency(totalSpent))
+            TextMoney("Осталось", formatAmountWithCurrency(dif))
         }
     }
 

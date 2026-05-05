@@ -30,7 +30,7 @@ fun Double.formatTwoDecimals(): String {
     return "$formattedInteger.$formattedDecimal"
 }
 
-fun formatAmountWithCurrency(amount: Double): String {
+fun formatAmountWithCurrency(amount: Float): String {
     val formatted = amount.toInt().toString()
         .reversed()
         .chunked(3)

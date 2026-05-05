@@ -12,10 +12,7 @@ import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.shadow.Shadow
-import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -47,9 +44,9 @@ fun BarChart(
             .fillMaxWidth()
     ) {
         if (componentsSum > 0 || materialsSum > 0 || laborSum > 0) {
-            val matText = textMeasurer.measure(formatAmountWithCurrency(materialsSum.toDouble()), textStyle)
-            val compText = textMeasurer.measure(formatAmountWithCurrency(componentsSum.toDouble()), textStyle)
-            val laborText = textMeasurer.measure(formatAmountWithCurrency(laborSum.toDouble()), textStyle)
+            val matText = textMeasurer.measure(formatAmountWithCurrency(materialsSum), textStyle)
+            val compText = textMeasurer.measure(formatAmountWithCurrency(componentsSum), textStyle)
+            val laborText = textMeasurer.measure(formatAmountWithCurrency(laborSum), textStyle)
             val matTextWidth = matText.size.width
             val laborTextWidth = laborText.size.width
 

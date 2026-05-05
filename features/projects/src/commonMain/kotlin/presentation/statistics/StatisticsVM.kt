@@ -69,7 +69,7 @@ class StatisticsVM(
                         SummaryItem(
                             name = category.category,
                             percent = if (summary.totalSpent > 0) (category.total.toFloat() / summary.totalSpent.toFloat()) else 0f,
-                            amount = formatAmountWithCurrency(category.total),
+                            amount = formatAmountWithCurrency(category.total.toFloat()),
                             color = when (category.category) {
                                 "Материал" -> EntourageTeal
                                 "Комплектующее" -> EntouragePeach
@@ -80,8 +80,8 @@ class StatisticsVM(
 
                     _state.update {
                         it.copy(
-                            spent = formatAmountWithCurrency(summary.totalSpent),
-                            planned = formatAmountWithCurrency(summary.budget ?: 0.0),
+                            spent = formatAmountWithCurrency(summary.totalSpent.toFloat()),
+                            planned = formatAmountWithCurrency((summary.budget ?: 0f).toFloat()),
                             progress = if ((summary.budget
                                     ?: 0.0) > 0
                             ) (summary.totalSpent / summary.budget!!).toFloat() else 0f,

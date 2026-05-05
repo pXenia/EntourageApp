@@ -22,5 +22,7 @@ data class ProjectDto(
     val roomsCount: Int,
     @SerialName("members_count")
     val membersCount: Int,
+    @SerialName("total_spent")
+    val totalSpent: Float
 )
 
