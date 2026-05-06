@@ -10,7 +10,7 @@ import kotlin.time.Clock
 data class ProjectDetail(
     val id: Int,
     val title: String,
-    val role: String,
+    val role: Int,
     val square: Float?,
     val budget: Float,
     val description: String?,

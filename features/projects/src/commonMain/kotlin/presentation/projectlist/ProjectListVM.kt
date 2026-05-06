@@ -42,17 +42,28 @@ class ProjectListVM(
                 .collect { projects ->
                     allProjectCards = projects
                     archiveProjectCards = allProjectCards.filter { it.isCompleted }
-                    _state.update {
-                        it.copy(isLoading = false, projectCards = allProjectCards)
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isLoading = false,
+                            projectCards = when (currentState.projectFilter) {
+                                ProjectFilter.ALL -> allProjectCards
+                                ProjectFilter.ARCHIVE -> archiveProjectCards
+                            }
+                        )
                     }
                 }
         }
     }
 
     private fun filterProjects(filter: ProjectFilter) {
-        when(filter){
-            ProjectFilter.ALL -> _state.update { it.copy(projectFilter = ProjectFilter.ALL, projectCards = allProjectCards) }
-            ProjectFilter.ARCHIVE -> _state.update { it.copy(projectFilter = ProjectFilter.ARCHIVE, projectCards = archiveProjectCards) }
+        _state.update { currentState ->
+            currentState.copy(
+                projectFilter = filter,
+                projectCards = when (filter) {
+                    ProjectFilter.ALL -> allProjectCards
+                    ProjectFilter.ARCHIVE -> archiveProjectCards
+                }
+            )
         }
     }
 }

@@ -5,7 +5,7 @@ import com.entourageapp.core.network.dto.ProjectDto
 data class ProjectCard(
     val id: Int,
     val title: String,
-    val role: String,
+    val role: Int,
     val membersCount: Int,
     val years: String,
 )

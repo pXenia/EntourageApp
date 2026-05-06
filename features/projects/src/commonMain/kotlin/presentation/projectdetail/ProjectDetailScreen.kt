@@ -55,6 +55,7 @@ import com.entourageapp.core.ui.gallery
 import com.entourageapp.core.ui.info
 import com.entourageapp.core.ui.stats
 import com.entourageapp.core.ui.tools.formatAmountWithCurrency
+import com.entourageapp.core.ui.tools.getPlural
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -359,7 +360,7 @@ private fun RoomsInfo(
                     modifier = Modifier.alignByBaseline()
                 )
                 Text(
-                    text = "комнат",
+                    text = getPlural(roomsCount, "комната", "комнаты", "комнат"),
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 16.sp),
                     modifier = Modifier.alignByBaseline()
                 )

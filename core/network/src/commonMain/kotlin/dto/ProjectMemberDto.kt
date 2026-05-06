@@ -9,6 +9,6 @@ data class ProjectMemberDto(
     val id: Int,
     val name: String,
     val email: String,
-    @SerialName("role_title")
-    val role: String
+    @SerialName("role_id")
+    val roleId: Int
 )

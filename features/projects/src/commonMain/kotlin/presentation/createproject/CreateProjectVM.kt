@@ -54,7 +54,7 @@ class CreateProjectVM(
                 viewModelScope.launch {
                     try {
                         val user = repository.checkEmail(intent.email)
-                        val roleCode = if (intent.allowEdit) "editor" else "viewer"
+                        val roleCode = if (intent.allowEdit) 2 else 3
                         val participant = PendingParticipant(
                             email = intent.email,
                             name = user.name,
@@ -99,13 +99,13 @@ class CreateProjectVM(
                             startDate = project.startDateFormatted.replace(".", ""),
                             endDate = project.endDateFormatted?.replace(".", ""),
                             square = project.square?.toString() ?: "",
-                            budget = project.budget?.toLong()?.toString() ?: "",
+                            budget = project.budget.toLong().toString() ?: "",
                             description = project.description ?: "",
-                            pendingParticipants = members.filter { it.role != "owner" }.map {
+                            pendingParticipants = members.filter { it.roleId != 1 }.map {
                                 PendingParticipant(
                                     email = it.email,
                                     name = it.name,
-                                    roleCode = it.role
+                                    roleCode = it.roleId
                                 )
                             },
                             isLoading = false
@@ -169,11 +169,7 @@ class CreateProjectVM(
                         members = currentState.pendingParticipants.map {
                             ProjectMemberAddDto(
                                 email = it.email,
-                                roleCode = when (it.roleCode) {
-                                    "Владлец" -> "owner"
-                                    "Редактор" -> "editor"
-                                    else -> "viewer"
-                                }
+                                roleId = it.roleCode
                             )
                         }
                     )

@@ -11,7 +11,7 @@ interface ProjectsRepository {
     fun getProjectsList(): Flow<List<ProjectCard>>
     suspend fun createProject(project: ProjectCreateDto): Int
     suspend fun updateProject(projectId: Int, project: ProjectCreateDto)
-    suspend fun addProjectMember(projectId: Int, email: String, roleCode: String)
+    suspend fun addProjectMember(projectId: Int, email: String, roleCode: Int)
     suspend fun syncProjectMembers(projectId: Int, members: List<ProjectMemberAddDto>)
     fun getProjectById(projectId: Int): Flow<ProjectDetail>
     suspend fun checkEmail(email: String): UserEmailCheckDto

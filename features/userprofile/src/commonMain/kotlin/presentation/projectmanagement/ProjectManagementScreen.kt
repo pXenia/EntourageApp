@@ -80,7 +80,7 @@ fun ProjectManagementScreen(
     }
 
     if (state.isConfirmSheetVisible && state.selectedProject != null) {
-        val isOwner = state.selectedProject!!.role == "owner"
+        val isOwner = state.selectedProject!!.role == 1
         DeleteDialog(
             onDismiss = { viewModel.onIntent(ProjectManagementIntent.HideConfirmSheet) },
             onOkClick = { viewModel.onIntent(ProjectManagementIntent.ConfirmAction)},
@@ -157,7 +157,7 @@ private fun ProjectActionCard(
     projectName: String,
     participantsCount: Int,
     dateRange: String,
-    role: String,
+    role: Int,
     buttonText: String,
     onButtonClick: () -> Unit,
     color: Color
@@ -247,11 +247,11 @@ private fun ProjectInfoRow(icon: DrawableResource, text: String) {
 }
 
 @Composable
-private fun RoleBadge(role: String) {
+private fun RoleBadge(role: Int) {
     val roleTitle = when (role) {
-        "owner" -> "Владелец"
-        "editor" -> "Редактор"
-        "viewer" -> "Читатель"
+        1 -> "Владелец"
+        2 -> "Редактор"
+        3 -> "Читатель"
         else -> ""
     }
 

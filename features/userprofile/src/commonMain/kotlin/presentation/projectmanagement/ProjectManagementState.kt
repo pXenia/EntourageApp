@@ -9,8 +9,8 @@ data class ProjectManagementState(
     val selectedProject: ProjectCard? = null,
     val isConfirmSheetVisible: Boolean = false
 ) {
-    val ownedProjects: List<ProjectCard> get() = projects.filter { it.role == "owner" }
-    val memberProjects: List<ProjectCard> get() = projects.filter { it.role != "owner" }
+    val ownedProjects: List<ProjectCard> get() = projects.filter { it.role == 1 }
+    val memberProjects: List<ProjectCard> get() = projects.filter { it.role != 1 }
 }
 
 sealed interface ProjectManagementIntent {

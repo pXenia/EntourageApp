@@ -3,7 +3,7 @@ package com.entourageapp.features.projects.presentation.createproject
 data class PendingParticipant(
     val email: String,
     val name: String,
-    val roleCode: String
+    val roleCode: Int
 )
 
 data class CreateProjectState(

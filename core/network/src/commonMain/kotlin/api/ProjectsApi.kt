@@ -11,7 +11,7 @@ interface ProjectsApi {
     suspend fun getProjectById(projectId: Int): ProjectDto
     suspend fun createProject(project: ProjectCreateDto): Int
     suspend fun updateProject(projectId: Int, project: ProjectCreateDto)
-    suspend fun addProjectMember(projectId: Int, email: String, roleCode: String)
+    suspend fun addProjectMember(projectId: Int, email: String, roleCode: Int)
     suspend fun syncProjectMembers(projectId: Int, members: ProjectMembersSyncDto)
     suspend fun deleteProject(projectId: Int)
     suspend fun getProjectSummary(projectId: Int): ProjectSummaryDto

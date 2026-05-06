@@ -21,7 +21,7 @@ import kotlinx.serialization.json.jsonPrimitive
 
 class ProjectsKtorApi(private val client: HttpClient) : ProjectsApi {
     override suspend fun getProjects(): List<ProjectDto> {
-        return client.get("projects/").body()
+        return client.get("projects").body()
     }
 
     override suspend fun getProjectById(projectId: Int): ProjectDto {
@@ -29,7 +29,7 @@ class ProjectsKtorApi(private val client: HttpClient) : ProjectsApi {
     }
 
     override suspend fun createProject(project: ProjectCreateDto): Int {
-        val response = client.post("projects/add/") {
+        val response = client.post("projects/add") {
             contentType(ContentType.Application.Json)
             setBody(project)
         }.body<JsonObject>()
@@ -44,22 +44,22 @@ class ProjectsKtorApi(private val client: HttpClient) : ProjectsApi {
         }
     }
 
-    override suspend fun addProjectMember(projectId: Int, email: String, roleCode: String) {
-        client.post("projects/$projectId/members/") {
+    override suspend fun addProjectMember(projectId: Int, email: String, roleCode: Int) {
+        client.post("projects/$projectId/members/add") {
             contentType(ContentType.Application.Json)
-            setBody(ProjectMemberAddDto(email = email, roleCode = roleCode))
+            setBody(ProjectMemberAddDto(email = email, roleId = roleCode))
         }
     }
 
     override suspend fun syncProjectMembers(projectId: Int, members: ProjectMembersSyncDto) {
-        client.put("projects/$projectId/members/") {
+        client.put("projects/$projectId/members") {
             contentType(ContentType.Application.Json)
             setBody(members)
         }
     }
 
     override suspend fun deleteProject(projectId: Int) {
-        client.delete("projects/$projectId")
+        client.delete("projects/delete/$projectId")
     }
 
     override suspend fun getProjectSummary(projectId: Int): ProjectSummaryDto {
