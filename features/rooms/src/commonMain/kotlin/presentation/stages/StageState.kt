@@ -35,9 +35,9 @@ data class StageState(
 )
 
 sealed interface StageIntent {
-    data object LoadStages : StageIntent
-    data class ToggleTask(val stageId: Int, val taskId: Int) : StageIntent
-    data class UpdateStageStatus(val stageId: Int, val status: StageStatus) : StageIntent
-    data class AddStage(val title: String, val deadline: String) : StageIntent
-    data class AddTask(val stageId: Int, val title: String, val deadline: String) : StageIntent
+    data class LoadStages(val roomId: Int) : StageIntent
+    data class ToggleTask(val roomId: Int, val stageId: Int, val taskId: Int) : StageIntent
+    data class UpdateStageStatus(val roomId: Int, val stageId: Int, val status: StageStatus) : StageIntent
+    data class AddStage(val roomId: Int, val title: String, val deadline: String) : StageIntent
+    data class AddTask(val roomId: Int, val stageId: Int, val title: String, val deadline: String) : StageIntent
 }

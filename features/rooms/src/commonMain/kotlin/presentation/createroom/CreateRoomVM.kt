@@ -93,7 +93,7 @@ class CreateRoomVM(
                 val params = paramsDef.await()
                 val offsets = offsetsDef.await()
 
-                val selectedType = types.find { it.code == detail.typeCode }
+                val selectedType = types.find { it.id == detail.typeCode }
                 val points = offsets.map { Offset(it.x, it.y) }
                 
                 _state.update { it.copy(
@@ -141,7 +141,7 @@ class CreateRoomVM(
                         projectId = projectId,
                         room = RoomAddDto(
                             title = s.title,
-                            typeCode = s.selectedRoomType?.code,
+                            typeCode = s.selectedRoomType?.id,
                             description = s.description.ifBlank { null },
                             square = s.square,
                             ceilingHeight = s.ceilingHeight.toFloatOrNull()
@@ -160,7 +160,7 @@ class CreateRoomVM(
                         roomId = s.roomId,
                         room = RoomFullUpdateDto(
                             title = s.title,
-                            typeCode = s.selectedRoomType?.code,
+                            typeCode = s.selectedRoomType?.id,
                             description = s.description.ifBlank { null },
                             square = s.square,
                             ceilingHeight = s.ceilingHeight.toFloatOrNull(),

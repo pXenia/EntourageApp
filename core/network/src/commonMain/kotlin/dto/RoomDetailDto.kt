@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 data class RoomDetailDto(
     val id: Int,
     val title: String,
-    @SerialName("type_code")
-    val typeCode: String?,
+    @SerialName("type_id")
+    val typeCode: Int?,
     val description: String?,
     val square: Float?,
     @SerialName("ceiling_height")

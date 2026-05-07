@@ -5,7 +5,7 @@ import com.entourageapp.core.network.dto.RoomDetailDto
 data class RoomDetail(
     val id: Int,
     val title: String,
-    val typeCode: String?,
+    val typeCode: Int?,
     val description: String?,
     val square: Float?,
     val ceilingHeight: Float?,

@@ -66,7 +66,7 @@ fun RoomDetailScreen(
     onEstimateClick: (Int, Int) -> Unit,
     onGalleryClick: (Int, Int) -> Unit,
     onRoomInfoClick: (Int, Int) -> Unit = { _, _ -> },
-    onStagesClick: (Int, Int) -> Unit = { _, _ -> },
+    onStagesClick: (Int) -> Unit,
     viewModel: RoomDetailVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -121,7 +121,7 @@ fun RoomDetailScreen(
                 )
                 HorizontalDivider(thickness = 1.dp, color = EntourageBlack)
                 CardButton(
-                    onClick = { onStagesClick(projectId, roomId) },
+                    onClick = { onStagesClick(roomId) },
                     title = "Этапы и задачи",
                     text = "${room.stagesCount} ${getPlural(room.stagesCount, "этап", "этапа", "этапов")} и ${room.tasksCount} ${getPlural(room.tasksCount, "задача", "задачи", "задач")}",
                 )

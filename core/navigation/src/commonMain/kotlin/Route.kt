@@ -49,7 +49,7 @@ sealed interface Route : NavKey {
     data class RoomInfo(val projectId: Int, val roomId: Int) : Route
 
     @Serializable
-    data class StageList(val projectId: Int, val roomId: Int) : Route
+    data class StageList(val roomId: Int) : Route
 
     @Serializable
     data class RoomParameters(val projectId: Int, val roomId: Int) : Route

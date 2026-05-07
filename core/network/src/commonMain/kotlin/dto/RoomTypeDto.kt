@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RoomTypeDto(
-    val code: String,
+    val id: Int,
     val title: String
 )

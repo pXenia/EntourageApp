@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +51,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StageScreen(
+    roomId: Int,
     onBackClick: () -> Unit = {},
     viewModel: StageVM = koinViewModel()
 ) {
@@ -58,6 +60,10 @@ fun StageScreen(
     var showAddDialog by remember { mutableStateOf(false) }
     var selectedStage by remember { mutableStateOf<Stage?>(null) }
     val sheetState = rememberModalBottomSheetState()
+
+    LaunchedEffect(Unit) {
+        viewModel.handleIntent(StageIntent.LoadStages(roomId))
+    }
 
     Box(
         modifier = Modifier
@@ -100,7 +106,7 @@ fun StageScreen(
                     StageSection(
                         stage = stage,
                         onTaskToggle = { taskId ->
-                            viewModel.handleIntent(StageIntent.ToggleTask(stage.id, taskId))
+                            viewModel.handleIntent(StageIntent.ToggleTask(roomId, stage.id, taskId))
                         },
                         onStatusClick = {
                             selectedStage = stage
@@ -123,7 +129,7 @@ fun StageScreen(
                 onDismiss = { showSheet = false },
                 onSelected = { id, status ->
                     viewModel.handleIntent(
-                        StageIntent.UpdateStageStatus(id, status)
+                        StageIntent.UpdateStageStatus(roomId, id, status)
                     )
                     showSheet = false
                 },
@@ -137,11 +143,11 @@ fun StageScreen(
                 stages = state.stages,
                 onDismiss = { showAddDialog = false },
                 onConfirmStage = { title, deadline ->
-                    viewModel.handleIntent(StageIntent.AddStage(title, deadline))
+                    viewModel.handleIntent(StageIntent.AddStage(roomId, title, deadline))
                     showAddDialog = false
                 },
                 onConfirmTask = { stageId, title, deadline ->
-                    viewModel.handleIntent(StageIntent.AddTask(stageId, title, deadline))
+                    viewModel.handleIntent(StageIntent.AddTask(roomId, stageId, title, deadline))
                     showAddDialog = false
                 }
             )

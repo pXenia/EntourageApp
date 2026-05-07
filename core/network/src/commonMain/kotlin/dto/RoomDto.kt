@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 data class RoomDto(
     val id: Int,
     val title: String,
-    @SerialName("type_code")
-    val type: String,
+    @SerialName("type_id")
+    val type: Int?,
     val description: String?,
     val square: Float,
     @SerialName("ceiling_height")
@@ -18,8 +18,8 @@ data class RoomDto(
 @Serializable
 data class RoomAddDto(
     val title: String,
-    @SerialName("type_code")
-    val typeCode: String? = null,
+    @SerialName("type_id")
+    val typeCode: Int? = null,
     val description: String? = null,
     val square: Float? = null,
     @SerialName("ceiling_height")
@@ -42,8 +42,8 @@ data class OffsetDto(
 @Serializable
 data class RoomFullUpdateDto(
     val title: String,
-    @SerialName("type_code")
-    val typeCode: String? = null,
+    @SerialName("type_id")
+    val typeCode: Int? = null,
     val description: String? = null,
     val square: Float? = null,
     @SerialName("ceiling_height")

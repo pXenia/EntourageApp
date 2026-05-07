@@ -10,11 +10,6 @@ data class StageStatusDto(
 )
 
 @Serializable
-data class StageStatusAddDto(
-    val title: String
-)
-
-@Serializable
 data class StageAddDto(
     @SerialName("status_id")
     val statusId: Int,
@@ -39,6 +34,8 @@ data class StagePutDto(
 @Serializable
 data class StageDto(
     val id: Int,
+    @SerialName("room_id")
+    val roomId: Int,
     @SerialName("status_id")
     val statusId: Int,
     val title: String,
@@ -48,6 +45,8 @@ data class StageDto(
 @Serializable
 data class StageDetailDto(
     val id: Int,
+    @SerialName("room_id")
+    val roomId: Int,
     @SerialName("status_id")
     val statusId: Int,
     val title: String,
@@ -65,14 +64,6 @@ data class TaskAddDto(
 
 @Serializable
 data class TaskPatchDto(
-    @SerialName("is_completed")
-    val isCompleted: Boolean
-)
-
-@Serializable
-data class TaskPutDto(
-    val title: String,
-    val deadline: String? = null,
     @SerialName("is_completed")
     val isCompleted: Boolean
 )
