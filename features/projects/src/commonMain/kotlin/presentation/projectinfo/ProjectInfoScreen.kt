@@ -106,7 +106,7 @@ fun ProjectInfoScreen(
                     state.members.forEach { member ->
                         MemberCard(
                             name = member.name,
-                            role = member.role,
+                            role = member.roleId,
                             email = member.email
                         )
                     }
@@ -136,7 +136,7 @@ fun ProjectInfoScreen(
                 }
             }
 
-            if (state.project?.role != "viewer") {
+            if (state.project?.role != 3) {
                 AccentButton(
                     modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth().height(56.dp),
                     text = "Редактировать",
@@ -153,9 +153,15 @@ fun ProjectInfoScreen(
 @Composable
 private fun MemberCard(
     name: String,
-    role: String,
+    role: Int,
     email: String
 ) {
+    val roleTitle = when (role) {
+        1 -> "владелец"
+        2 -> "редактор"
+        3 -> "читатель"
+        else -> ""
+    }
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -181,7 +187,7 @@ private fun MemberCard(
                     style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp)
                 )
                 Text(
-                    text = " ($role)",
+                    text = " ($roleTitle)",
                     style = MaterialTheme.typography.bodySmall.copy(
                         color = EntourageTeal.copy(alpha = 0.7f),
                         fontSize = 14.sp

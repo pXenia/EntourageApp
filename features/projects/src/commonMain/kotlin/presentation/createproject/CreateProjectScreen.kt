@@ -182,9 +182,10 @@ fun CreateProjectScreen(
                     modifier = Modifier.fillMaxWidth(),
                     name = participant.name,
                     role = when (participant.roleCode) {
-                        "editor" -> "редакт."
-                        "viewer" -> "читатель"
-                        else -> participant.roleCode
+                        1 -> "владелец"
+                        2 -> "редакт."
+                        3 -> "читатель"
+                        else -> ""
                     },
                     email = participant.email,
                     onCrossClick = {

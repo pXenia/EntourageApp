@@ -1,0 +1,133 @@
+package com.entourageapp.features.rooms.presentation.stages
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.entourageapp.core.ui.tools.formatDate
+import com.entourageapp.core.ui.tools.tryParseDate
+import com.entourageapp.features.rooms.domain.StagesRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+
+class StageVM(
+    private val repository: StagesRepository
+) : ViewModel() {
+    private val _state = MutableStateFlow(StageState())
+    val state: StateFlow<StageState> = _state.asStateFlow()
+
+    fun handleIntent(intent: StageIntent) {
+        when (intent) {
+            is StageIntent.LoadStages -> loadStages(intent.roomId)
+            is StageIntent.ToggleTask -> toggleTask(intent.roomId, intent.stageId, intent.taskId)
+            is StageIntent.UpdateStageStatus -> updateStageStatus(intent.roomId, intent.stageId, intent.status)
+            is StageIntent.AddStage -> addStage(intent.roomId, intent.title, intent.deadline)
+            is StageIntent.AddTask -> addTask(intent.roomId, intent.stageId, intent.title, intent.deadline)
+        }
+    }
+
+    private fun loadStages(roomId: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+            runCatching {
+                val stages = repository.getStages(roomId)
+                val stageDetails = stages.map { stage ->
+                    repository.getStageDetail(stage.id)
+                }
+                
+                _state.update { state ->
+                    state.copy(
+                        isLoading = false,
+                        stages = stageDetails.map { detail ->
+                            Stage(
+                                id = detail.id,
+                                title = detail.title,
+                                status = StageStatus.fromId(detail.statusId),
+                                deadline = formatDate(detail.deadline ?: ""),
+                                tasks = detail.tasks.map { task ->
+                                    Task(
+                                        id = task.id,
+                                        title = task.title,
+                                        isCompleted = task.isCompleted,
+                                        deadline = formatDate(task.deadline ?: "")
+                                    )
+                                }
+                            )
+                        }
+                    )
+                }
+            }.onFailure { e ->
+                _state.update { it.copy(isLoading = false, error = e.message) }
+            }
+        }
+    }
+
+    private fun addStage(roomId: Int, title: String, deadline: String) {
+        viewModelScope.launch {
+            runCatching {
+                val deadlinePars = if (deadline.isNotBlank()) {
+                    tryParseDate(deadline)
+                } else null
+                
+                repository.createStage(
+                    roomId = roomId,
+                    statusId = StageStatus.NOT_STARTED.id,
+                    title = title,
+                    deadline = deadlinePars?.toString()
+                )
+            }.onSuccess {
+                loadStages(roomId)
+            }.onFailure { e ->
+                _state.update { it.copy(error = e.message) }
+            }
+        }
+    }
+
+    private fun addTask(roomId: Int, stageId: Int, title: String, deadline: String) {
+        viewModelScope.launch {
+            runCatching {
+                val deadlinePars = if (deadline.isNotBlank()) {
+                    tryParseDate(deadline)
+                } else null
+                
+                repository.createTask(
+                    stageId = stageId,
+                    title = title,
+                    deadline = deadlinePars?.toString()
+                )
+            }.onSuccess {
+                loadStages(roomId = roomId)
+            }.onFailure { e ->
+                _state.update { it.copy(error = e.message) }
+            }
+        }
+    }
+
+    private fun toggleTask(roomId: Int, stageId: Int, taskId: Int) {
+        val stage = _state.value.stages.find { it.id == stageId }
+        val task = stage?.tasks?.find { it.id == taskId } ?: return
+        
+        viewModelScope.launch {
+            runCatching {
+                repository.toggleTask(taskId, !task.isCompleted)
+            }.onSuccess {
+                loadStages(roomId = roomId)
+            }.onFailure { e ->
+                _state.update { it.copy(error = e.message) }
+            }
+        }
+    }
+
+    private fun updateStageStatus(roomId: Int, stageId: Int, status: StageStatus) {
+        viewModelScope.launch {
+            runCatching {
+                repository.updateStageStatus(stageId, status.id)
+            }.onSuccess {
+                loadStages(roomId)
+            }.onFailure { e ->
+                _state.update { it.copy(error = e.message) }
+            }
+        }
+    }
+}

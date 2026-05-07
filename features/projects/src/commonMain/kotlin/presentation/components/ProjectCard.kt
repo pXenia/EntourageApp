@@ -39,6 +39,7 @@ import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
+import com.entourageapp.core.ui.tools.getPlural
 
 @Composable
 fun ProjectCard(
@@ -89,13 +90,13 @@ fun ProjectCard(
 
                 InfoBox(
                     value = participants.toString(),
-                    label = "участники",
+                    label = getPlural(participants, "участник", "участника", "участников"),
                     backgroundColor = Color.Transparent,
                     shape = RoundedCornerShape(16.dp)
                 )
                 InfoBox(
                     value = rooms.toString(),
-                    label = "комнат",
+                    label = getPlural(rooms, "комната", "комнаты", "комнат"),
                     backgroundColor = EntouragePeach.copy(alpha = 0.8f),
                     shape = RoundedCornerShape(16.dp)
                 )

@@ -18,16 +18,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,12 +36,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
-import com.entourageapp.core.ui.add
 import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.components.TabButton
 import com.entourageapp.core.ui.components.TopScreenTitle
 import com.entourageapp.features.projects.presentation.components.ProjectCard
-import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -99,9 +92,9 @@ fun ProjectListScreen(
             )
             TabButton(
                 modifier = Modifier.weight(1f),
-                title = "Текущие",
-                isSelected = state.projectFilter == ProjectFilter.CURRENT,
-                onClick = {viewModel.handleIntent(ProjectListIntent.FilterProjects(ProjectFilter.CURRENT))}
+                title = "Архив",
+                isSelected = state.projectFilter == ProjectFilter.ARCHIVE,
+                onClick = {viewModel.handleIntent(ProjectListIntent.FilterProjects(ProjectFilter.ARCHIVE))}
             )
         }
         Box(

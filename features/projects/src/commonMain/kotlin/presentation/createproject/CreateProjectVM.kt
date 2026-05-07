@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entourageapp.core.network.dto.ProjectCreateDto
 import com.entourageapp.core.network.dto.ProjectMemberAddDto
+import com.entourageapp.core.ui.tools.tryParseDate
 import com.entourageapp.features.projects.domain.ProjectsRepository
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
 
 class CreateProjectVM(
     private val repository: ProjectsRepository
@@ -54,7 +54,7 @@ class CreateProjectVM(
                 viewModelScope.launch {
                     try {
                         val user = repository.checkEmail(intent.email)
-                        val roleCode = if (intent.allowEdit) "editor" else "viewer"
+                        val roleCode = if (intent.allowEdit) 2 else 3
                         val participant = PendingParticipant(
                             email = intent.email,
                             name = user.name,
@@ -99,13 +99,13 @@ class CreateProjectVM(
                             startDate = project.startDateFormatted.replace(".", ""),
                             endDate = project.endDateFormatted?.replace(".", ""),
                             square = project.square?.toString() ?: "",
-                            budget = project.budget?.toLong()?.toString() ?: "",
+                            budget = project.budget.toLong().toString() ?: "",
                             description = project.description ?: "",
-                            pendingParticipants = members.filter { it.role != "owner" }.map {
+                            pendingParticipants = members.filter { it.roleId != 1 }.map {
                                 PendingParticipant(
                                     email = it.email,
                                     name = it.name,
-                                    roleCode = it.role
+                                    roleCode = it.roleId
                                 )
                             },
                             isLoading = false
@@ -169,11 +169,7 @@ class CreateProjectVM(
                         members = currentState.pendingParticipants.map {
                             ProjectMemberAddDto(
                                 email = it.email,
-                                roleCode = when(it.roleCode){
-                                    "Владлец" ->  "owner"
-                                    "Редактор" -> "editor"
-                                    else -> "viewer"
-                                }
+                                roleId = it.roleCode
                             )
                         }
                     )
@@ -196,18 +192,6 @@ class CreateProjectVM(
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.message) }
             }
-        }
-    }
-
-    private fun tryParseDate(uiDate: String): LocalDate? {
-        if (uiDate.length != 8) return null
-        return try {
-            val day = uiDate.substring(0, 2).toInt()
-            val month = uiDate.substring(2, 4).toInt()
-            val year = uiDate.substring(4, 8).toInt()
-            LocalDate(year, month, day)
-        } catch (e: Exception) {
-            null
         }
     }
 }

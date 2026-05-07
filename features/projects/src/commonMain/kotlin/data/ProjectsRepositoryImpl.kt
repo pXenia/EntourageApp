@@ -35,7 +35,7 @@ class ProjectsRepositoryImpl(
         api.updateProject(projectId, project)
     }
 
-    override suspend fun addProjectMember(projectId: Int, email: String, roleCode: String) {
+    override suspend fun addProjectMember(projectId: Int, email: String, roleCode: Int) {
         api.addProjectMember(projectId, email, roleCode)
     }
 

@@ -1,6 +1,10 @@
 package com.entourageapp.features.projects.domain
 
 import com.entourageapp.core.network.dto.ProjectDto
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
 
 data class ProjectCard(
     val id: Int,
@@ -23,6 +27,11 @@ fun ProjectDto.toProjectCard(): ProjectCard {
         else -> ""
     }
 
+    val isCompleted = endDate?.let {
+        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        LocalDate.parse(it) < today
+    } ?: false
+
     return ProjectCard(
         id = id,
         title = title,
@@ -30,6 +39,6 @@ fun ProjectDto.toProjectCard(): ProjectCard {
         roomsCount = roomsCount,
         membersCount = membersCount,
         years = yearsString,
-        isCompleted = true
+        isCompleted = isCompleted
     )
 }

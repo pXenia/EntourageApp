@@ -12,6 +12,8 @@ import com.entourageapp.core.network.api.ProjectsApi
 import com.entourageapp.core.network.api.ProjectsKtorApi
 import com.entourageapp.core.network.api.RoomsApi
 import com.entourageapp.core.network.api.RoomsKtorApi
+import com.entourageapp.core.network.api.StagesApi
+import com.entourageapp.core.network.api.StagesKtorApi
 import com.russhwolf.settings.Settings
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpCallValidator
@@ -100,4 +102,5 @@ val networkModule = module {
     single<EstimateApi> { EstimateKtorApi(get()) }
     single<DocumentsApi> { DocumentsKtorApi(get()) }
     single<GalleryApi> { GalleryKtorApi(get()) }
+    single<StagesApi> { StagesKtorApi(get()) }
 }

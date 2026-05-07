@@ -23,11 +23,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,25 +38,20 @@ import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
-import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageRed
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.calendar
-import com.entourageapp.core.ui.components.AccentButton
 import com.entourageapp.core.ui.components.ScreenTitle
+import com.entourageapp.core.ui.components.SectionTitle
 import com.entourageapp.core.ui.dialogs.DeleteDialog
 import com.entourageapp.core.ui.tools.showToast
 import com.entourageapp.core.ui.user
-import com.entourageapp.features.userprofile.domain.ProjectCard
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -88,10 +80,10 @@ fun ProjectManagementScreen(
     }
 
     if (state.isConfirmSheetVisible && state.selectedProject != null) {
-        val isOwner = state.selectedProject!!.role == "owner"
+        val isOwner = state.selectedProject!!.role == 1
         DeleteDialog(
             onDismiss = { viewModel.onIntent(ProjectManagementIntent.HideConfirmSheet) },
-            onOkClick = { viewModel.onIntent(ProjectManagementIntent.HideConfirmSheet)},
+            onOkClick = { viewModel.onIntent(ProjectManagementIntent.ConfirmAction)},
             text = if (isOwner)
                 "Вы действительно хотите удалить проект \"${state.selectedProject!!.title}\"?"
             else "Вы действительно хотите выйти из проекта \"${state.selectedProject!!.title}\"?",
@@ -121,13 +113,7 @@ fun ProjectManagementScreen(
         ) {
             if (state.ownedProjects.isNotEmpty()) {
                 item {
-                    Text(
-                        text = "Удаление проектов",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = EntourageTeal,
-                            fontSize = 18.sp,
-                        )
-                    )
+                    SectionTitle("Удаление проектов")
                 }
                 items(state.ownedProjects) { project ->
                     ProjectActionCard(
@@ -146,13 +132,7 @@ fun ProjectManagementScreen(
 
             if (state.memberProjects.isNotEmpty()) {
                 item {
-                    Text(
-                        text = "Выход из проектов",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = EntourageTeal,
-                            fontSize = 18.sp,
-                        )
-                    )
+                    SectionTitle("Выход из проектов")
                 }
                 items(state.memberProjects) { project ->
                     ProjectActionCard(
@@ -177,7 +157,7 @@ private fun ProjectActionCard(
     projectName: String,
     participantsCount: Int,
     dateRange: String,
-    role: String,
+    role: Int,
     buttonText: String,
     onButtonClick: () -> Unit,
     color: Color
@@ -267,11 +247,11 @@ private fun ProjectInfoRow(icon: DrawableResource, text: String) {
 }
 
 @Composable
-private fun RoleBadge(role: String) {
+private fun RoleBadge(role: Int) {
     val roleTitle = when (role) {
-        "owner" -> "Владелец"
-        "editor" -> "Редактор"
-        "viewer" -> "Читатель"
+        1 -> "Владелец"
+        2 -> "Редактор"
+        3 -> "Читатель"
         else -> ""
     }
 
