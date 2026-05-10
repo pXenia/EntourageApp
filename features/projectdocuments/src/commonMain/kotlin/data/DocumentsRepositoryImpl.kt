@@ -16,7 +16,19 @@ class DocumentsRepositoryImpl(
         emit(api.getDocuments(projectId))
     }.catch { e -> throw e }
 
-    override suspend fun addDocument(projectId: Int, title: String, url: String) {
-        api.addDocument(projectId, DocumentAddDto(title = title, url = url))
+    override suspend fun createDocument(projectId: Int, title: String, url: String) {
+        api.createDocument(projectId, DocumentAddDto(title = title, url = url))
+    }
+
+    override suspend fun getDocument(projectId: Int, documentId: Int): Flow<DocumentDto> = flow {
+        emit(api.getDocument(projectId, documentId))
+    }.catch { e -> throw e }
+
+    override suspend fun updateDocument(projectId: Int, documentId: Int, title: String, url: String) {
+        api.updateDocument(projectId, documentId, DocumentAddDto(title = title, url = url))
+    }
+
+    override suspend fun deleteDocument(projectId: Int, documentId: Int) {
+        api.deleteDocument(projectId, documentId)
     }
 }

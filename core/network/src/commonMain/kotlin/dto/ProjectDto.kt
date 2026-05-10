@@ -25,3 +25,18 @@ data class ProjectDto(
     val totalSpent: Float
 )
 
+@Serializable
+data class ProjectShortDto(
+    val id: Int,
+    val title: String,
+    @SerialName("start_date")
+    val startDate: String,
+    @SerialName("end_date")
+    val endDate: String?,
+    val square: Float = 0f,
+    @SerialName("rooms_count")
+    val roomsCount: Int = 0,
+    @SerialName("members_count")
+    val membersCount: Int = 0
+)
+

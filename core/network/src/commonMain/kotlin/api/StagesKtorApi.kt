@@ -1,6 +1,5 @@
 package com.entourageapp.core.network.api
 
-import com.entourageapp.core.network.dto.MessageDto
 import com.entourageapp.core.network.dto.StageAddDto
 import com.entourageapp.core.network.dto.StageDetailDto
 import com.entourageapp.core.network.dto.StageDto
@@ -29,36 +28,42 @@ class StagesKtorApi(private val client: HttpClient) : StagesApi {
     override suspend fun getStageDetail(stageId: Int): StageDetailDto =
         client.get("stages/$stageId").body()
 
-    override suspend fun createStage(roomId: Int, data: StageAddDto): MessageDto =
+    override suspend fun createStage(roomId: Int, data: StageAddDto) {
         client.post("stages/room/$roomId") {
             contentType(ContentType.Application.Json)
             setBody(data)
-        }.body()
+        }
+    }
 
-    override suspend fun patchStage(stageId: Int, data: StagePatchDto): MessageDto =
+    override suspend fun patchStage(stageId: Int, data: StagePatchDto) {
         client.patch("stages/$stageId") {
             contentType(ContentType.Application.Json)
             setBody(data)
-        }.body()
+        }
+    }
 
-    override suspend fun deleteStage(stageId: Int): MessageDto =
-        client.delete("stages/$stageId").body()
+    override suspend fun deleteStage(stageId: Int) {
+        client.delete("stages/$stageId")
+    }
 
     override suspend fun getTasks(stageId: Int): List<TaskDto> =
         client.get("stages/$stageId/tasks").body()
 
-    override suspend fun createTask(stageId: Int, data: TaskAddDto): MessageDto =
+    override suspend fun createTask(stageId: Int, data: TaskAddDto) {
         client.post("stages/$stageId/tasks") {
             contentType(ContentType.Application.Json)
             setBody(data)
-        }.body()
+        }
+    }
 
-    override suspend fun patchTask(taskId: Int, data: TaskPatchDto): MessageDto =
+    override suspend fun patchTask(taskId: Int, data: TaskPatchDto) {
         client.patch("stages/tasks/$taskId") {
             contentType(ContentType.Application.Json)
             setBody(data)
-        }.body()
+        }
+    }
 
-    override suspend fun deleteTask(taskId: Int): MessageDto =
-        client.delete("stages/tasks/$taskId").body()
+    override suspend fun deleteTask(taskId: Int) {
+        client.delete("stages/tasks/$taskId")
+    }
 }

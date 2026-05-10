@@ -25,4 +25,8 @@ class RoomsRepositoryImpl(
         val response = api.getRoomById(projectId, roomId)
         emit(response.toRoomDetail())
     }.catch { e -> throw e }
+
+    override suspend fun deleteRoom(projectId: Int, roomId: Int) {
+        api.deleteRoom(projectId, roomId)
+    }
 }

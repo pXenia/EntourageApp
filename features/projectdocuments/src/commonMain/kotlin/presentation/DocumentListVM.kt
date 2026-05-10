@@ -40,7 +40,7 @@ class DocumentListVM(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                repository.addDocument(projectId, title, url)
+                repository.createDocument(projectId, title, url)
                 loadDocuments(projectId)
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.message) }

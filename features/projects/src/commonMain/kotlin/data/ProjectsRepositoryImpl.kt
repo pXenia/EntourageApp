@@ -23,7 +23,7 @@ class ProjectsRepositoryImpl(
 ) : ProjectsRepository {
 
     override fun getProjectsList(): Flow<List<ProjectCard>> = flow {
-        val response = api.getProjects()
+        val response = api.getProjectsListShort()
         emit(response.map { it.toProjectCard() })
     }.catch { e -> throw e }
 
@@ -58,5 +58,9 @@ class ProjectsRepositoryImpl(
 
     override suspend fun getProjectMembers(projectId: Int): List<ProjectMemberDto> {
         return api.getProjectMembers(projectId)
+    }
+
+    override suspend fun deleteProject(projectId: Int) {
+        api.deleteProject(projectId)
     }
 }

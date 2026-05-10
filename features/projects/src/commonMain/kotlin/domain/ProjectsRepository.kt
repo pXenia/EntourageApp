@@ -17,4 +17,5 @@ interface ProjectsRepository {
     suspend fun checkEmail(email: String): UserEmailCheckDto
     fun getProjectSummary(projectId: Int): Flow<ProjectSummaryDto>
     suspend fun getProjectMembers(projectId: Int): List<ProjectMemberDto>
+    suspend fun deleteProject(projectId: Int)
 }

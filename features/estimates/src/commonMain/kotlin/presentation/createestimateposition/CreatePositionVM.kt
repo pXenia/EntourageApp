@@ -47,8 +47,8 @@ class CreatePositionVM(
     private fun loadDictionaries(projectId: Int) {
         viewModelScope.launch {
             try {
-                val types = repository.getItemTypes(projectId)
-                val units = repository.getUnits(projectId)
+                val types = repository.getItemTypes()
+                val units = repository.getUnits()
                 val rooms = repository.getRooms(projectId)
 
                 val defaultType = types.find { it.id == 1 } ?: types.firstOrNull()
