@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,7 +59,7 @@ fun NavRoot(
 
     val startRoute = when (authState) {
         AuthState.Authenticated -> Route.ProjectList
-        else -> Route.Login
+        else -> Route.AuthStart
     }
 
     val navigationState = rememberNavigationState(
@@ -72,13 +71,13 @@ fun NavRoot(
     LaunchedEffect(authState) {
         when (authState) {
             AuthState.Authenticated -> {
-                if (navigationState.currentRoute is Route.Login) {
+                if (navigationState.currentRoute is Route.AuthStart || navigationState.currentRoute is Route.Login || navigationState.currentRoute is Route.Registration) {
                     navigator.navigate(Route.ProjectList)
                 }
             }
             AuthState.NotAuthenticated -> {
-                if (navigationState.currentRoute !is Route.Login) {
-                    navigator.navigate(Route.Login)
+                if (navigationState.currentRoute !is Route.AuthStart && navigationState.currentRoute !is Route.Login && navigationState.currentRoute !is Route.Registration) {
+                    navigator.navigate(Route.AuthStart)
                 }
             }
             AuthState.Loading -> Unit

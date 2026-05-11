@@ -39,7 +39,7 @@ class NavigationState(
     val currentRoute: NavKey
         get() = backStacks[topLevelRoute]?.lastOrNull() ?: topLevelRoute
 
-    private val authRoutes = setOf(Route.Login, Route.Registration)
+    private val authRoutes = setOf(Route.AuthStart, Route.Login, Route.Registration)
     private val topLevelRoutes = setOf(Route.ProjectList, Route.CalculatorsList(0,0), Route.UserProfile)
 
     val shouldShowBottomBar: Boolean
@@ -62,7 +62,7 @@ fun rememberNavigationState(
         mutableStateOf(startRoute)
     }
 
-    val authRoutes = setOf(Route.Login, Route.Registration)
+    val authRoutes = setOf(Route.AuthStart, Route.Login, Route.Registration)
 
     val backStacks = (topLevelRoutes + authRoutes).associateWith { key ->
         rememberNavBackStack(
@@ -84,6 +84,7 @@ private val config = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
             subclass(Route.AuthGraph::class, Route.AuthGraph.serializer())
+            subclass(Route.AuthStart::class, Route.AuthStart.serializer())
             subclass(Route.Login::class, Route.Login.serializer())
             subclass(Route.Registration::class, Route.Registration.serializer())
             subclass(Route.ProjectList::class, Route.ProjectList.serializer())
@@ -98,6 +99,7 @@ private val config = SavedStateConfiguration {
             subclass(Route.EstimateList::class, Route.EstimateList.serializer())
             subclass(Route.Wallpaper::class, Route.Wallpaper.serializer())
             subclass(Route.Paint::class, Route.Paint.serializer())
+            subclass(Route.Laminate::class, Route.Laminate.serializer())
             subclass(Route.Documents::class, Route.Documents.serializer())
             subclass(Route.Gallery::class, Route.Gallery.serializer())
             subclass(Route.ManageProjects::class, Route.ManageProjects.serializer())

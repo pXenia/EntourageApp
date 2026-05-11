@@ -9,6 +9,9 @@ sealed interface Route : NavKey {
     data object AuthGraph : Route
 
     @Serializable
+    data object AuthStart : Route
+
+    @Serializable
     data object Login : Route
 
     @Serializable
