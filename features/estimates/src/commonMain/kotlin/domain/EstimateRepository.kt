@@ -12,7 +12,7 @@ interface EstimateRepository {
     suspend fun getItemTypes(): List<EstimateItemTypeDto>
     suspend fun getRooms(projectId: Int): List<RoomShortDto>
     suspend fun addEstimateItem(projectId: Int, item: EstimateItemCreateDto)
-    suspend fun getEstimateList(projectId: Int): EstimateListDto
+    suspend fun getEstimateList(projectId: Int, roomId: Int?): EstimateListDto
     suspend fun getEstimateItem(projectId: Int, itemId: Int): EstimateItemDto
     suspend fun updateEstimateItem(projectId: Int, itemId: Int, item: EstimateItemCreateDto)
     suspend fun deleteEstimateItem(projectId: Int, itemId: Int)

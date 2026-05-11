@@ -11,7 +11,8 @@ fun EntryProviderScope<NavKey>.estimatesEntryBuilder(navigator: Navigator) {
     entry<Route.EstimateList> {
         EstimateListScreen(
             projectId = it.projectId,
-            onAddPosition = { projectId -> navigator.navigate(Route.CreateEstimatePosition(projectId, 0)) },
+            roomId = it.roomId,
+            onAddPosition = { projectId, roomId -> navigator.navigate(Route.CreateEstimatePosition(projectId, roomId)) },
             onBackClick = { navigator.goBack() }
         )
     }

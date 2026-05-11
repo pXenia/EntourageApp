@@ -11,7 +11,7 @@ interface EstimateApi {
     suspend fun getUnits(): List<MeasureUnitDto>
     suspend fun getItemTypes(): List<EstimateItemTypeDto>
     suspend fun getRooms(projectId: Int): List<RoomShortDto>
-    suspend fun getEstimateList(projectId: Int): EstimateListDto
+    suspend fun getEstimateList(projectId: Int, roomId: Int?): EstimateListDto
     suspend fun addEstimateItem(projectId: Int, item: EstimateItemCreateDto)
     suspend fun getEstimateItem(projectId: Int, itemId: Int): EstimateItemDto
     suspend fun updateEstimateItem(projectId: Int, itemId: Int, item: EstimateItemCreateDto)

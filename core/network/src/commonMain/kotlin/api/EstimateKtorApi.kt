@@ -10,6 +10,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -27,8 +28,10 @@ class EstimateKtorApi(private val client: HttpClient) : EstimateApi {
     override suspend fun getRooms(projectId: Int): List<RoomShortDto> =
         client.get("projects/$projectId/rooms").body()
 
-    override suspend fun getEstimateList(projectId: Int): EstimateListDto =
-        client.get("projects/$projectId/estimates").body()
+    override suspend fun getEstimateList(projectId: Int, roomId: Int?): EstimateListDto =
+        client.get("projects/$projectId/estimates"){
+            roomId?.let { parameter("room_id", it) }
+        }.body()
 
     override suspend fun addEstimateItem(projectId: Int, item: EstimateItemCreateDto) {
         client.post("projects/$projectId/estimates") {

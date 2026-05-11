@@ -61,7 +61,6 @@ fun AddParticipantDialog(
             Spacer(modifier = Modifier.height(20.dp))
 
             val descriptionText = buildAnnotatedString {
-                append("Пользователю ")
                 withStyle(
                     style = SpanStyle(
                         color = EntourageTeal,
@@ -69,7 +68,7 @@ fun AddParticipantDialog(
                 ) {
                     append(email.trim())
                 }
-                append("\nбудет отправлено приглашение в проект")
+                append("\nбудет добавлен в проект")
             }
 
             Text(

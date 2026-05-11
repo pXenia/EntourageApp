@@ -57,7 +57,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun EstimateListScreen(
     projectId: Int,
-    onAddPosition: (Int) -> Unit,
+    roomId: Int,
+    onAddPosition: (Int, Int) -> Unit,
     onBackClick: () -> Unit,
     viewModel: EstimateListVM = koinViewModel()
 ) {
@@ -68,7 +69,7 @@ fun EstimateListScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.handleIntent(EstimateListIntent.LoadData(projectId))
+        viewModel.handleIntent(EstimateListIntent.LoadData(projectId, roomId))
     }
 
     Column(
@@ -96,7 +97,7 @@ fun EstimateListScreen(
             ) {
                 ScreenTitleTwoButtons(
                     modifier = Modifier.padding(bottom = 8.dp),
-                    title = "Смета по проекту",
+                    title = if (roomId == 0) "Смета по проекту" else "Смета по комнате" ,
                     leftIcon = arrowLeft,
                     rightIcon = print,
                     onLeftButtonClick = onBackClick,
@@ -149,7 +150,7 @@ fun EstimateListScreen(
                 }
             }
             AddRoundButton(
-                onClick = { onAddPosition(projectId) },
+                onClick = { onAddPosition(projectId, roomId) },
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(bottom = 8.dp),

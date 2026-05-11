@@ -18,18 +18,19 @@ class EstimateListVM(
 
     fun handleIntent(intent: EstimateListIntent) {
         when (intent) {
-            is EstimateListIntent.LoadData -> loadEstimate(intent.projectId)
+            is EstimateListIntent.LoadData -> loadEstimate(intent.projectId, intent.roomId)
             is EstimateListIntent.UpdateSearch -> _state.update { it.copy(searchQuery = intent.query) }
             is EstimateListIntent.DeleteItem -> { /* логика удаления */ }
             is EstimateListIntent.ExportXlsx -> exportXlsx(intent.projectId)
         }
     }
 
-    private fun loadEstimate(projectId: Int) {
+    private fun loadEstimate(projectId: Int, roomId: Int) {
+
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             try {
-                val response = repository.getEstimateList(projectId)
+                val response = repository.getEstimateList(projectId, if (roomId == 0) null else roomId)
                 _state.update { it.copy(
                     items = response.items,
                     totalSum = response.totalSum,

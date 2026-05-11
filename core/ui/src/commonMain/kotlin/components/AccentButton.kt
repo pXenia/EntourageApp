@@ -19,7 +19,7 @@ fun AccentButton(
     text: String,
     containerColor: Color,
     contentColor: Color,
-    elevation: Dp = 2.dp,
+    elevation: Dp = 0.dp,
     enabled: Boolean = true
 ) {
     Button(

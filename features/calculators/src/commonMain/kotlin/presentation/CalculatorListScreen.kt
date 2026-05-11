@@ -36,6 +36,8 @@ fun CalculatorListScreen(
     projectId: Int,
     roomId: Int,
     onWallpaperClick: (Int, Int) -> Unit,
+    onPaintClick: (Int, Int) -> Unit,
+    onLaminateClick: (Int, Int) -> Unit
 ) {
     val scrollState = rememberLazyListState()
     val isCollapsed by remember {
@@ -78,6 +80,30 @@ fun CalculatorListScreen(
                         ),
                     onCardClick = { onWallpaperClick(projectId, roomId) },
                     title = "Обои"
+                )
+            }
+            item{
+                CalculatorCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem(
+                            fadeInSpec = tween(500),
+                            placementSpec = spring(stiffness = Spring.StiffnessLow)
+                        ),
+                    onCardClick = { onPaintClick(projectId, roomId) },
+                    title = "Краска"
+                )
+            }
+            item{
+                CalculatorCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem(
+                            fadeInSpec = tween(500),
+                            placementSpec = spring(stiffness = Spring.StiffnessLow)
+                        ),
+                    onCardClick = { onLaminateClick(projectId, roomId) },
+                    title = "Ламинат"
                 )
             }
         }
