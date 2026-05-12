@@ -9,7 +9,10 @@ data class EstimateListState(
     val searchQuery: String = "",
     val isLoading: Boolean = false,
     val isExporting: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val showDeleteDialog: Boolean = false,
+    val selectedItemId: Int? = null,
+    val selectedItemName: String = ""
 ) {
     val filteredItems: List<EstimateItemDto>
         get() = if (searchQuery.isBlank()) items
@@ -19,6 +22,8 @@ data class EstimateListState(
 sealed class EstimateListIntent {
     data class LoadData(val projectId: Int, val roomId: Int) : EstimateListIntent()
     data class UpdateSearch(val query: String) : EstimateListIntent()
-    data class DeleteItem(val itemId: Int) : EstimateListIntent()
+    data class ShowDeleteDialog(val itemId: Int, val itemName: String) : EstimateListIntent()
+    object DismissDeleteDialog : EstimateListIntent()
+    data class DeleteItem(val projectId: Int, val roomId: Int) : EstimateListIntent()
     data class ExportXlsx(val projectId: Int) : EstimateListIntent()
 }

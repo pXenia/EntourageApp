@@ -52,6 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.arrowLeft
@@ -69,6 +70,7 @@ import org.jetbrains.compose.resources.painterResource
 actual fun GalleryScreen(
     projectId: Int,
     roomId: Int,
+    roleId: Role,
     modifier: Modifier,
     onBackClick: () -> Unit,
     viewModel: GalleryVM
@@ -257,14 +259,20 @@ actual fun GalleryScreen(
                                         modifier = Modifier.align(Alignment.Center),
                                         color = EntourageBlack
                                     )
-                                    AddRoundButton(
-                                        onClick = {
-                                            viewModel.onIntent(GalleryIntent.SetAddImageVisibility(isVisible = true))
-                                        },
-                                        modifier = Modifier
-                                            .align(Alignment.BottomEnd)
-                                            .padding(bottom = 18.dp, end = 8.dp)
-                                    )
+                                    if(roleId != Role.Viewer) {
+                                        AddRoundButton(
+                                            onClick = {
+                                                viewModel.onIntent(
+                                                    GalleryIntent.SetAddImageVisibility(
+                                                        isVisible = true
+                                                    )
+                                                )
+                                            },
+                                            modifier = Modifier
+                                                .align(Alignment.BottomEnd)
+                                                .padding(bottom = 18.dp, end = 8.dp)
+                                        )
+                                    }
                                 }
                             }
 

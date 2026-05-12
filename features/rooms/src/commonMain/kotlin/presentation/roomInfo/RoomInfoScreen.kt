@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeachAlpha80
 import com.entourageapp.core.ui.EntourageTeal
@@ -40,6 +41,7 @@ import kotlin.math.roundToInt
 fun RoomInfoScreen(
     projectId: Int,
     roomId: Int,
+    roleId: Role,
     onBackClick: () -> Unit = {},
     onEditClick: (Int, Int) -> Unit = { _, _ -> },
     viewModel: RoomInfoVM = koinViewModel(),
@@ -134,14 +136,16 @@ fun RoomInfoScreen(
                     }
                 }
 
-                AccentButton(
-                    modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth().height(56.dp),
-                    text = "Редактировать",
-                    onClick = { onEditClick(projectId, roomId) },
-                    elevation = 0.dp,
-                    containerColor = EntouragePeachAlpha80,
-                    contentColor = EntourageBlack
-                )
+                if (roleId == Role.Owner) {
+                    AccentButton(
+                        modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth().height(56.dp),
+                        text = "Редактировать",
+                        onClick = { onEditClick(projectId, roomId) },
+                        elevation = 0.dp,
+                        containerColor = EntouragePeachAlpha80,
+                        contentColor = EntourageBlack
+                    )
+                }
             }
         }
     }

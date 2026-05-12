@@ -23,6 +23,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -50,6 +51,7 @@ import com.entourageapp.core.ui.calendar
 import com.entourageapp.core.ui.components.ScreenTitle
 import com.entourageapp.core.ui.components.SectionTitle
 import com.entourageapp.core.ui.dialogs.DeleteDialog
+import com.entourageapp.core.ui.tools.getPlural
 import com.entourageapp.core.ui.tools.showToast
 import com.entourageapp.core.ui.user
 import org.jetbrains.compose.resources.DrawableResource
@@ -101,13 +103,13 @@ fun ProjectManagementScreen(
             .padding(horizontal = 16.dp)
     ) {
         ScreenTitle(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
             title = "УПРАВЛЕНИЕ УЧАСТИЕМ\nВ ПРОЕКТАХ",
             onBackClick = onBackClick
         )
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(16.dp)),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(top = 8.dp)
         ) {
@@ -188,7 +190,7 @@ private fun ProjectActionCard(
                 color = EntourageBlack.copy(alpha = 0.6f)
             )
 
-            ProjectInfoRow(icon = user, text = "$participantsCount участника")
+            ProjectInfoRow(icon = user, text = "$participantsCount " + getPlural(participantsCount, "участник", "участника", "участников"))
             ProjectInfoRow(icon = calendar, text = dateRange)
 
             Spacer(modifier = Modifier.height(8.dp))

@@ -4,7 +4,7 @@ import com.entourageapp.features.projects.domain.ProjectCard
 
 data class ProjectListState(
     val isLoading: Boolean = false,
-    val projectFilter: ProjectFilter = ProjectFilter.ALL,
+    val projectFilter: ProjectFilter = ProjectFilter.CURRENT,
     val projectCards: List<ProjectCard> = emptyList(),
     val error: String? = null
 )

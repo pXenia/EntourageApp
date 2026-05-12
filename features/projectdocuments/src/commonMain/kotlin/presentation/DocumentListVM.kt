@@ -20,6 +20,13 @@ class DocumentListVM(
         when (intent) {
             is DocumentListIntent.LoadDocuments -> loadDocuments(intent.projectId)
             is DocumentListIntent.AddDocument -> addDocument(intent.projectId, intent.title, intent.url)
+            is DocumentListIntent.ShowDeleteDialog -> _state.update {
+                it.copy(showDeleteDialog = true, selectedDocId = intent.docId, selectedDocTitle = intent.docTitle)
+            }
+            is DocumentListIntent.DismissDeleteDialog -> _state.update {
+                it.copy(showDeleteDialog = false, selectedDocId = null, selectedDocTitle = "")
+            }
+            is DocumentListIntent.DeleteDocument -> deleteDocument(intent.projectId)
         }
     }
 
@@ -44,6 +51,19 @@ class DocumentListVM(
                 loadDocuments(projectId)
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.message) }
+            }
+        }
+    }
+
+    private fun deleteDocument(projectId: Int) {
+        val docId = _state.value.selectedDocId ?: return
+        viewModelScope.launch {
+            try {
+                repository.deleteDocument(projectId, docId)
+                _state.update { it.copy(showDeleteDialog = false, selectedDocId = null, selectedDocTitle = "") }
+                loadDocuments(projectId)
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false, error = e.message, showDeleteDialog = false) }
             }
         }
     }

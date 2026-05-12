@@ -24,9 +24,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -41,6 +43,7 @@ import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
@@ -48,16 +51,19 @@ import com.entourageapp.core.ui.arrowLeft
 import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.components.ScreenTitleTwoButtons
 import com.entourageapp.core.ui.components.SearchBar
+import com.entourageapp.core.ui.dialogs.DeleteDialog
 import com.entourageapp.core.ui.filter
 import com.entourageapp.core.ui.print
 import com.entourageapp.core.ui.tools.formatTwoDecimals
 import com.entourageapp.features.estimates.presentation.EstimateCard
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EstimateListScreen(
     projectId: Int,
     roomId: Int,
+    roleId: Role,
     onAddPosition: (Int, Int) -> Unit,
     onBackClick: () -> Unit,
     viewModel: EstimateListVM = koinViewModel()
@@ -67,9 +73,21 @@ fun EstimateListScreen(
     val isCollapsedHeader by remember {
         derivedStateOf { scrollState.firstVisibleItemScrollOffset > 0 }
     }
+    val sheetState = rememberModalBottomSheetState()
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(EstimateListIntent.LoadData(projectId, roomId))
+    }
+
+    if (state.showDeleteDialog) {
+        DeleteDialog(
+            onDismiss = { viewModel.handleIntent(EstimateListIntent.DismissDeleteDialog) },
+            onOkClick = { viewModel.handleIntent(EstimateListIntent.DeleteItem(projectId, roomId)) },
+            sheetState = sheetState,
+            title = "Удаление позиции",
+            text = "Вы действительно хотите удалить позицию \"${state.selectedItemName}\"?",
+            buttonTitle = "Удалить"
+        )
     }
 
     Column(
@@ -141,7 +159,12 @@ fun EstimateListScreen(
                         price = item.price.formatTwoDecimals(),
                         quantity = item.quantity.formatTwoDecimals(),
                         total = item.total.formatTwoDecimals(),
-                        room = item.room
+                        room = item.room,
+                        onLongClick = {
+                            if (roleId != Role.Viewer) {
+                                viewModel.handleIntent(EstimateListIntent.ShowDeleteDialog(item.id, item.name))
+                            }
+                        }
                     )
                 }
 
@@ -149,12 +172,14 @@ fun EstimateListScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
-            AddRoundButton(
-                onClick = { onAddPosition(projectId, roomId) },
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(bottom = 8.dp),
-            )
+            if (roleId != Role.Viewer) {
+                AddRoundButton(
+                    onClick = { onAddPosition(projectId, roomId) },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = 8.dp),
+                )
+            }
         }
     }
 }

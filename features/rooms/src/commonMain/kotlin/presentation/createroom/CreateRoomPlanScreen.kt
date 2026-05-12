@@ -3,6 +3,7 @@ package com.entourageapp.features.rooms.presentation.createroom
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -30,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.input.pointer.pointerInput
@@ -75,8 +78,7 @@ fun CreateRoomPlanScreen(
             .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding()
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 8.dp),
+            .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // расчет метрики
@@ -86,6 +88,7 @@ fun CreateRoomPlanScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 16.dp)
                 .border(1.dp, EntourageBlack, RoundedCornerShape(32.dp)),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -218,7 +221,7 @@ fun CreateRoomPlanScreen(
 
         // тулбар режимов
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             ModeChip("Рисование", state.mode == DrawMode.DRAW) {
@@ -240,6 +243,7 @@ fun CreateRoomPlanScreen(
         AccentButton(
             modifier = Modifier.fillMaxWidth()
                 .padding(top = 4.dp)
+                .padding(horizontal = 16.dp)
                 .height(48.dp),
             onClick = {
                 viewModel.handleIntent(
@@ -260,18 +264,20 @@ fun CreateRoomPlanScreen(
 
 @Composable
 fun RowScope.ModeChip(label: String, active: Boolean, onClick: () -> Unit) {
-    // кнопка выбора режима рисования
-    Button(
-        onClick = onClick,
-        modifier = Modifier.weight(1f),
-        shape = RoundedCornerShape(24.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (active) EntourageTeal.copy(alpha = 0.2f) else EntourageWhite.copy(
-                alpha = 0.2f
-            ),
-            contentColor = if (active) EntourageTeal else EntourageBlack.copy(alpha = 0.8f)
-        )
+    Box(
+        modifier = Modifier
+            .weight(1f)
+            .clip(RoundedCornerShape(24.dp))
+            .clickable { onClick() }
+            .background(if (active) EntourageTeal.copy(alpha = 0.2f) else EntourageWhite.copy(alpha = 0.2f))
+            .padding(12.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Text(label, fontSize = 12.sp, maxLines = 1)
+        Text(
+            label,
+            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp),
+            maxLines = 1,
+            color = if (active) EntourageTeal else EntourageBlack.copy(alpha = 0.8f)
+        )
     }
 }

@@ -67,17 +67,17 @@ fun SearchBar(
                             tint = EntourageBlack
                         )
                     }
-                    IconButton(
-                        onClick = onIconSecondClick,
-                        modifier = Modifier.size(20.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(iconSecond),
-                            contentDescription = "Filter",
-                            modifier = Modifier.size(height = 16.dp, width = 20.dp),
-                            tint = EntourageBlack
-                        )
-                    }
+//                    IconButton(
+//                        onClick = onIconSecondClick,
+//                        modifier = Modifier.size(20.dp)
+//                    ) {
+//                        Icon(
+//                            painter = painterResource(iconSecond),
+//                            contentDescription = "Filter",
+//                            modifier = Modifier.size(height = 16.dp, width = 20.dp),
+//                            tint = EntourageBlack
+//                        )
+//                    }
                 }
             },
             colors = OutlinedTextFieldDefaults.colors(

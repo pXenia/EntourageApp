@@ -1,6 +1,7 @@
 package com.entourageapp.features.projectdocuments.presentation
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,19 +10,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,25 +35,26 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
-import com.entourageapp.core.ui.EntourageTeal
-import com.entourageapp.core.ui.EntourageWhite
-import com.entourageapp.core.ui.add
 import com.entourageapp.core.ui.arrowLeft
 import com.entourageapp.core.ui.arrowRight
 import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.components.ScreenTitleTwoButtons
 import com.entourageapp.core.ui.components.SearchBar
 import com.entourageapp.core.ui.cross
+import com.entourageapp.core.ui.dialogs.DeleteDialog
 import com.entourageapp.core.ui.document
 import com.entourageapp.core.ui.search
 import com.entourageapp.core.ui.tools.formatUrl
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DocumentListScreen(
     projectId: Int,
+    roleId: Role,
     onBackClick: () -> Unit,
     viewModel: DocumentListVM = koinViewModel()
 ) {
@@ -62,9 +63,21 @@ fun DocumentListScreen(
     val uriHandler = LocalUriHandler.current
     val showSearch = remember { mutableStateOf(false) }
     val showAddDialog = remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
 
     LaunchedEffect(projectId) {
         viewModel.handleIntent(DocumentListIntent.LoadDocuments(projectId))
+    }
+
+    if (state.showDeleteDialog) {
+        DeleteDialog(
+            onDismiss = { viewModel.handleIntent(DocumentListIntent.DismissDeleteDialog) },
+            onOkClick = { viewModel.handleIntent(DocumentListIntent.DeleteDocument(projectId)) },
+            sheetState = sheetState,
+            title = "Удаление документа",
+            text = "Вы действительно хотите удалить документ \"${state.selectedDocTitle}\"?",
+            buttonTitle = "Удалить"
+        )
     }
 
     if (showAddDialog.value) {
@@ -127,31 +140,43 @@ fun DocumentListScreen(
                                 if (formattedUrl.isNotEmpty()) {
                                     uriHandler.openUri(formattedUrl)
                                 }
+                            },
+                            onLongClick = {
+                                if (roleId != Role.Viewer) {
+                                    viewModel.handleIntent(DocumentListIntent.ShowDeleteDialog(doc.id, doc.title))
+                                }
                             }
                         )
                     }
                 }
             }
-            AddRoundButton(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(bottom = 16.dp),
-                onClick = { showAddDialog.value = true }
-            )
+            if(roleId != Role.Viewer) {
+                AddRoundButton(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = 16.dp),
+                    onClick = { showAddDialog.value = true }
+                )
+            }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun DocumentCard(
     title: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(32.dp))
-            .clickable(onClick = onClick),
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            ),
         shape = RoundedCornerShape(32.dp),
         color = EntourageBlack.copy(alpha = 0.1f)
     ) {

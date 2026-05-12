@@ -63,7 +63,7 @@ fun Paint(
     ) {
         ScreenTitle(
             modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
-            title = "РАСХОД КРАСКИ",
+            title = "КРАСКА",
             onBackClick = onBackClick
         )
         Column(

@@ -52,7 +52,7 @@ fun Laminate(
     ) {
         ScreenTitle(
             modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
-            title = "РАСХОД ЛАМИНАТА",
+            title = "ЛАМИНАТ",
             onBackClick = onBackClick
         )
         Column(

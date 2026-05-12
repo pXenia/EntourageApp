@@ -24,6 +24,17 @@ class StageVM(
             is StageIntent.UpdateStageStatus -> updateStageStatus(intent.roomId, intent.stageId, intent.status)
             is StageIntent.AddStage -> addStage(intent.roomId, intent.title, intent.deadline)
             is StageIntent.AddTask -> addTask(intent.roomId, intent.stageId, intent.title, intent.deadline)
+            is StageIntent.ShowDeleteStageDialog -> _state.update { 
+                it.copy(showDeleteStageDialog = true, selectedStageId = intent.stageId, selectedItemName = intent.title) 
+            }
+            is StageIntent.ShowDeleteTaskDialog -> _state.update { 
+                it.copy(showDeleteTaskDialog = true, selectedTaskId = intent.taskId, selectedItemName = intent.title) 
+            }
+            is StageIntent.DismissDeleteDialog -> _state.update { 
+                it.copy(showDeleteStageDialog = false, showDeleteTaskDialog = false, selectedStageId = null, selectedTaskId = null, selectedItemName = "") 
+            }
+            is StageIntent.DeleteStage -> deleteStage(intent.roomId)
+            is StageIntent.DeleteTask -> deleteTask(intent.roomId)
         }
     }
 
@@ -100,6 +111,34 @@ class StageVM(
                 loadStages(roomId = roomId)
             }.onFailure { e ->
                 _state.update { it.copy(error = e.message) }
+            }
+        }
+    }
+
+    private fun deleteStage(roomId: Int) {
+        val stageId = _state.value.selectedStageId ?: return
+        viewModelScope.launch {
+            runCatching {
+                repository.deleteStage(stageId)
+            }.onSuccess {
+                _state.update { it.copy(showDeleteStageDialog = false, selectedStageId = null, selectedItemName = "") }
+                loadStages(roomId)
+            }.onFailure { e ->
+                _state.update { it.copy(error = e.message, showDeleteStageDialog = false) }
+            }
+        }
+    }
+
+    private fun deleteTask(roomId: Int) {
+        val taskId = _state.value.selectedTaskId ?: return
+        viewModelScope.launch {
+            runCatching {
+                repository.deleteTask(taskId)
+            }.onSuccess {
+                _state.update { it.copy(showDeleteTaskDialog = false, selectedTaskId = null, selectedItemName = "") }
+                loadStages(roomId)
+            }.onFailure { e ->
+                _state.update { it.copy(error = e.message, showDeleteTaskDialog = false) }
             }
         }
     }
