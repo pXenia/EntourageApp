@@ -33,8 +33,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.entourageapp.core.network.dto.ImageDto
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.network.dto.RoomShortDto
+import com.entourageapp.core.network.dto.gallery.ImageDto
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
 import com.entourageapp.core.ui.EntouragePeachAlpha30
@@ -59,6 +60,7 @@ fun UpdateImageBottomSheet(
     image: ImageDto,
     availableRooms: List<RoomShortDto>,
     projectId: Int,
+    roleId: Role,
     sheetState: SheetState,
     onIntent: (GalleryIntent) -> Unit,
     onDismissRequest: () -> Unit,
@@ -105,59 +107,60 @@ fun UpdateImageBottomSheet(
                 .navigationBarsPadding(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.Top
-            ) {
-                if (!isEditing) {
-                    ActionIcon(
-                        icon = delete,
-                        contentDescription = "Удалить",
-                        tint = EntourageRed,
-                        onClick = {
-                            onDismissRequest()
-                            onIntent(GalleryIntent.DeleteImage(projectId, image.id))
-                        }
-                    )
-                    Spacer(Modifier.width(12.dp))
-                    ActionIcon(
-                        icon = edit,
-                        contentDescription = "Редактировать",
-                        onClick = {
-                            isEditing = true
-                            onEditingChange(true)
-                        }
-                    )
-                } else {
-                    ActionIcon(
-                        icon = done,
-                        contentDescription = "Сохранить",
-                        tint = EntourageTeal,
-                        onClick = {
-                            onIntent(
-                                GalleryIntent.UpdateImage(
-                                    projectId,
-                                    image.id,
-                                    editedNote,
-                                    editedRoomId
+            if (roleId != Role.Viewer) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    if (!isEditing) {
+                        ActionIcon(
+                            icon = delete,
+                            contentDescription = "Удалить",
+                            tint = EntourageRed,
+                            onClick = {
+                                onDismissRequest()
+                                onIntent(GalleryIntent.DeleteImage(image.id))
+                            }
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        ActionIcon(
+                            icon = edit,
+                            contentDescription = "Редактировать",
+                            onClick = {
+                                isEditing = true
+                                onEditingChange(true)
+                            }
+                        )
+                    } else {
+                        ActionIcon(
+                            icon = done,
+                            contentDescription = "Сохранить",
+                            tint = EntourageTeal,
+                            onClick = {
+                                onIntent(
+                                    GalleryIntent.UpdateImage(
+                                        image.id,
+                                        editedNote,
+                                        editedRoomId
+                                    )
                                 )
-                            )
-                            isEditing = false
-                            onEditingChange(false)
-                        }
-                    )
-                    Spacer(Modifier.width(12.dp))
-                    ActionIcon(
-                        icon = cross,
-                        contentDescription = "Отмена",
-                        onClick = {
-                            isEditing = false
-                            onEditingChange(false)
-                            editedNote = image.note ?: ""
-                            editedRoomId = image.roomId
-                        }
-                    )
+                                isEditing = false
+                                onEditingChange(false)
+                            }
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        ActionIcon(
+                            icon = cross,
+                            contentDescription = "Отмена",
+                            onClick = {
+                                isEditing = false
+                                onEditingChange(false)
+                                editedNote = image.note ?: ""
+                                editedRoomId = image.roomId
+                            }
+                        )
+                    }
                 }
             }
 

@@ -25,7 +25,7 @@ class ProjectsRepositoryImpl(
     override fun getProjectsList(): Flow<List<ProjectCard>> = flow {
         val response = api.getProjectsListShort()
         emit(response.map { it.toProjectCard() })
-    }.catch { e -> throw e }
+    }
 
     override suspend fun createProject(project: ProjectCreateDto): Int {
         return api.createProject(project)

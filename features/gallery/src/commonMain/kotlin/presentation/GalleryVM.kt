@@ -3,6 +3,7 @@ package com.entourageapp.features.gallery.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entourageapp.features.gallery.domain.GalleryRepository
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -23,17 +24,22 @@ class GalleryVM(
     private val _sideEffect = MutableSharedFlow<GallerySideEffect>()
     val sideEffect: SharedFlow<GallerySideEffect> = _sideEffect.asSharedFlow()
 
+    private var loadJob: Job? = null
+
     fun onIntent(intent: GalleryIntent) {
         when (intent) {
-            is GalleryIntent.LoadImages -> loadImages(intent.projectId, intent.roomId)
+            is GalleryIntent.LoadImages -> {
+                _state.update { it.copy(currentFilterRoomId = intent.roomId) }
+                loadImages(intent.projectId, intent.roomId)
+            }
             is GalleryIntent.LoadRooms -> loadRooms(intent.projectId)
             is GalleryIntent.ToggleSelection -> toggleSelection(intent.imageId)
             is GalleryIntent.ClearSelection -> clearSelection()
             is GalleryIntent.SelectImage -> selectImage(intent.imageId)
             is GalleryIntent.CloseViewPager -> closeViewPager()
             is GalleryIntent.UpdateImage -> updateImage(intent)
-            is GalleryIntent.DeleteImage -> deleteImage(intent.projectId, intent.imageId)
-            is GalleryIntent.DeleteSelectedImages -> deleteSelectedImages(intent.projectId)
+            is GalleryIntent.DeleteImage -> deleteImage(intent.imageId)
+            is GalleryIntent.DeleteSelectedImages -> deleteSelectedImages()
             is GalleryIntent.SetSearchVisibility -> setSearchVisibility(intent.isVisible)
             is GalleryIntent.UpdateSearchQuery -> updateSearchQuery(intent.query)
             is GalleryIntent.SetAddImageVisibility -> setAddImageVisibility(intent.isVisible)
@@ -42,9 +48,12 @@ class GalleryVM(
         }
     }
 
-    private fun loadImages(projectId: Int, roomId: Int?) {
-        viewModelScope.launch {
-            _state.update { it.copy(status = GalleryState.GalleryStatus.Loading) }
+    private fun loadImages(projectId: Int, roomId: Int?, showLoading: Boolean = true) {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
+            if (showLoading) {
+                _state.update { it.copy(status = GalleryState.GalleryStatus.Loading) }
+            }
             repository.getImages(projectId, roomId)
                 .catch { e ->
                     _state.update { it.copy(status = GalleryState.GalleryStatus.Error) }
@@ -110,20 +119,27 @@ class GalleryVM(
         viewModelScope.launch {
             try {
                 repository.updateImage(
-                    projectId = intent.projectId,
                     imageId = intent.imageId,
                     note = intent.note,
                     roomId = intent.roomId
                 )
-                _state.update {
-                    it.copy(
-                        images = it.images.map { image ->
-                            if (image.id == intent.imageId) {
-                                image.copy(note = intent.note, roomId = intent.roomId)
-                            } else {
-                                image
-                            }
+                _state.update { state ->
+                    val updatedImages = state.images.map { image ->
+                        if (image.id == intent.imageId) {
+                            image.copy(note = intent.note, roomId = intent.roomId)
+                        } else {
+                            image
                         }
+                    }
+                    val filteredImages = if (state.currentFilterRoomId != null && intent.roomId != state.currentFilterRoomId) {
+                        updatedImages.filter { it.id != intent.imageId }
+                    } else {
+                        updatedImages
+                    }
+
+                    state.copy(
+                        images = filteredImages,
+                        status = if (filteredImages.isEmpty()) GalleryState.GalleryStatus.IsEmpty else state.status
                     )
                 }
             } catch (e: Exception) {
@@ -132,10 +148,10 @@ class GalleryVM(
         }
     }
 
-    private fun deleteImage(projectId: Int, imageId: Int) {
+    private fun deleteImage(imageId: Int) {
         viewModelScope.launch {
             try {
-                repository.deleteImage(projectId, imageId)
+                repository.deleteImage(imageId)
                 _state.update { state ->
                     val remainingImages = state.images.filter { it.id != imageId }
                     state.copy(
@@ -150,12 +166,12 @@ class GalleryVM(
         }
     }
 
-    private fun deleteSelectedImages(projectId: Int) {
+    private fun deleteSelectedImages() {
         viewModelScope.launch {
             val idsToDelete = _state.value.selectedIds
             try {
                 idsToDelete.forEach { id ->
-                    repository.deleteImage(projectId, id)
+                    repository.deleteImage( id)
                 }
                 _state.update { state ->
                     val remainingImages = state.images.filter { !idsToDelete.contains(it.id) }
@@ -205,7 +221,8 @@ class GalleryVM(
                     roomId = intent.roomId,
                     note = intent.note
                 )
-                loadImages(intent.projectId, intent.roomId)
+                val currentFilter = _state.value.currentFilterRoomId
+                loadImages(intent.projectId, currentFilter, showLoading = false)
             } catch (e: Exception) {
                 _sideEffect.emit(GallerySideEffect.ShowError("Ошибка при загрузке изображения"))
             }

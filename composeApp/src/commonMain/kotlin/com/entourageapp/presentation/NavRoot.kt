@@ -9,7 +9,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -44,21 +47,18 @@ fun NavRoot(
 ) {
     val authState by authVM.state.collectAsStateWithLifecycle()
 
-    when (authState) {
-        AuthState.Loading -> {
-            Box(
-                modifier = modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-            return
+    var authStatus by rememberSaveable { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(authState) {
+        when (authState) {
+            AuthState.Authenticated -> authStatus = "Authenticated"
+            AuthState.NotAuthenticated -> authStatus = "NotAuthenticated"
+            AuthState.Loading -> Unit
         }
-        else -> Unit
     }
 
-    val startRoute = when (authState) {
-        AuthState.Authenticated -> Route.ProjectList
+    val startRoute = when (authStatus) {
+        "Authenticated" -> Route.ProjectList
         else -> Route.AuthStart
     }
 
@@ -117,6 +117,15 @@ fun NavRoot(
                 navigationState = navigationState,
                 navigator = navigator
             )
+        }
+
+        if (authState == AuthState.Loading) {
+            Box(
+                modifier = Modifier.fillMaxSize().appBackground(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
         }
     }
 }

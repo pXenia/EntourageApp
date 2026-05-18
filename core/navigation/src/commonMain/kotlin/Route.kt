@@ -91,7 +91,10 @@ sealed interface Route : NavKey {
 
 @Serializable
 sealed interface Role {
-    object Owner : Role
-    object Editor : Role
-    object Viewer : Role
+    @Serializable
+    data object Owner : Role
+    @Serializable
+    data object Editor : Role
+    @Serializable
+    data object Viewer : Role
 }

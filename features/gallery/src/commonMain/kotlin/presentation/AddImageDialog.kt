@@ -11,9 +11,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -31,18 +35,42 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
+import com.entourageapp.core.network.dto.RoomShortDto
+import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
+import com.entourageapp.core.ui.EntouragePeachAlpha30
 import com.entourageapp.core.ui.EntourageTeal
+import com.entourageapp.core.ui.add
+import com.entourageapp.core.ui.components.Badge
 import com.entourageapp.core.ui.components.CustomTextBar
+import com.entourageapp.core.ui.cross
+import com.entourageapp.core.ui.dialogs.SelectRoomDialog
+import com.entourageapp.core.ui.tag
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun AddImageDialog(
     imageData: GalleryState.SelectedImageData?,
+    availableRooms: List<RoomShortDto>,
+    initialRoomId: Int? = null,
     onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit,
+    onConfirm: (String, Int?) -> Unit,
     launcher: () -> Unit,
 ) {
     var note by remember { mutableStateOf("") }
+    var editedRoomId by remember { mutableStateOf(initialRoomId) }
+    var showRoomDialog by remember { mutableStateOf(false) }
+
+    if (showRoomDialog) {
+        SelectRoomDialog(
+            rooms = availableRooms,
+            onDismiss = { showRoomDialog = false },
+            onSelect = { room ->
+                editedRoomId = room.id
+                showRoomDialog = false
+            }
+        )
+    }
 
     Dialog(onDismissRequest = onDismiss) {
         Column(
@@ -96,8 +124,51 @@ fun AddImageDialog(
                 label = "Заметка",
                 onValueChange = { note = it },
                 value = note,
-                 isSingleLine = false
+                isSingleLine = false
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val roomName = availableRooms.find { it.id == editedRoomId }?.title
+                if (roomName != null) {
+                    Badge(tag, roomName)
+                } else {
+                    Text(
+                        text = "Помещение не выбрано",
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp),
+                        color = EntourageBlack.copy(alpha = 0.6f)
+                    )
+                }
+
+                Surface(
+                    color = EntouragePeachAlpha30,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable {
+                            if (editedRoomId != null) {
+                                editedRoomId = null
+                            } else {
+                                showRoomDialog = true
+                            }
+                        }
+                ) {
+                    Icon(
+                        painter = if (editedRoomId != null) painterResource(cross) else painterResource(
+                            add
+                        ),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .size(16.dp),
+                        tint = EntourageBlack,
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -117,7 +188,7 @@ fun AddImageDialog(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 TextButton(
-                    onClick = { onConfirm(note) },
+                    onClick = { onConfirm(note, editedRoomId) },
                     enabled = imageData != null,
                     modifier = Modifier.background(Color.Transparent)
                 ) {

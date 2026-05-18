@@ -30,10 +30,6 @@ class LaminateVM(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                // We might still want to get the floor area if available from room params
-                // However, RoomParamsDto currently only has walls and ceiling height.
-                // RoomDetailDto has square (area). 
-                // For now, let's just keep it simple or check if repository can provide it.
                 _state.update { it.copy(isLoading = false) }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.message) }

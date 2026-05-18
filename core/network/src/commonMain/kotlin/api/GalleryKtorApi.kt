@@ -1,9 +1,8 @@
 package com.entourageapp.core.network.api
 
-import com.entourageapp.core.network.dto.ImageDto
-import com.entourageapp.core.network.dto.ImageUpdateDto
-import com.entourageapp.core.network.dto.ImageUploadedDto
-import com.entourageapp.core.network.dto.RoomShortDto
+import com.entourageapp.core.network.dto.gallery.ImageDto
+import com.entourageapp.core.network.dto.gallery.ImageUpdateDto
+import com.entourageapp.core.network.dto.gallery.ImageUploadedDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -22,7 +21,7 @@ import io.ktor.http.contentType
 class GalleryKtorApi(private val client: HttpClient) : GalleryApi {
 
     override suspend fun getImages(projectId: Int, roomId: Int?): List<ImageDto> =
-        client.get("projects/$projectId/images/") {
+        client.get("projects/$projectId/images") {
             roomId?.let { parameter("room_id", it) }
         }.body()
 
@@ -34,7 +33,7 @@ class GalleryKtorApi(private val client: HttpClient) : GalleryApi {
         roomId: Int?,
         note: String?
     ): ImageUploadedDto =
-        client.post("projects/$projectId/images/") {
+        client.post("projects/$projectId/images") {
             setBody(
                 MultiPartFormDataContent(
                     formData {
@@ -56,22 +55,18 @@ class GalleryKtorApi(private val client: HttpClient) : GalleryApi {
             )
         }.body()
 
-    override suspend fun deleteImage(projectId: Int, imageId: Int) {
-        client.delete("projects/$projectId/images/$imageId")
+    override suspend fun deleteImage(imageId: Int) {
+        client.delete("images/$imageId")
     }
 
     override suspend fun updateImage(
-        projectId: Int,
         imageId: Int,
         note: String?,
         roomId: Int?
     ) {
-        client.patch("projects/$projectId/images/$imageId") {
+        client.patch("images/$imageId") {
             contentType(ContentType.Application.Json)
             setBody(ImageUpdateDto(note = note, roomId = roomId))
         }
     }
-
-    override suspend fun getRooms(projectId: Int): List<RoomShortDto> =
-        client.get("projects/$projectId/rooms/short-list/").body()
 }

@@ -4,8 +4,9 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
-import com.entourageapp.core.network.dto.ImageDto
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.network.dto.RoomShortDto
+import com.entourageapp.core.network.dto.gallery.ImageDto
 
 @Composable
 expect fun GalleryViewPager(
@@ -14,6 +15,7 @@ expect fun GalleryViewPager(
     availableRooms: List<RoomShortDto>,
     onIntent: (GalleryIntent) -> Unit,
     projectId: Int,
+    roleId: Role,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 )

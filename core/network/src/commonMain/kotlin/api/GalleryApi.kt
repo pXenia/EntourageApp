@@ -1,8 +1,7 @@
 package com.entourageapp.core.network.api
 
-import com.entourageapp.core.network.dto.ImageDto
-import com.entourageapp.core.network.dto.ImageUploadedDto
-import com.entourageapp.core.network.dto.RoomShortDto
+import com.entourageapp.core.network.dto.gallery.ImageDto
+import com.entourageapp.core.network.dto.gallery.ImageUploadedDto
 
 interface GalleryApi {
     suspend fun getImages(projectId: Int, roomId: Int? = null): List<ImageDto>
@@ -14,7 +13,6 @@ interface GalleryApi {
         roomId: Int? = null,
         note: String? = null
     ): ImageUploadedDto
-    suspend fun deleteImage(projectId: Int, imageId: Int)
-    suspend fun updateImage(projectId: Int, imageId: Int, note: String?, roomId: Int?)
-    suspend fun getRooms(projectId: Int): List<RoomShortDto>
+    suspend fun deleteImage(imageId: Int)
+    suspend fun updateImage(imageId: Int, note: String?, roomId: Int?)
 }

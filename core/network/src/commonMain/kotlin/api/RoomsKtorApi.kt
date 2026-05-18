@@ -8,6 +8,7 @@ import com.entourageapp.core.network.dto.RoomDetailDto
 import com.entourageapp.core.network.dto.RoomDto
 import com.entourageapp.core.network.dto.RoomFullUpdateDto
 import com.entourageapp.core.network.dto.RoomParamsDto
+import com.entourageapp.core.network.dto.RoomShortDto
 import com.entourageapp.core.network.dto.RoomTypeDto
 import com.entourageapp.core.network.dto.WallAddDto
 import io.ktor.client.HttpClient
@@ -26,6 +27,9 @@ class RoomsKtorApi(private val client: HttpClient) : RoomsApi {
 
     override suspend fun getRooms(projectId: Int): List<RoomDto> =
         client.get("projects/$projectId/rooms/").body()
+
+    override suspend fun getRoomsShort(projectId: Int): List<RoomShortDto> =
+        client.get("projects/$projectId/rooms/short").body()
 
     override suspend fun createRoom(projectId: Int, room: RoomAddDto): RoomCreatedDto =
         client.post("projects/$projectId/rooms/") {

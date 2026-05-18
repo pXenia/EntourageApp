@@ -8,7 +8,9 @@ data class DocumentListState(
     val error: String? = null,
     val showDeleteDialog: Boolean = false,
     val selectedDocId: Int? = null,
-    val selectedDocTitle: String = ""
+    val selectedDocTitle: String = "",
+    val searchQuery: String = "",
+    val isSearchVisible: Boolean = false
 )
 
 sealed class DocumentListIntent {
@@ -17,4 +19,6 @@ sealed class DocumentListIntent {
     data class ShowDeleteDialog(val docId: Int, val docTitle: String) : DocumentListIntent()
     object DismissDeleteDialog : DocumentListIntent()
     data class DeleteDocument(val projectId: Int) : DocumentListIntent()
+    data class SetSearchVisibility(val isVisible: Boolean) : DocumentListIntent()
+    data class UpdateSearchQuery(val query: String) : DocumentListIntent()
 }

@@ -1,5 +1,10 @@
 package com.entourageapp.features.projectdocuments.presentation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,8 +46,7 @@ import com.entourageapp.core.ui.arrowLeft
 import com.entourageapp.core.ui.arrowRight
 import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.components.ScreenTitleTwoButtons
-import com.entourageapp.core.ui.components.SearchBar
-import com.entourageapp.core.ui.cross
+import com.entourageapp.core.ui.components.SimpleSearchBar
 import com.entourageapp.core.ui.dialogs.DeleteDialog
 import com.entourageapp.core.ui.document
 import com.entourageapp.core.ui.search
@@ -61,9 +65,16 @@ fun DocumentListScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val uriHandler = LocalUriHandler.current
-    val showSearch = remember { mutableStateOf(false) }
     val showAddDialog = remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
+
+    val filteredDocuments = remember(state.documents, state.searchQuery) {
+        if (state.searchQuery.isBlank()) {
+            state.documents
+        } else {
+            state.documents.filter { it.title.contains(state.searchQuery, ignoreCase = true) }
+        }
+    }
 
     LaunchedEffect(projectId) {
         viewModel.handleIntent(DocumentListIntent.LoadDocuments(projectId))
@@ -100,18 +111,19 @@ fun DocumentListScreen(
             leftIcon = arrowLeft,
             rightIcon = search,
             onLeftButtonClick = onBackClick,
-            onRightButtonClick = { showSearch.value = !showSearch.value }
+            onRightButtonClick = { viewModel.handleIntent(DocumentListIntent.SetSearchVisibility(!state.isSearchVisible)) }
         )
 
-        if (showSearch.value) {
-            SearchBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                text = "",
-                iconSecond = cross,
-                onTextChange = { },
-                onIconSecondClick = { showSearch.value = !showSearch.value }
+        AnimatedVisibility(
+            visible = state.isSearchVisible,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            SimpleSearchBar(
+                searchQuery = state.searchQuery,
+                onQueryChange = { viewModel.handleIntent(DocumentListIntent.UpdateSearchQuery(it)) },
+                onCloseClick = { viewModel.handleIntent(DocumentListIntent.SetSearchVisibility(false)) },
+                placeholder = "Поиск по документам..."
             )
         }
 
@@ -132,7 +144,7 @@ fun DocumentListScreen(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
-                    items(state.documents) { doc ->
+                    items(filteredDocuments) { doc ->
                         DocumentCard(
                             title = doc.title,
                             onClick = {

@@ -45,15 +45,13 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ProjectListScreen(
     modifier: Modifier = Modifier,
-    onCardClick: (projectId: Int) -> Unit = {},
+    onCardClick: (Int) -> Unit = {},
     onAddProjectClick: () -> Unit = {},
     viewModel: ProjectListVM = koinViewModel()
 ) {
     val scrollState = rememberLazyListState()
-    val isCollapsed by remember {
-        derivedStateOf { scrollState.firstVisibleItemIndex > 0 || scrollState.firstVisibleItemScrollOffset > 50 }
-    }
-    val state = viewModel.state.collectAsState().value
+    val isCollapsed by remember { derivedStateOf { scrollState.firstVisibleItemIndex > 0 || scrollState.firstVisibleItemScrollOffset > 50 } }
+    val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(ProjectListIntent.LoadProjects)
@@ -72,8 +70,7 @@ fun ProjectListScreen(
             exit = shrinkVertically() + fadeOut()
         ) {
             TopScreenTitle(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 title = "проекты".uppercase()
             )
         }
@@ -86,54 +83,65 @@ fun ProjectListScreen(
         ) {
             TabButton(
                 modifier = Modifier.weight(1f),
-                title = "Все",
-                isSelected = state.projectFilter == ProjectFilter.ALL,
-                onClick = {viewModel.handleIntent(ProjectListIntent.FilterProjects(ProjectFilter.ALL))}
+                title = "Текущие",
+                isSelected = state.projectFilter == ProjectFilter.CURRENT,
+                onClick = { viewModel.handleIntent(ProjectListIntent.ChangeFilter(ProjectFilter.CURRENT)) }
             )
             TabButton(
                 modifier = Modifier.weight(1f),
                 title = "Архив",
                 isSelected = state.projectFilter == ProjectFilter.ARCHIVE,
-                onClick = {viewModel.handleIntent(ProjectListIntent.FilterProjects(ProjectFilter.ARCHIVE))}
+                onClick = { viewModel.handleIntent(ProjectListIntent.ChangeFilter(ProjectFilter.ARCHIVE)) }
             )
         }
+
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                    color = EntourageTeal,
-                    trackColor = EntourageWhite.copy(alpha = 0.6f),
-                )
-            }
-            if (state.error != null) {
-                Text(
-                    text = state.error,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-            LazyColumn(
-                state = scrollState,
-                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(32.dp)),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(bottom = 80.dp)
-            ) {
-                items(state.projectCards) { project ->
-                    ProjectCard(
-                        modifier = Modifier
-                            .animateItem(
-                                fadeInSpec = tween(500),
-                                placementSpec = spring(stiffness = Spring.StiffnessLow)
-                            ),
-                        onCardClick = { onCardClick(project.id) },
-                        title = project.title,
-                        area = project.square,
-                        years = project.years,
-                        rooms = project.roomsCount,
-                        participants = project.membersCount
+            when {
+                state.isLoading && state.projectCards.isEmpty() -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = EntourageTeal,
+                        trackColor = EntourageWhite.copy(alpha = 0.6f),
                     )
+                }
+
+                state.error != null && state.projectCards.isEmpty() -> {
+                    Text(
+                        text = state.error ?: "Произошла ошибка",
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+
+                else -> {
+                    LazyColumn(
+                        state = scrollState,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(32.dp)),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(bottom = 80.dp)
+                    ) {
+                        items(
+                            items = state.projectCards,
+                            key = { it.id }) { project ->
+                            ProjectCard(
+                                modifier = Modifier
+                                    .animateItem(
+                                        fadeInSpec = tween(500),
+                                        placementSpec = spring(stiffness = Spring.StiffnessLow)
+                                    ),
+                                onCardClick = { onCardClick(project.id) },
+                                title = project.title,
+                                area = project.square,
+                                years = project.years,
+                                rooms = project.roomsCount,
+                                participants = project.membersCount
+                            )
+                        }
+                    }
                 }
             }
 

@@ -1,7 +1,7 @@
 package com.entourageapp.features.gallery.presentation
 
-import com.entourageapp.core.network.dto.ImageDto
 import com.entourageapp.core.network.dto.RoomShortDto
+import com.entourageapp.core.network.dto.gallery.ImageDto
 
 data class GalleryState(
     val images: List<ImageDto> = emptyList(),
@@ -13,7 +13,8 @@ data class GalleryState(
     val isSelectionMode: Boolean = false,
     val searchQuery: String = "",
     val isSearchVisible: Boolean = false,
-    val availableRooms: List<RoomShortDto> = emptyList()
+    val availableRooms: List<RoomShortDto> = emptyList(),
+    val currentFilterRoomId: Int? = null
 ) {
     sealed interface GalleryStatus {
         data object Loading : GalleryStatus
@@ -40,9 +41,9 @@ sealed interface GalleryIntent {
     data class SelectImage(val imageId: Int) : GalleryIntent
     data object CloseViewPager : GalleryIntent
     
-    data class UpdateImage(val projectId: Int, val imageId: Int, val note: String?, val roomId: Int?) : GalleryIntent
-    data class DeleteImage(val projectId: Int, val imageId: Int) : GalleryIntent
-    data class DeleteSelectedImages(val projectId: Int) : GalleryIntent
+    data class UpdateImage(val imageId: Int, val note: String?, val roomId: Int?) : GalleryIntent
+    data class DeleteImage(val imageId: Int) : GalleryIntent
+    object DeleteSelectedImages : GalleryIntent
     
     data class SetSearchVisibility(val isVisible: Boolean) : GalleryIntent
     data class UpdateSearchQuery(val query: String) : GalleryIntent

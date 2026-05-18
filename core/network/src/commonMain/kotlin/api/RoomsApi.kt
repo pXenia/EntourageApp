@@ -8,12 +8,14 @@ import com.entourageapp.core.network.dto.RoomDetailDto
 import com.entourageapp.core.network.dto.RoomDto
 import com.entourageapp.core.network.dto.RoomFullUpdateDto
 import com.entourageapp.core.network.dto.RoomParamsDto
+import com.entourageapp.core.network.dto.RoomShortDto
 import com.entourageapp.core.network.dto.RoomTypeDto
 import com.entourageapp.core.network.dto.WallAddDto
 
 interface RoomsApi {
     suspend fun getRoomTypes(projectId: Int): List<RoomTypeDto>
     suspend fun getRooms(projectId: Int): List<RoomDto>
+    suspend fun getRoomsShort(projectId: Int): List<RoomShortDto>
     suspend fun createRoom(projectId: Int, room: RoomAddDto): RoomCreatedDto
     suspend fun updateRoomFull(projectId: Int, roomId: Int, room: RoomFullUpdateDto)
     suspend fun deleteRoom(projectId: Int, roomId: Int)

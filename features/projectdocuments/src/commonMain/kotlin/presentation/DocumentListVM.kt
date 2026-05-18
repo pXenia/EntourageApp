@@ -27,6 +27,12 @@ class DocumentListVM(
                 it.copy(showDeleteDialog = false, selectedDocId = null, selectedDocTitle = "")
             }
             is DocumentListIntent.DeleteDocument -> deleteDocument(intent.projectId)
+            is DocumentListIntent.SetSearchVisibility -> _state.update {
+                it.copy(isSearchVisible = intent.isVisible, searchQuery = if (!intent.isVisible) "" else it.searchQuery)
+            }
+            is DocumentListIntent.UpdateSearchQuery -> _state.update {
+                it.copy(searchQuery = intent.query)
+            }
         }
     }
 

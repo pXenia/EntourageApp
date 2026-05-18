@@ -25,8 +25,6 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults.elevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,11 +43,10 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.entourageapp.core.network.dto.ImageDto
+import com.entourageapp.core.navigation.Role
+import com.entourageapp.core.network.dto.gallery.ImageDto
 import com.entourageapp.core.ui.EntourageBlack
-import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
-import com.entourageapp.core.ui.add
 import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.delete
 import org.jetbrains.compose.resources.painterResource
@@ -61,6 +58,7 @@ private val OverlayGrad = Brush.verticalGradient(
 
 @Composable
 internal fun GalleryGrid(
+    roleId: Role,
     images: List<ImageDto>,
     selectedIds: Set<Int>,
     isSelectionMode: Boolean,
@@ -91,7 +89,7 @@ internal fun GalleryGrid(
                         }
                     }
                 ) {
-                    val isSelected = selectedIds.contains(image.id)
+                    val isSelected = selectedIds.contains(image.id) && roleId != Role.Viewer
                     when (index % 9) {
                         0 -> {
                             ItemImage(
@@ -102,14 +100,16 @@ internal fun GalleryGrid(
                                 width = 16f,
                                 isSelected = isSelected,
                                 onImageClick = { id ->
-                                    if (isSelectionMode) {
+                                    if (isSelectionMode && roleId != Role.Viewer) {
                                         onIntent(GalleryIntent.ToggleSelection(id))
                                     } else {
                                         onIntent(GalleryIntent.SelectImage(id))
                                     }
                                 },
                                 onImageLongClick = { id ->
-                                    onIntent(GalleryIntent.ToggleSelection(id))
+                                    if (roleId != Role.Viewer) {
+                                        onIntent(GalleryIntent.ToggleSelection(id))
+                                    }
                                 },
                                 sharedTransitionScope = sharedTransitionScope,
                                 animatedVisibilityScope = animatedVisibilityScope
@@ -125,14 +125,16 @@ internal fun GalleryGrid(
                                 width = 1f,
                                 isSelected = isSelected,
                                 onImageClick = { id ->
-                                    if (isSelectionMode) {
+                                    if (isSelectionMode && roleId != Role.Viewer) {
                                         onIntent(GalleryIntent.ToggleSelection(id))
                                     } else {
                                         onIntent(GalleryIntent.SelectImage(id))
                                     }
                                 },
                                 onImageLongClick = { id ->
-                                    onIntent(GalleryIntent.ToggleSelection(id))
+                                    if (roleId != Role.Viewer) {
+                                        onIntent(GalleryIntent.ToggleSelection(id))
+                                    }
                                 },
                                 sharedTransitionScope = sharedTransitionScope,
                                 animatedVisibilityScope = animatedVisibilityScope
@@ -146,14 +148,16 @@ internal fun GalleryGrid(
                                 note = image.note,
                                 isSelected = isSelected,
                                 onImageClick = { id ->
-                                    if (isSelectionMode) {
+                                    if (isSelectionMode && roleId != Role.Viewer) {
                                         onIntent(GalleryIntent.ToggleSelection(id))
                                     } else {
                                         onIntent(GalleryIntent.SelectImage(id))
                                     }
                                 },
                                 onImageLongClick = { id ->
-                                    onIntent(GalleryIntent.ToggleSelection(id))
+                                    if (roleId != Role.Viewer) {
+                                        onIntent(GalleryIntent.ToggleSelection(id))
+                                    }
                                 },
                                 sharedTransitionScope = sharedTransitionScope,
                                 animatedVisibilityScope = animatedVisibilityScope
@@ -179,9 +183,11 @@ internal fun GalleryGrid(
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 18.dp, end = 8.dp)
         ) {
-            AddRoundButton(
-                onClick = { onIntent(GalleryIntent.SetAddImageVisibility(true)) },
-            )
+            if (roleId != Role.Viewer) {
+                AddRoundButton(
+                    onClick = { onIntent(GalleryIntent.SetAddImageVisibility(true)) },
+                )
+            }
         }
     }
 }

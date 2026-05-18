@@ -38,8 +38,9 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.entourageapp.core.network.dto.ImageDto
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.network.dto.RoomShortDto
+import com.entourageapp.core.network.dto.gallery.ImageDto
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.appBackground
@@ -54,6 +55,7 @@ actual fun GalleryViewPager(
     availableRooms: List<RoomShortDto>,
     onIntent: (GalleryIntent) -> Unit,
     projectId: Int,
+    roleId: Role,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
@@ -156,6 +158,7 @@ actual fun GalleryViewPager(
 
         if (showBottomSheet && currentImage != null) {
             UpdateImageBottomSheet(
+                roleId = roleId,
                 image = currentImage,
                 availableRooms = availableRooms,
                 projectId = projectId,

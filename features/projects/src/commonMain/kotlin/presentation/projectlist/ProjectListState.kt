@@ -9,7 +9,7 @@ data class ProjectListState(
     val error: String? = null
 )
 
-sealed class ProjectListIntent {
-    object LoadProjects : ProjectListIntent()
-    data class FilterProjects (val filter: ProjectFilter) : ProjectListIntent()
+sealed interface ProjectListIntent {
+    data object LoadProjects : ProjectListIntent
+    data class ChangeFilter(val filter: ProjectFilter) : ProjectListIntent
 }

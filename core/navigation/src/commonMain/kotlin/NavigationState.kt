@@ -26,7 +26,8 @@ import kotlinx.serialization.modules.polymorphic
 class NavigationState(
     val startRoute: NavKey, // главный экран приложения
     topLevelRoute: MutableState<NavKey>, // текущая активная вкладка
-    val backStacks: Map<NavKey, NavBackStack<NavKey>> // ключ - стек (несколько стеков одновременно)
+    val backStacks: Map<NavKey, NavBackStack<NavKey>>, // ключ - стек (несколько стеков одновременно)
+    private val topLevelRoutes: Set<NavKey>
 ) {
     var topLevelRoute: NavKey by topLevelRoute
     val stacksInUse: List<NavKey>
@@ -39,11 +40,8 @@ class NavigationState(
     val currentRoute: NavKey
         get() = backStacks[topLevelRoute]?.lastOrNull() ?: topLevelRoute
 
-    private val authRoutes = setOf(Route.AuthStart, Route.Login, Route.Registration)
-    private val topLevelRoutes = setOf(Route.ProjectList, Route.CalculatorsList(0,0), Route.UserProfile)
-
     val shouldShowBottomBar: Boolean
-        get() = (currentRoute !in authRoutes) && (currentRoute in topLevelRoutes)
+        get() = currentRoute in topLevelRoutes
 }
 
 
@@ -75,7 +73,8 @@ fun rememberNavigationState(
         NavigationState(
             startRoute = startRoute,
             topLevelRoute = topLevelRoute,
-            backStacks = backStacks
+            backStacks = backStacks,
+            topLevelRoutes = topLevelRoutes
         )
     }
 }
@@ -105,6 +104,10 @@ private val config = SavedStateConfiguration {
             subclass(Route.ManageProjects::class, Route.ManageProjects.serializer())
             subclass(Route.ProjectsStats::class, Route.ProjectsStats.serializer())
             subclass(Route.ProjectInfo::class, Route.ProjectInfo.serializer())
+            subclass(Route.StageList::class, Route.StageList.serializer())
+            subclass(Route.RoomParameters::class, Route.RoomParameters.serializer())
+            subclass(Route.CreateRoom.CreateForm::class, Route.CreateRoom.CreateForm.serializer())
+            subclass(Route.CreateRoom.CreatePlan::class, Route.CreateRoom.CreatePlan.serializer())
         }
     }
 }
