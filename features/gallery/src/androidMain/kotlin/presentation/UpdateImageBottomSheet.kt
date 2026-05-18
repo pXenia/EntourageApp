@@ -35,7 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.network.dto.RoomShortDto
-import com.entourageapp.core.network.dto.gallery.ImageDto
+import com.entourageapp.features.gallery.domain.GalleryImage
+import com.entourageapp.features.gallery.domain.GalleryRoom
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
 import com.entourageapp.core.ui.EntouragePeachAlpha30
@@ -57,8 +58,8 @@ import org.jetbrains.compose.resources.painterResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateImageBottomSheet(
-    image: ImageDto,
-    availableRooms: List<RoomShortDto>,
+    image: GalleryImage,
+    availableRooms: List<GalleryRoom>,
     projectId: Int,
     roleId: Role,
     sheetState: SheetState,
@@ -74,7 +75,7 @@ fun UpdateImageBottomSheet(
 
     if (showRoomDialog) {
         SelectRoomDialog(
-            rooms = availableRooms,
+            rooms = availableRooms.map { RoomShortDto(it.id, it.title) },
             onDismiss = { showRoomDialog = false },
             onSelect = { room ->
                 editedRoomId = room.id

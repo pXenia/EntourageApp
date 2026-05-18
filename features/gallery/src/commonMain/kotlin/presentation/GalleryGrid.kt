@@ -44,7 +44,7 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.entourageapp.core.navigation.Role
-import com.entourageapp.core.network.dto.gallery.ImageDto
+import com.entourageapp.features.gallery.domain.GalleryImage
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.components.AddRoundButton
@@ -59,7 +59,7 @@ private val OverlayGrad = Brush.verticalGradient(
 @Composable
 internal fun GalleryGrid(
     roleId: Role,
-    images: List<ImageDto>,
+    images: List<GalleryImage>,
     selectedIds: Set<Int>,
     isSelectionMode: Boolean,
     onIntent: (GalleryIntent) -> Unit,

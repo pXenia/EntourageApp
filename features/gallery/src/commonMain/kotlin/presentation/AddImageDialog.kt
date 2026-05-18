@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 import com.entourageapp.core.network.dto.RoomShortDto
+import com.entourageapp.features.gallery.domain.GalleryRoom
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
 import com.entourageapp.core.ui.EntouragePeachAlpha30
@@ -51,7 +52,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun AddImageDialog(
     imageData: GalleryState.SelectedImageData?,
-    availableRooms: List<RoomShortDto>,
+    availableRooms: List<GalleryRoom>,
     initialRoomId: Int? = null,
     onDismiss: () -> Unit,
     onConfirm: (String, Int?) -> Unit,
@@ -63,7 +64,7 @@ fun AddImageDialog(
 
     if (showRoomDialog) {
         SelectRoomDialog(
-            rooms = availableRooms,
+            rooms = availableRooms.map { RoomShortDto(it.id, it.title) },
             onDismiss = { showRoomDialog = false },
             onSelect = { room ->
                 editedRoomId = room.id
@@ -158,9 +159,7 @@ fun AddImageDialog(
                         }
                 ) {
                     Icon(
-                        painter = if (editedRoomId != null) painterResource(cross) else painterResource(
-                            add
-                        ),
+                        painter = if (editedRoomId != null) painterResource(cross) else painterResource(add),
                         contentDescription = null,
                         modifier = Modifier
                             .padding(12.dp)

@@ -39,8 +39,8 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.entourageapp.core.navigation.Role
-import com.entourageapp.core.network.dto.RoomShortDto
-import com.entourageapp.core.network.dto.gallery.ImageDto
+import com.entourageapp.features.gallery.domain.GalleryImage
+import com.entourageapp.features.gallery.domain.GalleryRoom
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.appBackground
@@ -50,9 +50,9 @@ import org.jetbrains.compose.resources.painterResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 actual fun GalleryViewPager(
-    images: List<ImageDto>,
+    images: List<GalleryImage>,
     pagerState: PagerState,
-    availableRooms: List<RoomShortDto>,
+    availableRooms: List<GalleryRoom>,
     onIntent: (GalleryIntent) -> Unit,
     projectId: Int,
     roleId: Role,

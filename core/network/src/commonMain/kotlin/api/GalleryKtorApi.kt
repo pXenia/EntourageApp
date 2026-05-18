@@ -2,7 +2,6 @@ package com.entourageapp.core.network.api
 
 import com.entourageapp.core.network.dto.gallery.ImageDto
 import com.entourageapp.core.network.dto.gallery.ImageUpdateDto
-import com.entourageapp.core.network.dto.gallery.ImageUploadedDto
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
@@ -32,7 +31,7 @@ class GalleryKtorApi(private val client: HttpClient) : GalleryApi {
         mimeType: String,
         roomId: Int?,
         note: String?
-    ): ImageUploadedDto =
+    ) {
         client.post("projects/$projectId/images") {
             setBody(
                 MultiPartFormDataContent(
@@ -53,7 +52,8 @@ class GalleryKtorApi(private val client: HttpClient) : GalleryApi {
                     }
                 )
             )
-        }.body()
+        }
+    }
 
     override suspend fun deleteImage(imageId: Int) {
         client.delete("images/$imageId")
