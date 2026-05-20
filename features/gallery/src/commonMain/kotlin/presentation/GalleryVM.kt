@@ -223,6 +223,7 @@ class GalleryVM(
                 )
                 val currentFilter = _state.value.currentFilterRoomId
                 loadImages(intent.projectId, currentFilter, showLoading = false)
+                _sideEffect.emit(GallerySideEffect.ScrollToTop)
             } catch (e: Exception) {
                 _sideEffect.emit(GallerySideEffect.ShowError("Ошибка при загрузке изображения"))
             }

@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigationevent.NavigationEventInfo
@@ -53,6 +54,7 @@ actual fun GalleryScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scrollState = rememberLazyGridState()
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
     val filteredImages = remember(state.images, state.searchQuery) {
         if (state.searchQuery.isBlank()) {
@@ -84,6 +86,9 @@ actual fun GalleryScreen(
                     showToast(effect.message)
                 }
                 GallerySideEffect.NavigateBack -> onBackClick()
+                GallerySideEffect.ScrollToTop -> {
+                    scrollState.scrollToItem(0)
+                }
             }
         }
     }
@@ -244,6 +249,7 @@ actual fun GalleryScreen(
                                     selectedIds = state.selectedIds,
                                     isSelectionMode = state.isSelectionMode,
                                     onIntent = viewModel::onIntent,
+                                    screenWidth = screenWidth,
                                     scrollState = scrollState,
                                     sharedTransitionScope = this@SharedTransitionLayout,
                                     animatedVisibilityScope = this@AnimatedContent

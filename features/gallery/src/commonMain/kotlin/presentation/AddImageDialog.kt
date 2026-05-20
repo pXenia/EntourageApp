@@ -36,10 +36,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 import com.entourageapp.core.network.dto.RoomShortDto
-import com.entourageapp.features.gallery.domain.GalleryRoom
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
-import com.entourageapp.core.ui.EntouragePeachAlpha30
+import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.add
 import com.entourageapp.core.ui.components.Badge
@@ -47,6 +46,7 @@ import com.entourageapp.core.ui.components.CustomTextBar
 import com.entourageapp.core.ui.cross
 import com.entourageapp.core.ui.dialogs.SelectRoomDialog
 import com.entourageapp.core.ui.tag
+import com.entourageapp.features.gallery.domain.GalleryRoom
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -147,7 +147,7 @@ fun AddImageDialog(
                 }
 
                 Surface(
-                    color = EntouragePeachAlpha30,
+                    color = EntouragePeach.copy(alpha = 0.6f),
                     modifier = Modifier
                         .clip(CircleShape)
                         .clickable {
@@ -163,7 +163,7 @@ fun AddImageDialog(
                         contentDescription = null,
                         modifier = Modifier
                             .padding(12.dp)
-                            .size(16.dp),
+                            .size(if (editedRoomId != null) 18.dp else 12.dp),
                         tint = EntourageBlack,
                     )
                 }

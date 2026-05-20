@@ -61,4 +61,5 @@ sealed interface GalleryIntent {
 sealed interface GallerySideEffect {
     data class ShowError(val message: String) : GallerySideEffect
     data object NavigateBack : GallerySideEffect
+    data object ScrollToTop : GallerySideEffect
 }

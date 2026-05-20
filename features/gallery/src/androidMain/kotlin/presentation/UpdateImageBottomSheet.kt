@@ -35,11 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.network.dto.RoomShortDto
-import com.entourageapp.features.gallery.domain.GalleryImage
-import com.entourageapp.features.gallery.domain.GalleryRoom
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
-import com.entourageapp.core.ui.EntouragePeachAlpha30
+import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageRed
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
@@ -52,6 +50,8 @@ import com.entourageapp.core.ui.dialogs.SelectRoomDialog
 import com.entourageapp.core.ui.done
 import com.entourageapp.core.ui.edit
 import com.entourageapp.core.ui.tag
+import com.entourageapp.features.gallery.domain.GalleryImage
+import com.entourageapp.features.gallery.domain.GalleryRoom
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
@@ -189,7 +189,7 @@ fun UpdateImageBottomSheet(
                     }
 
                     Surface(
-                        color = EntouragePeachAlpha30,
+                        color = EntouragePeach.copy(alpha = 0.6f),
                         modifier = Modifier
                             .clip(CircleShape)
                             .clickable {
@@ -205,7 +205,7 @@ fun UpdateImageBottomSheet(
                             contentDescription = null,
                             modifier = Modifier
                                 .padding(12.dp)
-                                .size(16.dp),
+                                .size(if (editedRoomId != null) 18.dp else 12.dp),
                             tint = EntourageBlack,
                         )
                     }
