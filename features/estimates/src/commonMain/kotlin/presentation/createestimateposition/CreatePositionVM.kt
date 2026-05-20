@@ -20,7 +20,7 @@ class CreatePositionVM(
 
     fun handleIntent(intent: CreatePositionIntent) {
         when (intent) {
-            is CreatePositionIntent.LoadDictionaries -> loadDictionaries(intent.projectId)
+            is CreatePositionIntent.LoadDictionaries -> loadDictionaries(intent.projectId, intent.roomId)
             is CreatePositionIntent.UpdateName -> _state.update { it.copy(name = intent.value) }
             is CreatePositionIntent.UpdatePrice -> _state.update { it.copy(price = intent.value) }
             is CreatePositionIntent.UpdateQuantity -> _state.update { it.copy(quantity = intent.value) }
@@ -44,7 +44,7 @@ class CreatePositionVM(
         }
     }
 
-    private fun loadDictionaries(projectId: Int) {
+    private fun loadDictionaries(projectId: Int, roomId: Int) {
         viewModelScope.launch {
             try {
                 val types = repository.getItemTypes()
@@ -60,7 +60,8 @@ class CreatePositionVM(
                         availableUnits = units,
                         availableRooms = rooms,
                         selectedType = defaultType,
-                        selectedUnit = defaultUnit
+                        selectedUnit = defaultUnit,
+                        selectedRoom = rooms.find { it.id == roomId }
                     )
                 }
             } catch (e: Exception) {

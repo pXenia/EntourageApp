@@ -1,8 +1,10 @@
 package com.entourageapp.features.estimates.presentation.createestimateposition
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,8 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -35,11 +37,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
-import com.entourageapp.core.ui.EntouragePeachAlpha30
+import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageRed
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
@@ -71,7 +76,7 @@ fun CreatePositionScreen(
     var showRoomDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.handleIntent(CreatePositionIntent.LoadDictionaries(projectId))
+        viewModel.handleIntent(CreatePositionIntent.LoadDictionaries(projectId, roomId))
     }
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) onBackClick()
@@ -120,7 +125,7 @@ fun CreatePositionScreen(
                 items = state.availableTypes,
                 selectedItem = state.selectedType,
                 onItemSelected = { viewModel.handleIntent(CreatePositionIntent.SelectType(it)) },
-                itemLabel = { it.name },
+                itemLabel = { it.title },
                 label = "Тип",
                 placeholder = "..."
             )
@@ -129,7 +134,7 @@ fun CreatePositionScreen(
                 items = state.availableUnits,
                 selectedItem = state.selectedUnit,
                 onItemSelected = { viewModel.handleIntent(CreatePositionIntent.SelectUnit(it)) },
-                itemLabel = { it.name },
+                itemLabel = { it.title },
                 label = "Ед. измерения",
                 placeholder = "..."
             )
@@ -168,11 +173,20 @@ fun CreatePositionScreen(
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp)
             )
             Spacer(modifier = Modifier.width(12.dp))
-            Surface(
-                color = EntouragePeachAlpha30,
+            Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(32.dp))
-                    .clickable{ onCalculateClick(projectId, roomId) }
+                    .clickable { onCalculateClick(projectId, roomId) }
+                    .background(EntouragePeach.copy(alpha = 0.6f))
+                    .innerShadow(
+                    shape = RoundedCornerShape(32.dp),
+                    shadow = Shadow(
+                        radius = 16.dp,
+                        spread = 8.dp,
+                        color = EntourageWhite.copy(alpha = 0.2f),
+                        offset = DpOffset(x = 2.dp, 2.dp)
+                    )
+                )
             ) {
                 Row(
                     modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
@@ -210,22 +224,32 @@ fun CreatePositionScreen(
             ) {
                 if (state.selectedRoom != null) {
                     Badge(tag, state.selectedRoom!!.title)
+                } else {
+                    Text(
+                        text = "Помещение не выбрано",
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp),
+                        color = EntourageBlack.copy(alpha = 0.6f)
+                    )
                 }
                 Surface(
-                    color = EntouragePeachAlpha30,
-                    modifier = Modifier.clip(CircleShape).clickable{
-                        if (state.selectedRoom != null) {
-                            viewModel.handleIntent(CreatePositionIntent.ClearRoom)
-                        } else {
-                            showRoomDialog = true
+                    color = EntouragePeach.copy(alpha = 0.6f),
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .clickable {
+                            if (state.selectedRoom != null) {
+                                viewModel.handleIntent(CreatePositionIntent.ClearRoom)
+                            } else {
+                                showRoomDialog = true
+                            }
                         }
-                    }
                 ) {
                     Icon(
-                        modifier = Modifier.padding(12.dp).size(18.dp),
                         painter = if (state.selectedRoom != null) painterResource(cross) else painterResource(add),
                         contentDescription = null,
-                        tint = EntourageBlack
+                        modifier = Modifier
+                            .padding(12.dp)
+                            .size(if (state.selectedRoom != null) 18.dp else 12.dp),
+                        tint = EntourageBlack,
                     )
                 }
             }

@@ -25,7 +25,7 @@ data class CreatePositionState(
 }
 
 sealed class CreatePositionIntent {
-    data class LoadDictionaries(val projectId: Int) : CreatePositionIntent()
+    data class LoadDictionaries(val projectId: Int, val roomId: Int) : CreatePositionIntent()
     data class UpdateName(val value: String) : CreatePositionIntent()
     data class UpdatePrice(val value: String) : CreatePositionIntent()
     data class UpdateQuantity(val value: String) : CreatePositionIntent()
