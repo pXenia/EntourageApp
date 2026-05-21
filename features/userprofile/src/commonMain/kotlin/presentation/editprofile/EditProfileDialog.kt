@@ -14,7 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,9 +25,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
-import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.arrowRight
 import com.entourageapp.core.ui.components.CustomTextBar
+import com.entourageapp.core.ui.components.DialogButton
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -84,13 +83,10 @@ private fun EditProfileSelection(onIntent: (UserProfileIntent) -> Unit) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            TextButton(onClick = { onIntent(UserProfileIntent.SetEditDialogVisibility(false)) }) {
-                Text(
-                    "Отменить",
-                    color = EntourageTeal,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp)
-                )
-            }
+            DialogButton(
+                text = "Отменить",
+                onClick = { onIntent(UserProfileIntent.SetEditDialogVisibility(false)) }
+            )
         }
     }
 }
@@ -150,15 +146,10 @@ private fun EditNameLayout(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            TextButton(
+            DialogButton(
+                text = "Сохранить",
                 onClick = { onIntent(UserProfileIntent.SaveName) }
-            ) {
-                Text(
-                    "Сохранить",
-                    color = EntourageTeal,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp)
-                )
-            }
+            )
         }
     }
 }
@@ -209,15 +200,10 @@ private fun EditPasswordLayout(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            TextButton(
+            DialogButton(
+                text = "Сохранить",
                 onClick = { onIntent(UserProfileIntent.SavePassword) }
-            ) {
-                Text(
-                    "Сохранить",
-                    color = EntourageTeal,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp)
-                )
-            }
+            )
         }
     }
 }

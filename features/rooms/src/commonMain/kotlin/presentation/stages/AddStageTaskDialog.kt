@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,10 +25,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.entourageapp.core.ui.EntourageLightBlueGray
-import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.components.CustomDateField
 import com.entourageapp.core.ui.components.CustomDropdownBar
 import com.entourageapp.core.ui.components.CustomTextBar
+import com.entourageapp.core.ui.components.DialogButton
 import com.entourageapp.core.ui.components.TabButton
 
 @Composable
@@ -116,19 +115,17 @@ fun AddStageTaskDialog(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = onDismiss) {
-                    Text(
-                        "Отменить",
-                        color = EntourageTeal,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp)
-                    )
-                }
+                DialogButton(
+                    text = "Отменить",
+                    onClick = onDismiss
+                )
 
                 Spacer(modifier = Modifier.width(16.dp))
 
                 val isEnabled = title.isNotBlank() && deadline.length == 8 && (isStageMode || selectedStage != null)
 
-                TextButton(
+                DialogButton(
+                    text = "Сохранить",
                     onClick = {
                         if (isStageMode) {
                             onConfirmStage(title, deadline)
@@ -137,13 +134,7 @@ fun AddStageTaskDialog(
                         }
                     },
                     enabled = isEnabled
-                ) {
-                    Text(
-                        "Сохранить",
-                        color = if (isEnabled) EntourageTeal else EntourageTeal.copy(alpha = 0.5f),
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp)
-                    )
-                }
+                )
             }
         }
     }

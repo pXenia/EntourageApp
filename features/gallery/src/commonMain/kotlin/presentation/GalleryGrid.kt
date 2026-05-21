@@ -53,8 +53,8 @@ import com.entourageapp.features.gallery.domain.GalleryImage
 import org.jetbrains.compose.resources.painterResource
 
 private val OverlayGrad = Brush.verticalGradient(
-    0f to Color.Transparent,
-    1f to EntourageBlack,
+    0.7f to Color.Transparent,
+    1f to EntourageBlack.copy(alpha = 0.8f),
 )
 
 @Composable
@@ -255,8 +255,8 @@ private fun ItemImage(
                 }
             }
         }
-        if (!note.isNullOrBlank()) {
             Box(modifier = Modifier.fillMaxSize().background(OverlayGrad))
+        if (!note.isNullOrBlank()) {
             Text(
                 text = note,
                 modifier = Modifier

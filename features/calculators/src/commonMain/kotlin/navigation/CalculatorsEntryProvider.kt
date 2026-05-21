@@ -14,6 +14,15 @@ import com.entourageapp.features.calculators.presentation.wallpaper.Wallpaper
 fun EntryProviderScope<NavKey>.calculatorsListEntryBuilder(navigator: Navigator) {
     entry<Route.CalculatorsList> {
         CalculatorListScreen(
+            projectId = 0,
+            roomId = 0,
+            onWallpaperClick = { projectId, roomId -> navigator.navigate(Route.Wallpaper(projectId, roomId)) },
+            onPaintClick = { projectId, roomId -> navigator.navigate(Route.Paint(projectId, roomId)) },
+            onLaminateClick = { projectId, roomId -> navigator.navigate(Route.Laminate(projectId, roomId)) }
+        )
+    }
+    entry<Route.CalculatorsListFromEstimate> {
+        CalculatorListScreen(
             projectId = it.projectId,
             roomId = it.roomId,
             onWallpaperClick = { projectId, roomId -> navigator.navigate(Route.Wallpaper(projectId, roomId)) },

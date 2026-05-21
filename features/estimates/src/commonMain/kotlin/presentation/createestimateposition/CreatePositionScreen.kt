@@ -123,7 +123,6 @@ fun CreatePositionScreen(
                 onItemSelected = { viewModel.handleIntent(CreatePositionIntent.SelectType(it)) },
                 itemLabel = { it.title },
                 label = "Тип",
-                placeholder = "..."
             )
             CustomDropdownBar(
                 modifier = Modifier.weight(1f),
@@ -132,7 +131,6 @@ fun CreatePositionScreen(
                 onItemSelected = { viewModel.handleIntent(CreatePositionIntent.SelectUnit(it)) },
                 itemLabel = { it.title },
                 label = "Ед. измерения",
-                placeholder = "..."
             )
         }
 
@@ -172,7 +170,7 @@ fun CreatePositionScreen(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(32.dp))
-                    .clickable { onCalculateClick(projectId, roomId) }
+                    .clickable { onCalculateClick(projectId, state.selectedRoom?.id ?: 0) }
                     .background(EntouragePeach.copy(alpha = 0.6f))
                     .innerShadow(
                     shape = RoundedCornerShape(32.dp),

@@ -14,7 +14,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +22,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -34,6 +32,7 @@ import androidx.compose.ui.window.Dialog
 import com.entourageapp.core.ui.EntourageLightBlueGray
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
+import com.entourageapp.core.ui.components.DialogButton
 
 @Composable
 fun AddParticipantDialog(
@@ -104,26 +103,17 @@ fun AddParticipantDialog(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(onClick = onDismiss) {
-                    Text(
-                        "Отменить",
-                        color = EntourageTeal,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp)
-                    )
-                }
+                DialogButton(
+                    text = "Отменить",
+                    onClick = onDismiss
+                )
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                TextButton(
-                    onClick = { onConfirm(isChecked) },
-                    modifier = Modifier.background(Color.Transparent)
-                ) {
-                    Text(
-                        "Пригласить",
-                        color = EntourageTeal,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp)
-                    )
-                }
+                DialogButton(
+                    text = "Пригласить",
+                    onClick = { onConfirm(isChecked) }
+                )
             }
         }
     }

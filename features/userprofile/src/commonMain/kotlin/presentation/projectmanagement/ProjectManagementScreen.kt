@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,7 +22,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextFieldDefaults.contentPadding
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -31,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,7 +63,6 @@ fun ProjectManagementScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.onIntent(ProjectManagementIntent.LoadProjects)
@@ -103,15 +99,14 @@ fun ProjectManagementScreen(
             .padding(horizontal = 16.dp)
     ) {
         ScreenTitle(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
             title = "УПРАВЛЕНИЕ УЧАСТИЕМ\nВ ПРОЕКТАХ",
             onBackClick = onBackClick
         )
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(16.dp)),
+            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(top = 8.dp)
         ) {
             if (state.ownedProjects.isNotEmpty()) {
                 item {

@@ -1,11 +1,15 @@
 package com.entourageapp.features.projectdocuments.presentation
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,12 +23,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -35,13 +39,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.innerShadow
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
+import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.arrowLeft
 import com.entourageapp.core.ui.arrowRight
 import com.entourageapp.core.ui.components.AddRoundButton
@@ -67,6 +76,7 @@ fun DocumentListScreen(
     val uriHandler = LocalUriHandler.current
     val showAddDialog = remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
+    val scrollState = rememberLazyListState()
 
     val filteredDocuments = remember(state.documents, state.searchQuery) {
         if (state.searchQuery.isBlank()) {
@@ -103,7 +113,7 @@ fun DocumentListScreen(
 
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = 16.dp)
+        modifier = Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = 16.dp).clipToBounds()
     ) {
         ScreenTitleTwoButtons(
             title = "Документы",
@@ -143,7 +153,8 @@ fun DocumentListScreen(
                 )
             } else {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    state = scrollState,
+                    modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)),
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     items(filteredDocuments) { doc ->
@@ -165,12 +176,27 @@ fun DocumentListScreen(
                 }
             }
             if(roleId != Role.Viewer) {
-                AddRoundButton(
+                this@Column.AnimatedVisibility(
+                    visible = !scrollState.isScrollInProgress,
+                    enter = slideInVertically(
+                        animationSpec = tween(durationMillis = 300),
+                        initialOffsetY = { it }
+                    ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+
+                    exit = slideOutVertically(
+                        animationSpec = tween(durationMillis = 300),
+                        targetOffsetY = { it }
+                    ) + fadeOut(animationSpec = tween(durationMillis = 300)),
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(bottom = 16.dp),
-                    onClick = { showAddDialog.value = true }
-                )
+                        .padding(bottom = 16.dp)
+                ) {
+                    AddRoundButton(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd),
+                        onClick = { showAddDialog.value = true }
+                    )
+                }
             }
         }
     }
@@ -183,16 +209,24 @@ private fun DocumentCard(
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
-    Surface(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(32.dp))
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = onLongClick
-            ),
-        shape = RoundedCornerShape(32.dp),
-        color = EntourageBlack.copy(alpha = 0.1f)
+            )
+            .background(EntourageBlack.copy(alpha = 0.1f))
+            .innerShadow(
+                shape = RoundedCornerShape(32.dp),
+                shadow = Shadow(
+                    radius = 8.dp,
+                    spread = 4.dp,
+                    color = EntourageWhite.copy(alpha = 0.2f),
+                    offset = DpOffset(x = 6.dp, 4.dp)
+                )
+            )
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 22.dp, vertical = 16.dp),

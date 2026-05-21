@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,8 +21,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.entourageapp.core.ui.EntourageLightBlueGray
 import com.entourageapp.core.ui.EntourageRed
-import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.components.CustomTextBar
+import com.entourageapp.core.ui.components.DialogButton
 
 @Composable
 fun DeleteAccountDialog(
@@ -70,21 +69,16 @@ fun DeleteAccountDialog(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
-                TextButton(onClick = { onIntent(UserProfileIntent.SetDeleteDialogVisibility(isVisible = false)) }) {
-                    Text(
-                        "Отменить",
-                        color = EntourageTeal,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp)
-                    )
-                }
+                DialogButton(
+                    text = "Отменить",
+                    onClick = { onIntent(UserProfileIntent.SetDeleteDialogVisibility(isVisible = false)) }
+                )
 
-                TextButton(onClick = { onIntent(UserProfileIntent.DeleteAccount) }) {
-                    Text(
-                        "Удалить",
-                        color = EntourageRed,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp)
-                    )
-                }
+                DialogButton(
+                    text = "Удалить",
+                    onClick = { onIntent(UserProfileIntent.DeleteAccount) },
+                    color = EntourageRed
+                )
             }
         }
     }

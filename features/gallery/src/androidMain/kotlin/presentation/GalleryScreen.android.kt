@@ -173,7 +173,6 @@ actual fun GalleryScreen(
                             title = if (isSelectionMode) "Выбрано: ${state.selectedIds.size}" else "Галерея",
                             leftIcon = if (isSelectionMode) cross else arrowLeft,
                             rightIcon = if (isSelectionMode) delete else search,
-                            modifier = Modifier,
                             onLeftButtonClick = {
                                 if (isSelectionMode) {
                                     viewModel.onIntent(GalleryIntent.ClearSelection)
@@ -181,6 +180,7 @@ actual fun GalleryScreen(
                                     onBackClick()
                                 }
                             },
+                            modifier = Modifier.padding(horizontal = 8.dp),
                             onRightButtonClick = {
                                 if (isSelectionMode) {
                                     viewModel.onIntent(GalleryIntent.DeleteSelectedImages)

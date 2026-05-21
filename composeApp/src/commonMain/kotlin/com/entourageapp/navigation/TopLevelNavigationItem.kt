@@ -29,6 +29,6 @@ val userProfileFeature = TopLevelNavigationItem(
 
 val topLevelNavItems = mapOf(
     Route.ProjectList to projectsListFeature,
-    Route.CalculatorsList(0,0) to calculatorsListFeature,
+    Route.CalculatorsList to calculatorsListFeature,
     Route.UserProfile to userProfileFeature
 )

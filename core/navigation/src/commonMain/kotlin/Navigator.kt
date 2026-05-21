@@ -2,24 +2,27 @@ package com.entourageapp.core.navigation
 
 import androidx.navigation3.runtime.NavKey
 
-class Navigator(val state: NavigationState){
-    fun navigate(route: NavKey){
-        if (route in state.backStacks.keys){
-            state.topLevelRoute = route
+class Navigator(val state: NavigationState) {
+    
+    fun navigate(route: NavKey) {
+        val exactRoot = state.backStacks.keys.find { it == route }
+        
+        if (exactRoot != null) {
+            state.topLevelRoute = exactRoot
         } else {
             state.backStacks[state.topLevelRoute]?.add(route)
         }
     }
 
-    fun goBack(){
-        val currentStack = state.backStacks[state.topLevelRoute] ?:
-        error("Stack for ${state.topLevelRoute} not found")
-        val currentRoute = currentStack.last()
-
-        if (currentRoute == state.topLevelRoute){
-            state.topLevelRoute = state.startRoute
-        } else {
+    fun goBack() {
+        val currentStack = state.backStacks[state.topLevelRoute] ?: return
+        
+        if (currentStack.size > 1) {
             currentStack.removeLastOrNull()
+        } else {
+            if (state.topLevelRoute != state.startRoute) {
+                state.topLevelRoute = state.startRoute
+            }
         }
     }
 
@@ -29,13 +32,12 @@ class Navigator(val state: NavigationState){
 
         if (index != -1) {
             val targetSize = if (inclusive) index else index + 1
-
             while (currentStack.size > targetSize) {
                 currentStack.removeLastOrNull()
             }
         } else {
             currentStack.clear()
-            navigate(route)
+            currentStack.add(route)
         }
     }
 

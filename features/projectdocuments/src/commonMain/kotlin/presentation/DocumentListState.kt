@@ -1,6 +1,6 @@
 package com.entourageapp.features.projectdocuments.presentation
 
-import com.entourageapp.core.network.dto.DocumentDto
+import com.entourageapp.core.network.dto.documents.DocumentDto
 
 data class DocumentListState(
     val isLoading: Boolean = false,

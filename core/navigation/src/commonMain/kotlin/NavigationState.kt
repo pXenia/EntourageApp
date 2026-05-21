@@ -7,8 +7,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
@@ -31,11 +29,7 @@ class NavigationState(
 ) {
     var topLevelRoute: NavKey by topLevelRoute
     val stacksInUse: List<NavKey>
-        get() = if (topLevelRoute == startRoute) {
-            listOf(startRoute)
-        } else {
-            listOf(startRoute, topLevelRoute)
-        }
+        get() = backStacks.keys.toList()
 
     val currentRoute: NavKey
         get() = backStacks[topLevelRoute]?.lastOrNull() ?: topLevelRoute
@@ -66,7 +60,11 @@ fun rememberNavigationState(
         rememberNavBackStack(
             configuration = config,
             key
-        )
+        ).also { stack ->
+            if (stack.isEmpty()) {
+                stack.add(key)
+            }
+        }
     }
 
     return remember(startRoute, topLevelRoutes) {
@@ -89,6 +87,7 @@ private val config = SavedStateConfiguration {
             subclass(Route.ProjectList::class, Route.ProjectList.serializer())
             subclass(Route.ProjectDetail::class, Route.ProjectDetail.serializer())
             subclass(Route.CreateProject::class, Route.CreateProject.serializer())
+            subclass(Route.CalculatorsListFromEstimate::class, Route.CalculatorsListFromEstimate.serializer())
             subclass(Route.CalculatorsList::class, Route.CalculatorsList.serializer())
             subclass(Route.UserProfile::class, Route.UserProfile.serializer())
             subclass(Route.RoomInfo::class, Route.RoomInfo.serializer())
@@ -115,21 +114,15 @@ private val config = SavedStateConfiguration {
 @Composable
 fun NavigationState.toEntries(
     entryProvider: (NavKey) -> NavEntry<NavKey>
-): SnapshotStateList<NavEntry<NavKey>> {
+): List<NavEntry<NavKey>> {
+    val stack = backStacks[topLevelRoute] ?: return emptyList()
 
-    val decoratedEntries = backStacks.mapValues { (_, stack) ->
-        val decorators = listOf(
+    return rememberDecoratedNavEntries(
+        backStack = stack,
+        entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator<NavKey>(),
             rememberViewModelStoreNavEntryDecorator()
-        )
-        rememberDecoratedNavEntries(
-            backStack = stack,
-            entryDecorators = decorators,
-            entryProvider = entryProvider
-        )
-    }
-
-    return stacksInUse
-        .flatMap { decoratedEntries[it] ?: emptyList() }
-        .toMutableStateList()
+        ),
+        entryProvider = entryProvider
+    )
 }

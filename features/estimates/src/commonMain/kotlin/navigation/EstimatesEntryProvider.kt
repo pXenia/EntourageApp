@@ -22,7 +22,7 @@ fun EntryProviderScope<NavKey>.estimatesEntryBuilder(navigator: Navigator) {
             projectId =  it.projectId,
             roomId = it.roomId,
             onBackClick = { navigator.goBack() },
-            onCalculateClick = { projectId, roomId -> navigator.navigate(Route.CalculatorsList(projectId, roomId))}
+            onCalculateClick = { projectId, roomId -> navigator.navigate(Route.CalculatorsListFromEstimate(projectId, roomId))}
         )
     }
 }

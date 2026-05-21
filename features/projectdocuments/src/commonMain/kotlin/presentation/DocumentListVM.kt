@@ -65,7 +65,7 @@ class DocumentListVM(
         val docId = _state.value.selectedDocId ?: return
         viewModelScope.launch {
             try {
-                repository.deleteDocument(projectId, docId)
+                repository.deleteDocument(docId)
                 _state.update { it.copy(showDeleteDialog = false, selectedDocId = null, selectedDocTitle = "") }
                 loadDocuments(projectId)
             } catch (e: Exception) {
