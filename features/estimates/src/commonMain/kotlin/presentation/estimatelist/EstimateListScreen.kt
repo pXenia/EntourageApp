@@ -1,13 +1,13 @@
 package com.entourageapp.features.estimates.presentation.estimatelist
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.DpOffset
@@ -50,9 +51,8 @@ import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.arrowLeft
 import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.components.ScreenTitleTwoButtons
-import com.entourageapp.core.ui.components.SearchBar
+import com.entourageapp.core.ui.components.SimpleSearchBar
 import com.entourageapp.core.ui.dialogs.DeleteDialog
-import com.entourageapp.core.ui.filter
 import com.entourageapp.core.ui.print
 import com.entourageapp.core.ui.tools.formatTwoDecimals
 import com.entourageapp.features.estimates.presentation.EstimateCard
@@ -71,7 +71,9 @@ fun EstimateListScreen(
     val scrollState = rememberLazyListState()
     val state by viewModel.state.collectAsState()
     val isCollapsedHeader by remember {
-        derivedStateOf { scrollState.firstVisibleItemScrollOffset > 0 }
+        derivedStateOf {
+            scrollState.firstVisibleItemIndex > 0 || scrollState.firstVisibleItemScrollOffset > 20
+        }
     }
     val sheetState = rememberModalBottomSheetState()
 
@@ -97,52 +99,61 @@ fun EstimateListScreen(
             .statusBarsPadding()
             .navigationBarsPadding()
             .padding(horizontal = 16.dp)
-            .animateContentSize(
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioNoBouncy,
-                    stiffness = Spring.StiffnessLow
-                )
-            )
+            .clipToBounds()
     ) {
-        AnimatedVisibility(
-            visible = !isCollapsedHeader,
-            enter = expandVertically(expandFrom = Alignment.Top) + fadeIn(),
-            exit = shrinkVertically(shrinkTowards = Alignment.Top) + fadeOut()
+        Column(
+            modifier = Modifier.fillMaxWidth()
         ) {
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            AnimatedVisibility(
+                visible = !isCollapsedHeader,
+                enter = expandVertically(
+                    animationSpec = tween(400),
+                    expandFrom = Alignment.Top
+                ) + fadeIn(tween(400)),
+                exit = shrinkVertically(
+                    animationSpec = tween(400),
+                    shrinkTowards = Alignment.Top
+                ) + fadeOut(tween(400))
             ) {
-                ScreenTitleTwoButtons(
-                    modifier = Modifier.padding(bottom = 8.dp),
-                    title = if (roomId == 0) "Смета по проекту" else "Смета по комнате" ,
-                    leftIcon = arrowLeft,
-                    rightIcon = print,
-                    onLeftButtonClick = onBackClick,
-                    onRightButtonClick = {
-                        viewModel.handleIntent(EstimateListIntent.ExportXlsx(projectId))
-                    }
-                )
-                TotalCard(string = "Итого", value = "${state.totalSum.formatTwoDecimals()} ₽")
-                TotalCard(string = "Позиций", value = state.itemsCount.toString())
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
+                    ScreenTitleTwoButtons(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        title = if (roomId == 0) "Смета по проекту" else "Смета по комнате",
+                        leftIcon = arrowLeft,
+                        rightIcon = print,
+                        onLeftButtonClick = onBackClick,
+                        onRightButtonClick = {
+                            viewModel.handleIntent(EstimateListIntent.ExportXlsx(projectId))
+                        }
+                    )
+                    TotalCard(string = "Итого", value = "${state.totalSum.formatTwoDecimals()} ₽")
+                    TotalCard(string = "Позиций", value = state.itemsCount.toString())
 
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                    thickness = 1.dp,
-                    color = EntourageBlack
-                )
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        thickness = 1.dp,
+                        color = EntourageBlack
+                    )
+                }
             }
+
+            SimpleSearchBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp, bottom = if (isCollapsedHeader) 4.dp else 12.dp, start = 8.dp, end = 8.dp),
+                searchQuery = state.searchQuery,
+                onQueryChange = { viewModel.handleIntent(EstimateListIntent.UpdateSearch(it)) },
+                onCloseClick = { viewModel.handleIntent(EstimateListIntent.UpdateSearch("")) }
+            )
         }
-        SearchBar(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-            text = state.searchQuery,
-            onTextChange = { viewModel.handleIntent(EstimateListIntent.UpdateSearch(it)) },
-            iconSecond = filter
-        )
+
         Box(modifier = Modifier.fillMaxSize()) {
 
             LazyColumn(
-                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(32.dp)),
+                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)),
                 state = scrollState,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
@@ -173,12 +184,24 @@ fun EstimateListScreen(
                 }
             }
             if (roleId != Role.Viewer) {
-                AddRoundButton(
-                    onClick = { onAddPosition(projectId, roomId) },
+                this@Column.AnimatedVisibility(
+                    visible = !scrollState.isScrollInProgress,
+                    enter = slideInVertically(
+                        animationSpec = tween(durationMillis = 300),
+                        initialOffsetY = { it }
+                    ) + fadeIn(animationSpec = tween(durationMillis = 300)),
+                    exit = slideOutVertically(
+                        animationSpec = tween(durationMillis = 300),
+                        targetOffsetY = { it }
+                    ) + fadeOut(animationSpec = tween(durationMillis = 300)),
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(bottom = 8.dp),
-                )
+                        .padding(bottom = 16.dp)
+                ) {
+                    AddRoundButton(
+                        onClick = { onAddPosition(projectId, roomId) }
+                    )
+                }
             }
         }
     }

@@ -177,7 +177,7 @@ internal fun GalleryGrid(
             ) + fadeOut(animationSpec = tween(durationMillis = 300)),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 18.dp, end = 8.dp)
+                .padding(bottom = 16.dp, end = 8.dp)
         ) {
             if (roleId != Role.Viewer) {
                 AddRoundButton(

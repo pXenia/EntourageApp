@@ -12,6 +12,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -172,7 +173,7 @@ actual fun GalleryScreen(
                             title = if (isSelectionMode) "Выбрано: ${state.selectedIds.size}" else "Галерея",
                             leftIcon = if (isSelectionMode) cross else arrowLeft,
                             rightIcon = if (isSelectionMode) delete else search,
-                            modifier = Modifier.padding(horizontal = 8.dp),
+                            modifier = Modifier,
                             onLeftButtonClick = {
                                 if (isSelectionMode) {
                                     viewModel.onIntent(GalleryIntent.ClearSelection)
@@ -195,6 +196,9 @@ actual fun GalleryScreen(
                             exit = shrinkVertically() + fadeOut()
                         ) {
                             SimpleSearchBar(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp, horizontal = 8.dp),
                                 searchQuery = state.searchQuery,
                                 onQueryChange = {
                                     viewModel.onIntent(GalleryIntent.UpdateSearchQuery(it))
@@ -236,7 +240,7 @@ actual fun GalleryScreen(
                                             },
                                             modifier = Modifier
                                                 .align(Alignment.BottomEnd)
-                                                .padding(bottom = 18.dp, end = 8.dp)
+                                                .padding(bottom = 16.dp, end = 8.dp)
                                         )
                                     }
                                 }

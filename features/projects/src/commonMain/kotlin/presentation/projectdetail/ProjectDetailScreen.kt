@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeach
@@ -110,13 +109,14 @@ fun ProjectDetailScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 ScreenTitleTwoButtons(
-                    modifier = Modifier.padding(bottom = 16.dp),
                     title = project.title,
                     leftIcon = arrowLeft,
                     rightIcon = info,
                     onLeftButtonClick = onBackClick,
                     onRightButtonClick = { onProjectInfoClick(projectId, state.role) }
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 DaysProgress(
                     startDate = project.startDateFormatted,
@@ -127,7 +127,7 @@ fun ProjectDetailScreen(
                     animationP = animationProgress.value
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(22.dp))
 
                 ProjectInfoCard(
                     roomsCount = project.roomsCount,

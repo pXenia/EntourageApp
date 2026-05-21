@@ -4,7 +4,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -34,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -103,7 +101,7 @@ fun EstimateCard(
 
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
-                thickness = 1.dp,
+                thickness = 0.7.dp,
                 color = EntourageBlack
             )
 
@@ -147,6 +145,7 @@ fun EstimateCard(
                 }
                 if (room != "") {
                     Row(
+                        modifier = Modifier.padding(top = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
@@ -214,9 +213,8 @@ private fun InfoCard(
 ) {
     Surface(
         modifier = modifier,
-        color = Color.Transparent,
+        color = EntourageWhite.copy(alpha = 0.1f),
         shape = RoundedCornerShape(24.dp),
-        border = BorderStroke(1.dp, EntourageTeal)
     ) {
         Row(
             modifier = Modifier

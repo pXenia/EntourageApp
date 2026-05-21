@@ -106,7 +106,6 @@ fun DocumentListScreen(
         modifier = Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().padding(horizontal = 16.dp)
     ) {
         ScreenTitleTwoButtons(
-            modifier = Modifier.padding(bottom = 8.dp),
             title = "Документы",
             leftIcon = arrowLeft,
             rightIcon = search,
@@ -120,6 +119,9 @@ fun DocumentListScreen(
             exit = shrinkVertically() + fadeOut()
         ) {
             SimpleSearchBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp, horizontal = 8.dp),
                 searchQuery = state.searchQuery,
                 onQueryChange = { viewModel.handleIntent(DocumentListIntent.UpdateSearchQuery(it)) },
                 onCloseClick = { viewModel.handleIntent(DocumentListIntent.SetSearchVisibility(false)) },

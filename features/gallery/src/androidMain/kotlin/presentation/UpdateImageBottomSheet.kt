@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,13 +36,12 @@ import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.network.dto.RoomShortDto
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
-import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageRed
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
-import com.entourageapp.core.ui.add
 import com.entourageapp.core.ui.components.Badge
 import com.entourageapp.core.ui.components.CustomTextBar
+import com.entourageapp.core.ui.components.SelectionBadgeRow
 import com.entourageapp.core.ui.cross
 import com.entourageapp.core.ui.delete
 import com.entourageapp.core.ui.dialogs.SelectRoomDialog
@@ -173,43 +171,11 @@ fun UpdateImageBottomSheet(
                     isSingleLine = false
                 )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    val roomName = availableRooms.find { it.id == editedRoomId }?.title
-                    if (roomName != null) {
-                        Badge(tag, roomName)
-                    } else {
-                        Text(
-                            text = "Помещение не выбрано",
-                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp),
-                            color = EntourageBlack.copy(alpha = 0.6f)
-                        )
-                    }
-
-                    Surface(
-                        color = EntouragePeach.copy(alpha = 0.6f),
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .clickable {
-                                if (editedRoomId != null) {
-                                    editedRoomId = null
-                                } else {
-                                    showRoomDialog = true
-                                }
-                            }
-                    ) {
-                        Icon(
-                            painter = if (editedRoomId != null) painterResource(cross) else painterResource(add),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .padding(12.dp)
-                                .size(if (editedRoomId != null) 18.dp else 12.dp),
-                            tint = EntourageBlack,
-                        )
-                    }
-                }
+                SelectionBadgeRow(
+                    selectedName = availableRooms.find { it.id == editedRoomId }?.title,
+                    onClear = { editedRoomId = null },
+                    onAdd = { showRoomDialog = true }
+                )
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     val note = image.note

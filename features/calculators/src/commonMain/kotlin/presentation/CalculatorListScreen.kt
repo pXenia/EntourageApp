@@ -58,14 +58,15 @@ fun CalculatorListScreen(
         ) {
             TopScreenTitle(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
                 title = "калькуляторы".uppercase()
             )
         }
 
         LazyColumn(
             state = scrollState,
-            modifier = Modifier.padding(top = 16.dp).fillMaxSize().clip(RoundedCornerShape(32.dp)),
+            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(32.dp)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp),
             contentPadding = PaddingValues(bottom = 80.dp)

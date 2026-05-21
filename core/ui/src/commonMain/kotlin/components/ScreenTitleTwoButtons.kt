@@ -43,8 +43,8 @@ fun ScreenTitleTwoButtons(
                 text = title.uppercase(),
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 16.dp),
-                style = MaterialTheme.typography.titleLarge.copy(fontSize = 20.sp),
+                    .padding(horizontal = 8.dp),
+                style = MaterialTheme.typography.titleLarge.copy(fontSize = 18.sp),
                 textAlign = TextAlign.Center,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1

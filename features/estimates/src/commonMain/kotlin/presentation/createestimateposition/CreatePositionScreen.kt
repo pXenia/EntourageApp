@@ -17,10 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -48,17 +46,15 @@ import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageRed
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
-import com.entourageapp.core.ui.add
 import com.entourageapp.core.ui.calculator
 import com.entourageapp.core.ui.coins
 import com.entourageapp.core.ui.components.AccentButton
-import com.entourageapp.core.ui.components.Badge
 import com.entourageapp.core.ui.components.CustomDropdownBar
 import com.entourageapp.core.ui.components.CustomTextBar
 import com.entourageapp.core.ui.components.ScreenTitle
-import com.entourageapp.core.ui.cross
+import com.entourageapp.core.ui.components.SectionTitle
+import com.entourageapp.core.ui.components.SelectionBadgeRow
 import com.entourageapp.core.ui.dialogs.SelectRoomDialog
-import com.entourageapp.core.ui.tag
 import com.entourageapp.core.ui.tools.formatTwoDecimals
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -184,9 +180,10 @@ fun CreatePositionScreen(
                         radius = 16.dp,
                         spread = 8.dp,
                         color = EntourageWhite.copy(alpha = 0.2f),
-                        offset = DpOffset(x = 2.dp, 2.dp)
+                        offset = DpOffset(x = 10.dp, 4.dp)
                     )
-                )
+                ),
+                contentAlignment = Alignment.Center
             ) {
                 Row(
                     modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp),
@@ -212,47 +209,12 @@ fun CreatePositionScreen(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(
-                text = "Помещение",
-                color = EntourageTeal,
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 18.sp),
+            SectionTitle("Помещение")
+            SelectionBadgeRow(
+                selectedName = state.selectedRoom?.title,
+                onClear = { viewModel.handleIntent(CreatePositionIntent.ClearRoom) },
+                onAdd = { showRoomDialog = true }
             )
-            HorizontalDivider(color = EntourageBlack, thickness = 1.dp)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                if (state.selectedRoom != null) {
-                    Badge(tag, state.selectedRoom!!.title)
-                } else {
-                    Text(
-                        text = "Помещение не выбрано",
-                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp),
-                        color = EntourageBlack.copy(alpha = 0.6f)
-                    )
-                }
-                Surface(
-                    color = EntouragePeach.copy(alpha = 0.6f),
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .clickable {
-                            if (state.selectedRoom != null) {
-                                viewModel.handleIntent(CreatePositionIntent.ClearRoom)
-                            } else {
-                                showRoomDialog = true
-                            }
-                        }
-                ) {
-                    Icon(
-                        painter = if (state.selectedRoom != null) painterResource(cross) else painterResource(add),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(12.dp)
-                            .size(if (state.selectedRoom != null) 18.dp else 12.dp),
-                        tint = EntourageBlack,
-                    )
-                }
-            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -263,8 +225,10 @@ fun CreatePositionScreen(
         ) {
             Text(
                 text = "ИТОГО",
-                color = EntourageTeal,
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 18.sp),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = EntourageTeal,
+                    fontSize = 18.sp,
+                ),
             )
             Surface(
                 color = Color.Transparent,

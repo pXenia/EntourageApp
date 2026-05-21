@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
 
 @Composable
-fun  TopScreenTitle(
+fun TopScreenTitle(
     modifier: Modifier = Modifier,
     title: String,
 ) {
@@ -23,7 +23,7 @@ fun  TopScreenTitle(
     ) {
         Text(
             text = title.uppercase(),
-            style = MaterialTheme.typography.titleMedium.copy(fontSize = 32.sp)
+            style = MaterialTheme.typography.titleLarge.copy(fontSize = 30.sp)
         )
 
         HorizontalDivider(

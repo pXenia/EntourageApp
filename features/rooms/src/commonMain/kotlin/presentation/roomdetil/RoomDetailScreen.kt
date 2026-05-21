@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeach
@@ -107,7 +106,6 @@ fun RoomDetailScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 ScreenTitleTwoButtons(
-                    modifier = Modifier.padding(bottom = 8.dp),
                     title = room.title,
                     leftIcon = arrowLeft,
                     rightIcon = info,
