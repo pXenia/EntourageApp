@@ -1,7 +1,6 @@
 package com.entourageapp.features.rooms.data
 
 import com.entourageapp.core.network.api.StagesApi
-import com.entourageapp.core.network.dto.MessageDto
 import com.entourageapp.core.network.dto.StageAddDto
 import com.entourageapp.core.network.dto.StageDetailDto
 import com.entourageapp.core.network.dto.StageDto
@@ -18,11 +17,14 @@ class StagesRepositoryImpl(private val api: StagesApi) : StagesRepository {
     override suspend fun createStage(roomId: Int, statusId: Int, title: String, deadline: String?)=
         api.createStage(roomId, StageAddDto(statusId, title, deadline))
 
+    override suspend fun updateStage(stageId: Int,  title: String, deadline: String?) =
+        api.updateStage(stageId, StageDetailDto(stageId, title, deadline))
+
     override suspend fun updateStageStatus(stageId: Int, statusId: Int) =
-        api.patchStage(stageId, StagePatchDto(statusId))
+        api.updateStageStatus(stageId, StagePatchDto(statusId))
 
     override suspend fun toggleTask(taskId: Int, isCompleted: Boolean) =
-        api.patchTask(taskId, TaskPatchDto(isCompleted))
+        api.updateTaskStatus(taskId, TaskPatchDto(isCompleted))
 
     override suspend fun createTask(stageId: Int, title: String, deadline: String?) =
         api.createTask(stageId, TaskAddDto(title, deadline))

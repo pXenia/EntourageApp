@@ -10,9 +10,9 @@ data class Task(
 )
 
 enum class StageStatus(val id: Int, val label: String) {
-    COMPLETED(1, "завершена"),
+    COMPLETED(1, "завершен"),
     IN_PROGRESS(2, "в процессе"),
-    NOT_STARTED(3, "не начата");
+    NOT_STARTED(3, "не начат");
 
     companion object {
         fun fromId(id: Int) = entries.find { it.id == id } ?: NOT_STARTED
@@ -32,6 +32,7 @@ data class StageState(
     val statuses: List<StageStatusDto> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null,
+    val showActionDialog: Boolean = false,
     val showDeleteStageDialog: Boolean = false,
     val showDeleteTaskDialog: Boolean = false,
     val selectedStageId: Int? = null,
@@ -44,7 +45,10 @@ sealed interface StageIntent {
     data class ToggleTask(val roomId: Int, val stageId: Int, val taskId: Int) : StageIntent
     data class UpdateStageStatus(val roomId: Int, val stageId: Int, val status: StageStatus) : StageIntent
     data class AddStage(val roomId: Int, val title: String, val deadline: String) : StageIntent
+    data class UpdateStage(val roomId: Int, val stageId: Int, val title: String, val deadline: String) : StageIntent
     data class AddTask(val roomId: Int, val stageId: Int, val title: String, val deadline: String) : StageIntent
+    data class ShowActionDialog(val stageId: Int, val title: String) : StageIntent
+    object DismissActionDialog : StageIntent
     data class ShowDeleteStageDialog(val stageId: Int, val title: String) : StageIntent
     data class ShowDeleteTaskDialog(val taskId: Int, val title: String) : StageIntent
     object DismissDeleteDialog : StageIntent

@@ -35,8 +35,15 @@ class StagesKtorApi(private val client: HttpClient) : StagesApi {
         }
     }
 
-    override suspend fun patchStage(stageId: Int, data: StagePatchDto) {
+    override suspend fun updateStage(stageId: Int, data: StageDetailDto) {
         client.patch("stages/$stageId") {
+            contentType(ContentType.Application.Json)
+            setBody(data)
+        }
+    }
+
+    override suspend fun updateStageStatus(stageId: Int, data: StagePatchDto) {
+        client.patch("stages/$stageId/status") {
             contentType(ContentType.Application.Json)
             setBody(data)
         }
@@ -56,8 +63,8 @@ class StagesKtorApi(private val client: HttpClient) : StagesApi {
         }
     }
 
-    override suspend fun patchTask(taskId: Int, data: TaskPatchDto) {
-        client.patch("stages/tasks/$taskId") {
+    override suspend fun updateTaskStatus(taskId: Int, data: TaskPatchDto) {
+        client.patch("stages/tasks/$taskId/status") {
             contentType(ContentType.Application.Json)
             setBody(data)
         }

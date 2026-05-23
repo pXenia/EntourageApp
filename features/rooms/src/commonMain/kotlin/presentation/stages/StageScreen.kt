@@ -50,6 +50,7 @@ import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.components.ScreenTitle
 import com.entourageapp.core.ui.dialogs.DeleteDialog
+import com.entourageapp.core.ui.dialogs.OptionsDialog
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,12 +64,25 @@ fun StageScreen(
     val state by viewModel.state.collectAsState()
     var showSheet by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
+    var showEditDialog by remember { mutableStateOf(false) }
     var selectedStage by remember { mutableStateOf<Stage?>(null) }
     val sheetState = rememberModalBottomSheetState()
     val deleteSheetState = rememberModalBottomSheetState()
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(StageIntent.LoadStages(roomId))
+    }
+
+    if (state.showActionDialog) {
+        OptionsDialog(
+            title = state.selectedItemName,
+            onDismiss = { viewModel.handleIntent(StageIntent.DismissActionDialog) },
+            onEditClick = {
+                selectedStage = state.stages.find { it.id == state.selectedStageId }
+                showEditDialog = true
+            },
+            onDeleteClick = { viewModel.handleIntent(StageIntent.ShowDeleteStageDialog(state.selectedStageId ?: 0, state.selectedItemName)) }
+        )
     }
 
     if (state.showDeleteStageDialog) {
@@ -124,7 +138,7 @@ fun StageScreen(
 
             Column(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                     .verticalScroll(rememberScrollState())
                     .padding(top = 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -142,7 +156,7 @@ fun StageScreen(
                             showSheet = true
                         },
                         onStageLongClick = {
-                            viewModel.handleIntent(StageIntent.ShowDeleteStageDialog(stage.id, stage.title))
+                            viewModel.handleIntent(StageIntent.ShowActionDialog(stage.id, stage.title))
                         },
                         onTaskLongClick = { taskId, title ->
                             viewModel.handleIntent(StageIntent.ShowDeleteTaskDialog(taskId, title))
@@ -187,6 +201,19 @@ fun StageScreen(
                 onConfirmTask = { stageId, title, deadline ->
                     viewModel.handleIntent(StageIntent.AddTask(roomId, stageId, title, deadline))
                     showAddDialog = false
+                }
+            )
+        }
+
+        if (showEditDialog && selectedStage != null) {
+            EditStageDialog(
+                stage = selectedStage!!,
+                onDismiss = { showEditDialog = false },
+                onConfirm = { title, deadline ->
+                    viewModel.handleIntent(
+                        StageIntent.UpdateStage(roomId,selectedStage!!.id, title, deadline)
+                    )
+                    showEditDialog = false
                 }
             )
         }

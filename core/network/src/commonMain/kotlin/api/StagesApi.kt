@@ -14,10 +14,11 @@ interface StagesApi {
     suspend fun getStages(roomId: Int): List<StageDto>
     suspend fun getStageDetail(stageId: Int): StageDetailDto
     suspend fun createStage(roomId: Int, data: StageAddDto)
-    suspend fun patchStage(stageId: Int, data: StagePatchDto)
+    suspend fun updateStage(stageId: Int, data: StageDetailDto)
+    suspend fun updateStageStatus(stageId: Int, data: StagePatchDto)
     suspend fun deleteStage(stageId: Int)
     suspend fun getTasks(stageId: Int): List<TaskDto>
     suspend fun createTask(stageId: Int, data: TaskAddDto)
-    suspend fun patchTask(taskId: Int, data: TaskPatchDto)
+    suspend fun updateTaskStatus(taskId: Int, data: TaskPatchDto)
     suspend fun deleteTask(taskId: Int)
 }

@@ -72,7 +72,7 @@ fun EstimateListScreen(
     val state by viewModel.state.collectAsState()
     val isCollapsedHeader by remember {
         derivedStateOf {
-            scrollState.firstVisibleItemIndex > 0 || (scrollState.firstVisibleItemScrollOffset > 50 && scrollState.canScrollForward)
+            (scrollState.firstVisibleItemIndex > 0 || (scrollState.firstVisibleItemScrollOffset > 50 && scrollState.canScrollForward)) && state.filteredItems.size >= 7
         }
     }
     val sheetState = rememberModalBottomSheetState()
