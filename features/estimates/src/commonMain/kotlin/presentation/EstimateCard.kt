@@ -57,7 +57,8 @@ fun EstimateCard(
     quantity: String,
     total: String,
     room: String,
-    onLongClick: () -> Unit = {}
+    onLongClick: () -> Unit = {},
+    onEditClick: () -> Unit = {}
 ) {
     var expandedState by remember { mutableStateOf(false) }
     val rotationState by animateFloatAsState(
@@ -92,18 +93,20 @@ fun EstimateCard(
             modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp, bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Headline(
-                text = type,
-                number = number,
-                onClick = { expandedState = !expandedState },
-                rotationState = rotationState
-            )
+            Column {
+                Headline(
+                    text = type,
+                    number = number,
+                    onClick = { expandedState = !expandedState },
+                    rotationState = rotationState
+                )
 
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth(),
-                thickness = 0.7.dp,
-                color = EntourageBlack
-            )
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 0.7.dp,
+                    color = EntourageBlack
+                )
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),

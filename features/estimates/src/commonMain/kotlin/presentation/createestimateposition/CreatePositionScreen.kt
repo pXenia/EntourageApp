@@ -63,6 +63,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun CreatePositionScreen(
     projectId: Int,
     roomId: Int,
+    itemId: Int? = null,
     onBackClick: () -> Unit,
     onCalculateClick: (Int, Int) -> Unit,
     viewModel: CreatePositionVM = koinViewModel(),
@@ -72,7 +73,11 @@ fun CreatePositionScreen(
     var showRoomDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.handleIntent(CreatePositionIntent.LoadDictionaries(projectId, roomId))
+        if (itemId != null) {
+            viewModel.handleIntent(CreatePositionIntent.LoadItem(projectId, itemId))
+        } else {
+            viewModel.handleIntent(CreatePositionIntent.LoadDictionaries(projectId, roomId))
+        }
     }
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) onBackClick()
@@ -100,7 +105,7 @@ fun CreatePositionScreen(
     ) {
         ScreenTitle(
             modifier = Modifier.fillMaxWidth(),
-            title = "Добавление в смету",
+            title = if (itemId != null) "Редактирование позиции" else "Добавление в смету",
             onBackClick = onBackClick
         )
 
@@ -276,7 +281,11 @@ fun CreatePositionScreen(
                 .fillMaxWidth()
                 .height(56.dp),
             onClick = { viewModel.handleIntent(CreatePositionIntent.Submit(projectId)) },
-            text = if (state.isLoading) "ДОБАВЛЕНИЕ..." else "ДОБАВИТЬ В СМЕТУ",
+            text = if (state.isLoading) {
+                if (itemId != null) "СОХРАНЕНИЕ..." else "ДОБАВЛЕНИЕ..."
+            } else {
+                if (itemId != null) "СОХРАНИТЬ ИЗМЕНЕНИЯ" else "ДОБАВИТЬ В СМЕТУ"
+            },
             containerColor = EntourageBlack,
             contentColor = EntourageWhite,
             enabled = !state.isLoading

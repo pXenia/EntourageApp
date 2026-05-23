@@ -2,7 +2,6 @@ package com.entourageapp.features.rooms.presentation.roomlist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -92,8 +91,7 @@ fun RoomListScreen(
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
-                .clip(RoundedCornerShape(32.dp)),
-            contentPadding = PaddingValues(bottom = 16.dp),
+                .clip(RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(state.rooms) { room ->

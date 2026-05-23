@@ -1,6 +1,6 @@
 package com.entourageapp.features.calculators.presentation.wallpaper
 
-import com.entourageapp.core.network.dto.WallDto
+import com.entourageapp.core.network.dto.rooms.WallDto
 
 data class WallpaperState(
     val isLoading: Boolean = false,

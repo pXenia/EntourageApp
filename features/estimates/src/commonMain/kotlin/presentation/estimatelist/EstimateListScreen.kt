@@ -13,10 +13,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -53,6 +51,7 @@ import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.components.ScreenTitleTwoButtons
 import com.entourageapp.core.ui.components.SimpleSearchBar
 import com.entourageapp.core.ui.dialogs.DeleteDialog
+import com.entourageapp.core.ui.dialogs.OptionsDialog
 import com.entourageapp.core.ui.print
 import com.entourageapp.core.ui.tools.formatTwoDecimals
 import com.entourageapp.features.estimates.presentation.EstimateCard
@@ -65,6 +64,7 @@ fun EstimateListScreen(
     roomId: Int,
     roleId: Role,
     onAddPosition: (Int, Int) -> Unit,
+    onEditPosition: (Int, Int, Int) -> Unit,
     onBackClick: () -> Unit,
     viewModel: EstimateListVM = koinViewModel()
 ) {
@@ -72,13 +72,22 @@ fun EstimateListScreen(
     val state by viewModel.state.collectAsState()
     val isCollapsedHeader by remember {
         derivedStateOf {
-            scrollState.firstVisibleItemIndex > 0 || scrollState.firstVisibleItemScrollOffset > 20
+            scrollState.firstVisibleItemIndex > 0 || (scrollState.firstVisibleItemScrollOffset > 50 && scrollState.canScrollForward)
         }
     }
     val sheetState = rememberModalBottomSheetState()
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(EstimateListIntent.LoadData(projectId, roomId))
+    }
+
+    if (state.showActionDialog) {
+        OptionsDialog(
+            title = state.selectedItemName,
+            onDismiss = { viewModel.handleIntent(EstimateListIntent.DismissActionDialog) },
+            onEditClick = { onEditPosition(projectId, roomId, state.selectedItemId ?: 0) },
+            onDeleteClick = { viewModel.handleIntent(EstimateListIntent.ShowDeleteDialog(state.selectedItemId ?: 0, state.selectedItemName)) }
+        )
     }
 
     if (state.showDeleteDialog) {
@@ -156,6 +165,7 @@ fun EstimateListScreen(
                 modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)),
                 state = scrollState,
                 verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 100.dp)
             ) {
                 itemsIndexed(
                     items = state.filteredItems,
@@ -165,7 +175,7 @@ fun EstimateListScreen(
                         modifier = Modifier.fillMaxWidth(),
                         number = index + 1,
                         type = item.itemType,
-                        name = item.name,
+                        name = item.title,
                         units = item.unit,
                         price = item.price.formatTwoDecimals(),
                         quantity = item.quantity.formatTwoDecimals(),
@@ -173,14 +183,15 @@ fun EstimateListScreen(
                         room = item.room,
                         onLongClick = {
                             if (roleId != Role.Viewer) {
-                                viewModel.handleIntent(EstimateListIntent.ShowDeleteDialog(item.id, item.name))
+                                viewModel.handleIntent(EstimateListIntent.ShowActionDialog(item.id, item.title))
+                            }
+                        },
+                        onEditClick = {
+                            if (roleId != Role.Viewer) {
+                                onEditPosition(projectId, roomId, item.id)
                             }
                         }
                     )
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
             if (roleId != Role.Viewer) {

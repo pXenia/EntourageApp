@@ -49,8 +49,9 @@ class RoomListVM(
         val roomId = _state.value.selectedRoomId ?: return
         viewModelScope.launch {
             try {
-                repository.deleteRoom(projectId, roomId)
+                repository.deleteRoom(roomId)
                 _state.update { it.copy(showDeleteDialog = false, selectedRoomId = null, selectedRoomTitle = "") }
+                loadRooms(projectId)
             } catch (e: Exception) {
                 _state.update { it.copy(error = e.message, showDeleteDialog = false) }
             }

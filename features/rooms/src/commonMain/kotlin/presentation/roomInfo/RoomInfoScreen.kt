@@ -77,14 +77,15 @@ fun RoomInfoScreen(
             ) {
                 ScreenTitle(
                     title = "Информация о комнате",
-                    onBackClick = onBackClick
+                    onBackClick = onBackClick,
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Column(
                     modifier = Modifier
+                        .clip(RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp))
                         .weight(1f)
-                        .verticalScroll(scrollState)
-                        .clip(RoundedCornerShape(16.dp))
-                        .padding(top = 4.dp),
+                        .padding(top = 4.dp)
+                        .verticalScroll(scrollState),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     InfoRow("Высота потолков", "${state.ceilingHeight?.roundToInt() ?: 0} см")

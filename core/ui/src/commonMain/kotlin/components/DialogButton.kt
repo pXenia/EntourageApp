@@ -16,7 +16,8 @@ fun DialogButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     color: Color = EntourageTeal,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    containerColor: Color = Color.Transparent
 ) {
     TextButton(
         onClick = onClick,
@@ -24,7 +25,8 @@ fun DialogButton(
         enabled = enabled,
         colors = ButtonDefaults.textButtonColors(
             contentColor = color,
-            disabledContentColor = Color.Gray
+            disabledContentColor = Color.Gray,
+            containerColor = containerColor
         )
     ) {
         Text(

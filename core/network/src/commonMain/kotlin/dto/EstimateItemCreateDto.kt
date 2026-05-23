@@ -9,7 +9,7 @@ data class EstimateItemCreateDto(
     val roomId: Int? = null,
     @SerialName("item_type_id")
     val itemTypeId: Int,
-    val name: String,
+    val title: String,
     val quantity: Double,
     @SerialName("unit_id")
     val unitId: Int,

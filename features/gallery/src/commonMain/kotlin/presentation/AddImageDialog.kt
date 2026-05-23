@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
-import com.entourageapp.core.network.dto.RoomShortDto
+import com.entourageapp.core.network.dto.rooms.RoomShortDto
 import com.entourageapp.core.ui.EntourageLightBlueGray
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.components.CustomTextBar

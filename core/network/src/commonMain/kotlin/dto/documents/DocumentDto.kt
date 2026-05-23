@@ -11,10 +11,3 @@ data class DocumentDto(
     val title: String,
     val url: String
 )
-
-@Serializable
-data class DocumentCreatedDto(
-    @SerialName("document_id")
-    val documentId: Int,
-    val message: String
-)

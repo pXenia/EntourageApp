@@ -1,7 +1,7 @@
 package com.entourageapp.features.gallery.domain
 
 import com.entourageapp.core.network.dto.gallery.ImageDto
-import com.entourageapp.core.network.dto.RoomShortDto
+import com.entourageapp.core.network.dto.rooms.RoomShortDto
 
 data class GalleryImage(
     val id: Int,

@@ -20,8 +20,14 @@ class EstimateListVM(
         when (intent) {
             is EstimateListIntent.LoadData -> loadEstimate(intent.projectId, intent.roomId)
             is EstimateListIntent.UpdateSearch -> _state.update { it.copy(searchQuery = intent.query) }
+            is EstimateListIntent.ShowActionDialog -> _state.update {
+                it.copy(showActionDialog = true, selectedItemId = intent.itemId, selectedItemName = intent.itemName)
+            }
+            is EstimateListIntent.DismissActionDialog -> _state.update {
+                it.copy(showActionDialog = false, selectedItemId = null, selectedItemName = "")
+            }
             is EstimateListIntent.ShowDeleteDialog -> _state.update { 
-                it.copy(showDeleteDialog = true, selectedItemId = intent.itemId, selectedItemName = intent.itemName) 
+                it.copy(showActionDialog = false, showDeleteDialog = true, selectedItemId = intent.itemId, selectedItemName = intent.itemName)
             }
             is EstimateListIntent.DismissDeleteDialog -> _state.update { 
                 it.copy(showDeleteDialog = false, selectedItemId = null, selectedItemName = "") 
@@ -52,7 +58,7 @@ class EstimateListVM(
         val itemId = _state.value.selectedItemId ?: return
         viewModelScope.launch {
             try {
-                repository.deleteEstimateItem(projectId, itemId)
+                repository.deleteEstimateItem(itemId)
                 _state.update { it.copy(showDeleteDialog = false, selectedItemId = null, selectedItemName = "") }
                 loadEstimate(projectId, roomId)
             } catch (e: Exception) {

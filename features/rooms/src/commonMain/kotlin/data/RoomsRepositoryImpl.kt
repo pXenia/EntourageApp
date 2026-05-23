@@ -21,12 +21,12 @@ class RoomsRepositoryImpl(
         throw e
     }
 
-    override fun getRoomById(projectId: Int, roomId: Int): Flow<RoomDetail> = flow {
-        val response = api.getRoomById(projectId, roomId)
+    override fun getRoomById(roomId: Int): Flow<RoomDetail> = flow {
+        val response = api.getRoomById(roomId)
         emit(response.toRoomDetail())
     }.catch { e -> throw e }
 
-    override suspend fun deleteRoom(projectId: Int, roomId: Int) {
-        api.deleteRoom(projectId, roomId)
+    override suspend fun deleteRoom(roomId: Int) {
+        api.deleteRoom(roomId)
     }
 }

@@ -14,6 +14,7 @@ fun EntryProviderScope<NavKey>.estimatesEntryBuilder(navigator: Navigator) {
             roomId = it.roomId,
             roleId = it.roleId,
             onAddPosition = { projectId, roomId -> navigator.navigate(Route.CreateEstimatePosition(projectId, roomId)) },
+            onEditPosition = { projectId, roomId, itemId -> navigator.navigate(Route.CreateEstimatePosition(projectId, roomId, itemId)) },
             onBackClick = { navigator.goBack() }
         )
     }
@@ -21,6 +22,7 @@ fun EntryProviderScope<NavKey>.estimatesEntryBuilder(navigator: Navigator) {
         CreatePositionScreen(
             projectId =  it.projectId,
             roomId = it.roomId,
+            itemId = it.itemId,
             onBackClick = { navigator.goBack() },
             onCalculateClick = { projectId, roomId -> navigator.navigate(Route.CalculatorsListFromEstimate(projectId, roomId))}
         )

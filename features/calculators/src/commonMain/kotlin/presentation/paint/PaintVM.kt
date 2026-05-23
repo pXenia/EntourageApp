@@ -49,12 +49,12 @@ class PaintVM(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                val params = repository.getParams(projectId, roomId)
+                val params = repository.getParams(roomId)
                 _state.update {
                     it.copy(
                         isLoading = false,
                         walls = params.walls,
-                        ceilingHeight = (params.ceilingHeight ?: 0).toString()
+                        ceilingHeight = (params.ceilingHeight ?: 0f).toString()
                     )
                 }
             } catch (e: Exception) {

@@ -4,10 +4,10 @@ import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entourageapp.core.network.api.RoomsApi
-import com.entourageapp.core.network.dto.OffsetAddDto
-import com.entourageapp.core.network.dto.RoomAddDto
-import com.entourageapp.core.network.dto.RoomFullUpdateDto
-import com.entourageapp.core.network.dto.WallAddDto
+import com.entourageapp.core.network.dto.rooms.OffsetAddDto
+import com.entourageapp.core.network.dto.rooms.RoomAddDto
+import com.entourageapp.core.network.dto.rooms.RoomFullUpdateDto
+import com.entourageapp.core.network.dto.rooms.WallAddDto
 import com.entourageapp.features.rooms.presentation.components.drawplan.polygonAreaM2
 import com.entourageapp.features.rooms.presentation.components.drawplan.wallLenM
 import kotlinx.coroutines.async
@@ -72,8 +72,8 @@ class CreateRoomVM(
     private fun loadRoomTypes(projectId: Int) {
         if (_state.value.roomTypes.isNotEmpty()) return
         viewModelScope.launch {
-            runCatching { roomsApi.getRoomTypes(projectId) }
-                .onSuccess { types -> _state.update { it.copy(roomTypes = types) } }
+            runCatching { roomsApi.getRoomTypes() }
+                .onSuccess { types -> _state.update { it.copy(roomTypes = types, selectedRoomType = types.first()) } }
                 .onFailure { e -> _state.update { it.copy(error = e.message) } }
         }
     }
@@ -83,10 +83,10 @@ class CreateRoomVM(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null, roomId = roomId) }
             runCatching {
-                val typesDef = async { roomsApi.getRoomTypes(projectId) }
-                val detailDef = async { roomsApi.getRoomById(projectId, roomId) }
-                val paramsDef = async { roomsApi.getParams(projectId, roomId) }
-                val offsetsDef = async { roomsApi.getOffsets(projectId, roomId) }
+                val typesDef = async { roomsApi.getRoomTypes() }
+                val detailDef = async { roomsApi.getRoomById(roomId) }
+                val paramsDef = async { roomsApi.getParams(roomId) }
+                val offsetsDef = async { roomsApi.getOffsets(roomId) }
 
                 val types = typesDef.await()
                 val detail = detailDef.await()
@@ -149,14 +149,13 @@ class CreateRoomVM(
                     )
                     val roomId = created.roomId
                     s.walls.forEach { wall ->
-                        roomsApi.addWall(projectId, roomId, WallAddDto(length = wall.lengthM))
+                        roomsApi.addWall(roomId, WallAddDto(length = wall.lengthM))
                     }
                     s.points.forEach { point ->
-                        roomsApi.addOffset(projectId, roomId, OffsetAddDto(x = point.x, y = point.y))
+                        roomsApi.addOffset(roomId, OffsetAddDto(x = point.x, y = point.y))
                     }
                 } else {
                     roomsApi.updateRoomFull(
-                        projectId = projectId,
                         roomId = s.roomId,
                         room = RoomFullUpdateDto(
                             title = s.title,

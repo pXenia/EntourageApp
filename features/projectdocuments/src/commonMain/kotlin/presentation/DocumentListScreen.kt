@@ -221,10 +221,10 @@ private fun DocumentCard(
             .innerShadow(
                 shape = RoundedCornerShape(32.dp),
                 shadow = Shadow(
-                    radius = 8.dp,
-                    spread = 4.dp,
-                    color = EntourageWhite.copy(alpha = 0.2f),
-                    offset = DpOffset(x = 6.dp, 4.dp)
+                    radius = 16.dp,
+                    spread = 6.dp,
+                    color = EntourageWhite.copy(alpha = 0.15f),
+                    offset = DpOffset(x = 4.dp, 3.dp)
                 )
             )
     ) {

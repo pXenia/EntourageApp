@@ -3,9 +3,11 @@ package com.entourageapp.core.ui.dialogs
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -64,19 +66,20 @@ actual fun DeleteDialog(
 
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                horizontalArrangement = Arrangement.End
             ) {
                 DialogButton(
                     modifier = Modifier.weight(1f),
                     text = "Отменить",
                     onClick = onDismiss
                 )
-
+                Spacer(modifier = Modifier.width(8.dp))
                 DialogButton(
                     modifier = Modifier.weight(1f),
                     text = buttonTitle,
                     onClick = onOkClick,
-                    color = EntourageRed
+                    color = EntourageRed,
+                    containerColor = EntourageRed.copy(alpha = 0.2f)
                 )
             }
         }

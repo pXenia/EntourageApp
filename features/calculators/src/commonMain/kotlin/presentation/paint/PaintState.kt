@@ -1,6 +1,6 @@
 package com.entourageapp.features.calculators.presentation.paint
 
-import com.entourageapp.core.network.dto.WallDto
+import com.entourageapp.core.network.dto.rooms.WallDto
 
 enum class PaintTarget {
     WALLS, CEILING

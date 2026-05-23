@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.entourageapp.core.network.dto.WallDto
+import com.entourageapp.core.network.dto.rooms.WallDto
 import com.entourageapp.core.ui.EntourageLightBlueGray
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.components.DialogButton
