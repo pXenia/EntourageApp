@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -60,6 +61,7 @@ fun CreateRoomScreen(
             .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding()
+            .imePadding()
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -103,8 +105,8 @@ fun CreateRoomScreen(
                             )
                         )
                     },
+                    placeholder = "270",
                     label = "Высота потолка",
-                    placeholder = "270"
                 )
             }
 
@@ -112,13 +114,13 @@ fun CreateRoomScreen(
                 InfoLine(
                     modifier = Modifier.fillMaxWidth(),
                     label = "Площадь",
-                    value = "${state.square.fmt()} м²"
+                    value = "${state.square.fmt()} кв. м"
                 )
                 state.walls.forEach { wall ->
                     InfoLine(
                         modifier = Modifier.fillMaxWidth(),
                         label = "Стена ${wall.index}",
-                        value = "${wall.lengthM.fmt()} м"
+                        value = "${(wall.lengthM * 100).toInt()} см"
                     )
                 }
             }
@@ -152,7 +154,7 @@ fun CreateRoomScreen(
             AccentButton(
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 onClick = { viewModel.handleIntent(CreateRoomIntent.Submit(projectId)) },
-                text = if (state.isLoading) "Сохранение..." else "создать",
+                text = if (state.isLoading) "Сохранение..." else if (roomId != null) "Сохранить" else "Создать",
                 containerColor = EntourageBlack,
                 contentColor = EntourageWhite
             )

@@ -51,6 +51,7 @@ import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.components.ScreenTitle
 import com.entourageapp.core.ui.dialogs.DeleteDialog
 import com.entourageapp.core.ui.dialogs.OptionsDialog
+import com.entourageapp.core.ui.tools.showToast
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,6 +74,12 @@ fun StageScreen(
         viewModel.handleIntent(StageIntent.LoadStages(roomId))
     }
 
+    LaunchedEffect(state.error) {
+        state.error?.let {
+            showToast(it)
+        }
+    }
+
     if (state.showActionDialog) {
         OptionsDialog(
             title = state.selectedItemName,
@@ -88,7 +95,7 @@ fun StageScreen(
     if (state.showDeleteStageDialog) {
         DeleteDialog(
             onDismiss = { viewModel.handleIntent(StageIntent.DismissDeleteDialog) },
-            onOkClick = { viewModel.handleIntent(StageIntent.DeleteStage(roomId)) },
+            onOkClick = { viewModel.handleIntent(StageIntent.DeleteStage(roomId, state.selectedStageId ?: 0)) },
             sheetState = deleteSheetState,
             title = "Удаление этапа",
             text = "Вы действительно хотите удалить этап \"${state.selectedItemName}\"?",
@@ -99,7 +106,7 @@ fun StageScreen(
     if (state.showDeleteTaskDialog) {
         DeleteDialog(
             onDismiss = { viewModel.handleIntent(StageIntent.DismissDeleteDialog) },
-            onOkClick = { viewModel.handleIntent(StageIntent.DeleteTask(roomId)) },
+            onOkClick = { viewModel.handleIntent(StageIntent.DeleteTask(roomId, state.selectedTaskId ?: 0)) },
             sheetState = deleteSheetState,
             title = "Удаление задачи",
             text = "Вы действительно хотите удалить задачу \"${state.selectedItemName}\"?",

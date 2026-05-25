@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
@@ -57,6 +58,7 @@ fun Laminate(
         )
         Column(
             modifier = Modifier
+                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .weight(1f)
                 .verticalScroll(scrollState)
                 .padding(bottom = 16.dp)
@@ -66,13 +68,13 @@ fun Laminate(
             CustomTextBar(
                 value = state.floorArea,
                 onValueChange = { viewModel.handleIntent(LaminateIntent.UpdateFloorArea(it)) },
-                label = "Площадь пола, м²",
+                label = "Площадь пола, кв. м",
             )
 
             CustomTextBar(
                 value = state.packArea,
                 onValueChange = { viewModel.handleIntent(LaminateIntent.UpdatePackArea(it)) },
-                label = "Площадь в упаковке, м²",
+                label = "Площадь в упаковке, кв. м",
             )
 
             CustomTextBar(

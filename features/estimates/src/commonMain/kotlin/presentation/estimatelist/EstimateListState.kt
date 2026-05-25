@@ -27,6 +27,6 @@ sealed class EstimateListIntent {
     object DismissActionDialog : EstimateListIntent()
     data class ShowDeleteDialog(val itemId: Int, val itemName: String) : EstimateListIntent()
     object DismissDeleteDialog : EstimateListIntent()
-    data class DeleteItem(val projectId: Int, val roomId: Int) : EstimateListIntent()
+    data class DeleteItem(val projectId: Int, val roomId: Int, val itemId: Int) : EstimateListIntent()
     data class ExportXlsx(val projectId: Int) : EstimateListIntent()
 }

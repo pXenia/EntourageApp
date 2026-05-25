@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entourageapp.features.projects.domain.ProjectCard
 import com.entourageapp.features.projects.domain.ProjectsRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
@@ -18,6 +21,9 @@ class ProjectListVM(
     private val _state = MutableStateFlow(ProjectListState())
     val state: StateFlow<ProjectListState> = _state.asStateFlow()
 
+    private val _sideEffect = MutableSharedFlow<ProjectListSideEffect>()
+    val sideEffect: SharedFlow<ProjectListSideEffect> = _sideEffect.asSharedFlow()
+
     private var currentProjectCards = emptyList<ProjectCard>()
     private var archiveProjectCards = emptyList<ProjectCard>()
 
@@ -25,6 +31,16 @@ class ProjectListVM(
         when (intent) {
             is ProjectListIntent.LoadProjects -> loadProjects()
             is ProjectListIntent.ChangeFilter -> changeFilter(intent.filter)
+            is ProjectListIntent.OpenProject -> {
+                viewModelScope.launch {
+                    _sideEffect.emit(ProjectListSideEffect.NavigateToProject(intent.id))
+                }
+            }
+            is ProjectListIntent.CreateProject -> {
+                viewModelScope.launch {
+                    _sideEffect.emit(ProjectListSideEffect.NavigateToCreateProject)
+                }
+            }
         }
     }
 
@@ -32,8 +48,8 @@ class ProjectListVM(
         viewModelScope.launch {
             repository.getProjectsList().onStart {
                 _state.update { it.copy(isLoading = true, error = null) }
-            }.catch { error ->
-                _state.update { it.copy(isLoading = false, error = "Ошибка загрузки проектов") }
+            }.catch {
+                _state.update { it.copy(isLoading = false, error = it.error) }
             }.collect { projects ->
                 _state.update { currentState ->
                     currentProjectCards = projects.filter { !it.isCompleted }

@@ -66,7 +66,7 @@ fun CalculatorListScreen(
 
         LazyColumn(
             state = scrollState,
-            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(32.dp)),
+            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp),
             contentPadding = PaddingValues(bottom = 80.dp)

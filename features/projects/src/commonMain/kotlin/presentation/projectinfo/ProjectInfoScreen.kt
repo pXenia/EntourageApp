@@ -36,6 +36,8 @@ import com.entourageapp.core.ui.components.AccentButton
 import com.entourageapp.core.ui.components.InfoRow
 import com.entourageapp.core.ui.components.ScreenTitle
 import com.entourageapp.core.ui.components.SectionTitle
+import com.entourageapp.core.ui.tools.formatAmountWithCurrency
+import com.entourageapp.core.ui.tools.formatTwoDecimals
 import com.entourageapp.core.ui.user
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -92,11 +94,11 @@ fun ProjectInfoScreen(
                         InfoRow("Дата окончания", it) 
                     }
                     project.square?.let { 
-                        InfoRow("Площадь, кв.м", it.toString()) 
+                        InfoRow("Площадь, кв. м", it.formatTwoDecimals())
                     }
                     InfoRow("Всего комнат", project.roomsCount.toString())
                     project.budget?.let { 
-                        InfoRow("Бюджет", "${it.toLong()} ₽") 
+                        InfoRow("Бюджет", formatAmountWithCurrency(it))
                     }
                 }
 

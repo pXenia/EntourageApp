@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -42,6 +43,8 @@ import com.entourageapp.core.ui.arrowLeft
 import com.entourageapp.core.ui.components.AccentButton
 import com.entourageapp.core.ui.components.CustomTextBar
 import com.entourageapp.core.ui.components.FloatingButton
+import entourageapp.features.auth.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -109,6 +112,7 @@ fun LoginScreen(
             .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding()
+            .imePadding()
             .padding(horizontal = 16.dp)
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -155,7 +159,7 @@ fun LoginScreen(
         )
         state.generalError?.let {
             Text(
-                text = it,
+                text = stringResource(Res.string.login_error_generic),
                 color = EntourageRed,
                 fontSize = 16.sp,
                 modifier = Modifier.padding(top = 8.dp, start = 20.dp)

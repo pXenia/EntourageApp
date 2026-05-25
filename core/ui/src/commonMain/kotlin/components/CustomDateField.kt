@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,6 +56,11 @@ fun CustomDateField(
         errorCursorColor = EntourageTeal
     )
 
+    val customTextSelectionColors = TextSelectionColors(
+        handleColor = EntourageTeal,
+        backgroundColor = EntourageTeal.copy(alpha = 0.4f)
+    )
+
     Column(modifier = modifier) {
         if (label.isNotEmpty()) {
             Text(
@@ -62,60 +70,61 @@ fun CustomDateField(
                 modifier = Modifier.padding(start = 20.dp, bottom = 2.dp)
             )
         }
-
-        BasicTextField(
-            value = value,
-            onValueChange = { input ->
-                val digitsOnly = input.filter { it.isDigit() }
-                if (digitsOnly.length <= 8) {
-                    onValueChange(digitsOnly)
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            textStyle = MaterialTheme.typography.bodySmall.copy(
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center,
-                color = EntourageBlack
-            ),
-            interactionSource = interactionSource,
-            visualTransformation = DateTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            cursorBrush = SolidColor(EntourageTeal),
-            decorationBox = { innerTextField ->
-                OutlinedTextFieldDefaults.DecorationBox(
-                    value = value,
-                    innerTextField = innerTextField,
-                    enabled = true,
-                    singleLine = true,
-                    visualTransformation = DateTransformation(),
-                    interactionSource = interactionSource,
-                    isError = isError,
-                    placeholder = {
-                        Text(
-                            text = "ДД.ММ.ГГГГ",
-                            modifier = Modifier.fillMaxWidth(),
-                            color = EntourageBlack.copy(alpha = 0.7f),
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontSize = 14.sp,
-                                textAlign = TextAlign.Center
-                            )
-                        )
-                    },
-                    colors = colors,
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    container = {
-                        OutlinedTextFieldDefaults.Container(
-                            enabled = true,
-                            isError = isError,
-                            interactionSource = interactionSource,
-                            colors = colors,
-                            shape = RoundedCornerShape(50)
-                        )
+        CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
+            BasicTextField(
+                value = value,
+                onValueChange = { input ->
+                    val digitsOnly = input.filter { it.isDigit() }
+                    if (digitsOnly.length <= 8) {
+                        onValueChange(digitsOnly)
                     }
-                )
-            }
-        )
+                },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                textStyle = MaterialTheme.typography.bodySmall.copy(
+                    fontSize = 14.sp,
+                    textAlign = TextAlign.Center,
+                    color = EntourageBlack
+                ),
+                interactionSource = interactionSource,
+                visualTransformation = DateTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                cursorBrush = SolidColor(EntourageTeal),
+                decorationBox = { innerTextField ->
+                    OutlinedTextFieldDefaults.DecorationBox(
+                        value = value,
+                        innerTextField = innerTextField,
+                        enabled = true,
+                        singleLine = true,
+                        visualTransformation = DateTransformation(),
+                        interactionSource = interactionSource,
+                        isError = isError,
+                        placeholder = {
+                            Text(
+                                text = "ДД.ММ.ГГГГ",
+                                modifier = Modifier.fillMaxWidth(),
+                                color = EntourageBlack.copy(alpha = 0.7f),
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = 14.sp,
+                                    textAlign = TextAlign.Center
+                                )
+                            )
+                        },
+                        colors = colors,
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                        container = {
+                            OutlinedTextFieldDefaults.Container(
+                                enabled = true,
+                                isError = isError,
+                                interactionSource = interactionSource,
+                                colors = colors,
+                                shape = RoundedCornerShape(50)
+                            )
+                        }
+                    )
+                }
+            )
+        }
 
         if (errorText != null) {
             Text(

@@ -52,6 +52,6 @@ sealed interface StageIntent {
     data class ShowDeleteStageDialog(val stageId: Int, val title: String) : StageIntent
     data class ShowDeleteTaskDialog(val taskId: Int, val title: String) : StageIntent
     object DismissDeleteDialog : StageIntent
-    data class DeleteStage(val roomId: Int) : StageIntent
-    data class DeleteTask(val roomId: Int) : StageIntent
+    data class DeleteStage(val roomId: Int, val stageId: Int) : StageIntent
+    data class DeleteTask(val roomId: Int, val taskId: Int) : StageIntent
 }

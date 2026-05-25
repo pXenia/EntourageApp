@@ -24,7 +24,7 @@ class EstimateListVM(
                 it.copy(showActionDialog = true, selectedItemId = intent.itemId, selectedItemName = intent.itemName)
             }
             is EstimateListIntent.DismissActionDialog -> _state.update {
-                it.copy(showActionDialog = false, selectedItemId = null, selectedItemName = "")
+                it.copy(showActionDialog = false)
             }
             is EstimateListIntent.ShowDeleteDialog -> _state.update { 
                 it.copy(showActionDialog = false, showDeleteDialog = true, selectedItemId = intent.itemId, selectedItemName = intent.itemName)
@@ -32,14 +32,14 @@ class EstimateListVM(
             is EstimateListIntent.DismissDeleteDialog -> _state.update { 
                 it.copy(showDeleteDialog = false, selectedItemId = null, selectedItemName = "") 
             }
-            is EstimateListIntent.DeleteItem -> deleteItem(intent.projectId, intent.roomId)
+            is EstimateListIntent.DeleteItem -> deleteItem(intent.projectId, intent.roomId, intent.itemId)
             is EstimateListIntent.ExportXlsx -> exportXlsx(intent.projectId)
         }
     }
 
     private fun loadEstimate(projectId: Int, roomId: Int) {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
+            _state.update { it.copy(isLoading = true, error = null) }
             try {
                 val response = repository.getEstimateList(projectId, if (roomId == 0) null else roomId)
                 _state.update { it.copy(
@@ -54,15 +54,15 @@ class EstimateListVM(
         }
     }
 
-    private fun deleteItem(projectId: Int, roomId: Int) {
-        val itemId = _state.value.selectedItemId ?: return
+    private fun deleteItem(projectId: Int, roomId: Int, itemId: Int) {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
             try {
                 repository.deleteEstimateItem(itemId)
                 _state.update { it.copy(showDeleteDialog = false, selectedItemId = null, selectedItemName = "") }
                 loadEstimate(projectId, roomId)
             } catch (e: Exception) {
-                _state.update { it.copy(error = e.message, showDeleteDialog = false) }
+                _state.update { it.copy(error = e.message, showDeleteDialog = false, isLoading = false) }
             }
         }
     }

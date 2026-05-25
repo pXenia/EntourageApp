@@ -53,7 +53,9 @@ import com.entourageapp.core.ui.components.SimpleSearchBar
 import com.entourageapp.core.ui.dialogs.DeleteDialog
 import com.entourageapp.core.ui.dialogs.OptionsDialog
 import com.entourageapp.core.ui.print
+import com.entourageapp.core.ui.tools.formatThreeDecimals
 import com.entourageapp.core.ui.tools.formatTwoDecimals
+import com.entourageapp.core.ui.tools.showToast
 import com.entourageapp.features.estimates.presentation.EstimateCard
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -81,19 +83,33 @@ fun EstimateListScreen(
         viewModel.handleIntent(EstimateListIntent.LoadData(projectId, roomId))
     }
 
+    LaunchedEffect(state.error) {
+        state.error?.let {
+            showToast(it)
+        }
+    }
+
     if (state.showActionDialog) {
         OptionsDialog(
             title = state.selectedItemName,
             onDismiss = { viewModel.handleIntent(EstimateListIntent.DismissActionDialog) },
-            onEditClick = { onEditPosition(projectId, roomId, state.selectedItemId ?: 0) },
-            onDeleteClick = { viewModel.handleIntent(EstimateListIntent.ShowDeleteDialog(state.selectedItemId ?: 0, state.selectedItemName)) }
+            onEditClick = { 
+                val itemId = state.selectedItemId ?: 0
+                viewModel.handleIntent(EstimateListIntent.DismissActionDialog)
+                onEditPosition(projectId, roomId, itemId) 
+            },
+            onDeleteClick = { 
+                val itemId = state.selectedItemId ?: 0
+                val itemName = state.selectedItemName
+                viewModel.handleIntent(EstimateListIntent.ShowDeleteDialog(itemId, itemName)) 
+            }
         )
     }
 
     if (state.showDeleteDialog) {
         DeleteDialog(
             onDismiss = { viewModel.handleIntent(EstimateListIntent.DismissDeleteDialog) },
-            onOkClick = { viewModel.handleIntent(EstimateListIntent.DeleteItem(projectId, roomId)) },
+            onOkClick = { viewModel.handleIntent(EstimateListIntent.DeleteItem(projectId, roomId, state.selectedItemId ?: 0)) },
             sheetState = sheetState,
             title = "Удаление позиции",
             text = "Вы действительно хотите удалить позицию \"${state.selectedItemName}\"?",
@@ -178,7 +194,7 @@ fun EstimateListScreen(
                         name = item.title,
                         units = item.unit,
                         price = item.price.formatTwoDecimals(),
-                        quantity = item.quantity.formatTwoDecimals(),
+                        quantity = item.quantity.formatThreeDecimals(),
                         total = item.total.formatTwoDecimals(),
                         room = item.room,
                         onLongClick = {

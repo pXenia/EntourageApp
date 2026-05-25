@@ -29,7 +29,7 @@ class StageVM(
                 it.copy(showActionDialog = true, selectedStageId = intent.stageId, selectedItemName = intent.title)
             }
             is StageIntent.DismissActionDialog -> _state.update {
-                it.copy(showActionDialog = false, selectedStageId = null, selectedItemName = "")
+                it.copy(showActionDialog = false)
             }
             is StageIntent.ShowDeleteStageDialog -> _state.update { 
                 it.copy(showActionDialog = false, showDeleteStageDialog = true, selectedStageId = intent.stageId, selectedItemName = intent.title)
@@ -40,8 +40,8 @@ class StageVM(
             is StageIntent.DismissDeleteDialog -> _state.update { 
                 it.copy(showDeleteStageDialog = false, showDeleteTaskDialog = false, selectedStageId = null, selectedTaskId = null, selectedItemName = "") 
             }
-            is StageIntent.DeleteStage -> deleteStage(intent.roomId)
-            is StageIntent.DeleteTask -> deleteTask(intent.roomId)
+            is StageIntent.DeleteStage -> deleteStage(intent.roomId, intent.stageId)
+            is StageIntent.DeleteTask -> deleteTask(intent.roomId, intent.taskId)
         }
     }
 
@@ -138,30 +138,30 @@ class StageVM(
         }
     }
 
-    private fun deleteStage(roomId: Int) {
-        val stageId = _state.value.selectedStageId ?: return
+    private fun deleteStage(roomId: Int, stageId: Int) {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
             runCatching {
                 repository.deleteStage(stageId)
             }.onSuccess {
-                _state.update { it.copy(showDeleteStageDialog = false, selectedStageId = null, selectedItemName = "") }
+                _state.update { it.copy(showDeleteStageDialog = false, selectedStageId = null, selectedItemName = "", isLoading = false) }
                 loadStages(roomId)
             }.onFailure { e ->
-                _state.update { it.copy(error = e.message, showDeleteStageDialog = false) }
+                _state.update { it.copy(error = e.message, showDeleteStageDialog = false, isLoading = false) }
             }
         }
     }
 
-    private fun deleteTask(roomId: Int) {
-        val taskId = _state.value.selectedTaskId ?: return
+    private fun deleteTask(roomId: Int, taskId: Int) {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
             runCatching {
                 repository.deleteTask(taskId)
             }.onSuccess {
-                _state.update { it.copy(showDeleteTaskDialog = false, selectedTaskId = null, selectedItemName = "") }
+                _state.update { it.copy(showDeleteTaskDialog = false, selectedTaskId = null, selectedItemName = "", isLoading = false) }
                 loadStages(roomId)
             }.onFailure { e ->
-                _state.update { it.copy(error = e.message, showDeleteTaskDialog = false) }
+                _state.update { it.copy(error = e.message, showDeleteTaskDialog = false, isLoading = false) }
             }
         }
     }

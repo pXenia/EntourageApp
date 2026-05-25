@@ -98,8 +98,10 @@ fun CustomTextBar(
                 value = value,
                 onValueChange = { newValue ->
                     if (isNumeric) {
-                        if (newValue.all { it.isDigit() }) {
-                            onValueChange(newValue)
+                        if (newValue.all { it.isDigit() || it == '.' }) {
+                            if (newValue.count { it == '.' } <= 1) {
+                                onValueChange(newValue)
+                            }
                         }
                     } else {
                         onValueChange(newValue)
@@ -191,24 +193,40 @@ class ThousandsSeparatorTransformation : VisualTransformation {
             return TransformedText(text, OffsetMapping.Identity)
         }
 
-        val formattedText = originalText
+        val parts = originalText.split(".")
+        val integerPart = parts[0]
+        val fractionalPart = if (parts.size > 1) "." + parts[1] else ""
+
+        val formattedInteger = integerPart
             .reversed()
             .chunked(3)
             .joinToString(" ")
             .reversed()
 
+        val formattedText = formattedInteger + fractionalPart
+
         val offsetMapping = object : OffsetMapping {
             override fun originalToTransformed(offset: Int): Int {
                 if (offset <= 0) return 0
-                val spacesBefore = (formattedText.length - originalText.length)
-                val originalToRight = originalText.length - offset
-                val spacesToRight = originalToRight / 3
-                return formattedText.length - originalToRight - spacesToRight
+                
+                if (offset <= integerPart.length) {
+                    val originalToRightInInteger = integerPart.length - offset
+                    val spacesToRight = originalToRightInInteger / 3
+                    return formattedInteger.length - originalToRightInInteger - spacesToRight
+                } else {
+                    val offsetInFraction = offset - integerPart.length
+                    return formattedInteger.length + offsetInFraction
+                }
             }
 
             override fun transformedToOriginal(offset: Int): Int {
-                val spacesBefore = formattedText.substring(0, offset).count { it == ' ' }
-                return offset - spacesBefore
+                if (offset <= formattedInteger.length) {
+                    val spacesBefore = formattedInteger.substring(0, offset).count { it == ' ' }
+                    return offset - spacesBefore
+                } else {
+                    val offsetInFraction = offset - formattedInteger.length
+                    return integerPart.length + offsetInFraction
+                }
             }
         }
 

@@ -119,8 +119,8 @@ fun RoomInfoScreen(
                     HorizontalDivider(thickness = 1.dp, color = EntourageBlack)
 
                     InfoRow("Периметр", "${(state.perimeter * 100).roundToInt()} см")
-                    InfoRow("Площадь стен", "${state.wallArea.fmt()} кв.м")
-                    InfoRow("Площадь помещения", "${state.square?.fmt() ?: "0"} кв.м")
+                    InfoRow("Площадь стен", "${state.wallArea.fmt()} кв. м")
+                    InfoRow("Площадь помещения", "${state.square?.fmt() ?: "0"} кв. м")
 
                     HorizontalDivider(thickness = 1.dp, color = EntourageBlack)
 

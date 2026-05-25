@@ -12,4 +12,11 @@ data class ProjectListState(
 sealed interface ProjectListIntent {
     data object LoadProjects : ProjectListIntent
     data class ChangeFilter(val filter: ProjectFilter) : ProjectListIntent
+    data class OpenProject(val id: Int) : ProjectListIntent
+    data object CreateProject : ProjectListIntent
+}
+
+sealed interface ProjectListSideEffect {
+    data class NavigateToProject(val id: Int) : ProjectListSideEffect
+    data object NavigateToCreateProject : ProjectListSideEffect
 }

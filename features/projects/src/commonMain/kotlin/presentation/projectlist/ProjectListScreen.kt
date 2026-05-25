@@ -40,6 +40,8 @@ import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.components.TabButton
 import com.entourageapp.core.ui.components.TopScreenTitle
 import com.entourageapp.features.projects.presentation.components.ProjectCard
+import entourageapp.features.projects.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -50,8 +52,21 @@ fun ProjectListScreen(
     viewModel: ProjectListVM = koinViewModel()
 ) {
     val scrollState = rememberLazyListState()
-    val isCollapsed by remember { derivedStateOf { scrollState.firstVisibleItemIndex > 0 || scrollState.firstVisibleItemScrollOffset > 50 } }
     val state by viewModel.state.collectAsState()
+    val isCollapsed by remember {
+        derivedStateOf {
+            (scrollState.firstVisibleItemIndex > 0 || scrollState.firstVisibleItemScrollOffset > 50) && state.projectCards.size > 4
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+                is ProjectListSideEffect.NavigateToProject -> onCardClick(sideEffect.id)
+                is ProjectListSideEffect.NavigateToCreateProject -> onAddProjectClick()
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(ProjectListIntent.LoadProjects)
@@ -71,7 +86,7 @@ fun ProjectListScreen(
         ) {
             TopScreenTitle(
                 modifier = Modifier.fillMaxWidth(),
-                title = "проекты".uppercase()
+                title = stringResource(Res.string.projects_title).uppercase()
             )
         }
 
@@ -83,13 +98,13 @@ fun ProjectListScreen(
         ) {
             TabButton(
                 modifier = Modifier.weight(1f),
-                title = "Текущие",
+                title = stringResource(Res.string.filter_current),
                 isSelected = state.projectFilter == ProjectFilter.CURRENT,
                 onClick = { viewModel.handleIntent(ProjectListIntent.ChangeFilter(ProjectFilter.CURRENT)) }
             )
             TabButton(
                 modifier = Modifier.weight(1f),
-                title = "Архив",
+                title = stringResource(Res.string.filter_archive),
                 isSelected = state.projectFilter == ProjectFilter.ARCHIVE,
                 onClick = { viewModel.handleIntent(ProjectListIntent.ChangeFilter(ProjectFilter.ARCHIVE)) }
             )
@@ -109,7 +124,7 @@ fun ProjectListScreen(
 
                 state.error != null && state.projectCards.isEmpty() -> {
                     Text(
-                        text = state.error ?: "Произошла ошибка",
+                        text = state.error ?: stringResource(Res.string.error_occurred),
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
@@ -133,7 +148,7 @@ fun ProjectListScreen(
                                         fadeInSpec = tween(500),
                                         placementSpec = spring(stiffness = Spring.StiffnessLow)
                                     ),
-                                onCardClick = { onCardClick(project.id) },
+                                onCardClick = { viewModel.handleIntent(ProjectListIntent.OpenProject(project.id)) },
                                 title = project.title,
                                 area = project.square,
                                 years = project.years,
@@ -150,7 +165,7 @@ fun ProjectListScreen(
                     .align(Alignment.BottomEnd)
                     .navigationBarsPadding()
                     .padding(bottom = 80.dp),
-                onClick = onAddProjectClick
+                onClick = { viewModel.handleIntent(ProjectListIntent.CreateProject) }
             )
         }
     }

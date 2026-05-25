@@ -30,6 +30,42 @@ fun Double.formatTwoDecimals(): String {
     return "$formattedInteger.$formattedDecimal"
 }
 
+fun Double.formatThreeDecimals(): String {
+    val rounded = (kotlin.math.round(this * 100) / 100.0).toString()
+
+    val parts = rounded.split(".")
+    val integerPart = parts[0]
+    val decimalPart = if (parts.size > 1) parts[1] else "0"
+
+    val formattedInteger = integerPart
+        .reversed()
+        .chunked(3)
+        .joinToString(" ")
+        .reversed()
+
+    val formattedDecimal = decimalPart.padEnd(3, '0').take(3)
+
+    return "$formattedInteger.$formattedDecimal"
+}
+
+fun Float.formatTwoDecimals(): String {
+    val rounded = (kotlin.math.round(this * 100) / 100.0).toString()
+
+    val parts = rounded.split(".")
+    val integerPart = parts[0]
+    val decimalPart = if (parts.size > 1) parts[1] else "0"
+
+    val formattedInteger = integerPart
+        .reversed()
+        .chunked(3)
+        .joinToString(" ")
+        .reversed()
+
+    val formattedDecimal = decimalPart.padEnd(2, '0').take(2)
+
+    return "$formattedInteger.$formattedDecimal"
+}
+
 fun formatAmountWithCurrency(amount: Float): String {
     val formatted = amount.toInt().toString()
         .reversed()
