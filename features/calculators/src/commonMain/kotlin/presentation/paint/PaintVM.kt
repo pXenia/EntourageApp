@@ -116,7 +116,6 @@ class PaintVM(
         val requiredLiters = (totalAreaM2 / consumptionM2L) * layers
         val withReserve = requiredLiters * (1.0 + reservePercent / 100.0)
 
-        // Round to 2 decimal places
         val roundedResult = ceil(withReserve * 100) / 100.0
 
         _state.update { it.copy(result = roundedResult) }

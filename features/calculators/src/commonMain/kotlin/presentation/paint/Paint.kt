@@ -136,14 +136,14 @@ fun Paint(
                 CustomTextBar(
                     value = state.manualArea,
                     onValueChange = { viewModel.handleIntent(PaintIntent.UpdateManualArea(it)) },
-                    label = "Площадь потолка, м²",
+                    label = "Площадь потолка, кв. м",
                 )
             }
 
             CustomTextBar(
                 value = state.consumption,
                 onValueChange = { viewModel.handleIntent(PaintIntent.UpdateConsumption(it)) },
-                label = "Расход, м²/л",
+                label = "Расход, кв.м/л",
             )
 
             CustomTextBar(

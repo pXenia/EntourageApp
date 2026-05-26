@@ -101,7 +101,7 @@ class CreateRoomVM(
                     roomTypes = types,
                     selectedRoomType = selectedType,
                     description = detail.description ?: "",
-                    ceilingHeight = detail.ceilingHeight?.toString() ?: "",
+                    ceilingHeight = detail.ceilingHeight?.toInt().toString(),
                     square = detail.square ?: 0f,
                     walls = params.walls.mapIndexed { index, wall -> 
                         WallInfo(index = index + 1, lengthM = wall.length)

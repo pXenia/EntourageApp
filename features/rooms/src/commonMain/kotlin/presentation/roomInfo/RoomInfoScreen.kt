@@ -88,9 +88,8 @@ fun RoomInfoScreen(
                         .verticalScroll(scrollState),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    InfoRow("Высота потолков", "${state.ceilingHeight?.roundToInt() ?: 0} см")
+                    InfoRow("Название", state.title)
                     HorizontalDivider(thickness = 1.dp, color = EntourageBlack)
-
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -115,6 +114,7 @@ fun RoomInfoScreen(
                     state.walls.forEach { wall ->
                         InfoRow("Стена ${wall.index}", "${(wall.lengthM * 100).roundToInt()} см")
                     }
+                    InfoRow("Высота потолка", "${state.ceilingHeight?.roundToInt() ?: 0} см")
 
                     HorizontalDivider(thickness = 1.dp, color = EntourageBlack)
 
