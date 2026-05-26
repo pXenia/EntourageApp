@@ -10,15 +10,17 @@ import kotlin.time.Clock
 data class ProjectDetail(
     val id: Int,
     val title: String,
+    val role: Int,
     val square: Float?,
-    val budget: Float?,
+    val budget: Float,
     val description: String?,
     val roomsCount: Int,
     val pastDays: Int,
     val allDays: Int,
     val progress: Float,
     val startDateFormatted: String,
-    val endDateFormatted: String?
+    val endDateFormatted: String?,
+    val totalSpent: Float
 )
 
 
@@ -37,14 +39,16 @@ fun ProjectDto.toProjectDetail(): ProjectDetail {
     return ProjectDetail(
         id = id,
         title = title,
+        role = role,
         square = square,
-        budget = budget,
+        budget = budget ?: 0f,
         description = description,
         roomsCount = roomsCount,
         pastDays = pastDays,
         allDays = allDays,
         progress = progress,
         startDateFormatted = start.format(),
-        endDateFormatted = end?.format()
+        endDateFormatted = end?.format(),
+        totalSpent = totalSpent
     )
 }

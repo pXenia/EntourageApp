@@ -13,16 +13,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.entourageapp.core.network.dto.WallDto
+import com.entourageapp.core.network.dto.rooms.WallDto
 import com.entourageapp.core.ui.EntourageLightBlueGray
 import com.entourageapp.core.ui.EntourageTeal
+import com.entourageapp.core.ui.components.DialogButton
 
 @Composable
 fun SelectWallsDialog(
@@ -34,9 +34,10 @@ fun SelectWallsDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = "Готово", color = EntourageTeal)
-            }
+            DialogButton(
+                text = "Готово",
+                onClick = onDismiss
+            )
         },
         shape = RoundedCornerShape(28.dp),
         containerColor = EntourageLightBlueGray,

@@ -1,0 +1,3 @@
+<resources>
+    <string name="login_error_generic">Неверный логин или пароль. Пожалуйста, проверьте данные и попробуйте снова.</string>
+</resources>

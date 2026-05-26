@@ -9,7 +9,7 @@ data class EstimateItemDto(
     @SerialName("project_id") val projectId: Int,
     @SerialName("room_name") val room: String,
     @SerialName("item_type_name") val itemType: String,
-    val name: String,
+    val title: String,
     val quantity: Double,
     @SerialName("unit_name") val unit: String,
     val price: Double,

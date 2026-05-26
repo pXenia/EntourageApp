@@ -10,6 +10,7 @@ fun EntryProviderScope<NavKey>.documentsEntryBuilder(navigator: Navigator) {
     entry<Route.Documents> {
         DocumentListScreen(
             projectId = it.projectId,
+            roleId = it.roleId,
             onBackClick = { navigator.goBack() }
         )
     }

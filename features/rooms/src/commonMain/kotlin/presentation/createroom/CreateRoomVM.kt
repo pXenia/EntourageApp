@@ -4,11 +4,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entourageapp.core.network.api.RoomsApi
-import com.entourageapp.core.network.dto.OffsetAddDto
-import com.entourageapp.core.network.dto.RoomAddDto
-import com.entourageapp.core.network.dto.WallAddDto
+import com.entourageapp.core.network.dto.rooms.OffsetAddDto
+import com.entourageapp.core.network.dto.rooms.RoomAddDto
+import com.entourageapp.core.network.dto.rooms.RoomFullUpdateDto
+import com.entourageapp.core.network.dto.rooms.WallAddDto
 import com.entourageapp.features.rooms.presentation.components.drawplan.polygonAreaM2
 import com.entourageapp.features.rooms.presentation.components.drawplan.wallLenM
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -44,6 +46,7 @@ class CreateRoomVM(
                     )
                 }
             is CreateRoomIntent.LoadRoomTypes -> loadRoomTypes(intent.projectId)
+            is CreateRoomIntent.LoadRoom -> loadRoom(intent.projectId, intent.roomId)
             is CreateRoomIntent.Submit -> submit(intent.projectId)
         }
     }
@@ -67,10 +70,56 @@ class CreateRoomVM(
     }
 
     private fun loadRoomTypes(projectId: Int) {
+        if (_state.value.roomTypes.isNotEmpty()) return
         viewModelScope.launch {
-            runCatching { roomsApi.getRoomTypes(projectId) }
-                .onSuccess { types -> _state.update { it.copy(roomTypes = types) } }
+            runCatching { roomsApi.getRoomTypes() }
+                .onSuccess { types -> _state.update { it.copy(roomTypes = types, selectedRoomType = types.first()) } }
                 .onFailure { e -> _state.update { it.copy(error = e.message) } }
+        }
+    }
+
+    private fun loadRoom(projectId: Int, roomId: Int) {
+        if (_state.value.roomId == roomId && _state.value.title.isNotEmpty()) return
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null, roomId = roomId) }
+            runCatching {
+                val typesDef = async { roomsApi.getRoomTypes() }
+                val detailDef = async { roomsApi.getRoomById(roomId) }
+                val paramsDef = async { roomsApi.getParams(roomId) }
+                val offsetsDef = async { roomsApi.getOffsets(roomId) }
+
+                val types = typesDef.await()
+                val detail = detailDef.await()
+                val params = paramsDef.await()
+                val offsets = offsetsDef.await()
+
+                val selectedType = types.find { it.id == detail.typeCode }
+                val points = offsets.map { Offset(it.x, it.y) }
+                
+                _state.update { it.copy(
+                    title = detail.title,
+                    roomTypes = types,
+                    selectedRoomType = selectedType,
+                    description = detail.description ?: "",
+                    ceilingHeight = detail.ceilingHeight?.toInt().toString(),
+                    square = detail.square ?: 0f,
+                    walls = params.walls.mapIndexed { index, wall -> 
+                        WallInfo(index = index + 1, lengthM = wall.length)
+                    },
+                    points = points
+                ) }
+
+                _planState.update { it.copy(
+                    points = points,
+                    walls = params.walls.mapIndexed { index, wall -> 
+                        WallInfo(index = index + 1, lengthM = wall.length)
+                    },
+                    square = detail.square ?: 0f
+                ) }
+            }.onFailure { e ->
+                _state.update { it.copy(error = e.message) }
+            }
+            _state.update { it.copy(isLoading = false) }
         }
     }
 
@@ -87,22 +136,37 @@ class CreateRoomVM(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             runCatching {
-                val created = roomsApi.createRoom(
-                    projectId = projectId,
-                    room = RoomAddDto(
-                        title = s.title,
-                        typeCode = s.selectedRoomType?.code,
-                        description = s.description.ifBlank { null },
-                        square = s.square,
-                        ceilingHeight = s.ceilingHeight.toFloatOrNull()
+                if (s.roomId == null) {
+                    val created = roomsApi.createRoom(
+                        projectId = projectId,
+                        room = RoomAddDto(
+                            title = s.title,
+                            typeCode = s.selectedRoomType?.id,
+                            description = s.description.ifBlank { null },
+                            square = s.square,
+                            ceilingHeight = s.ceilingHeight.toFloatOrNull()
+                        )
                     )
-                )
-                val roomId = created.roomId
-                s.walls.forEach { wall ->
-                    roomsApi.addWall(projectId, roomId, WallAddDto(length = wall.lengthM))
-                }
-                s.points.forEach { point ->
-                    roomsApi.addOffset(projectId, roomId, OffsetAddDto(x = point.x, y = point.y))
+                    val roomId = created.roomId
+                    s.walls.forEach { wall ->
+                        roomsApi.addWall(roomId, WallAddDto(length = wall.lengthM))
+                    }
+                    s.points.forEach { point ->
+                        roomsApi.addOffset(roomId, OffsetAddDto(x = point.x, y = point.y))
+                    }
+                } else {
+                    roomsApi.updateRoomFull(
+                        roomId = s.roomId,
+                        room = RoomFullUpdateDto(
+                            title = s.title,
+                            typeCode = s.selectedRoomType?.id,
+                            description = s.description.ifBlank { null },
+                            square = s.square,
+                            ceilingHeight = s.ceilingHeight.toFloatOrNull(),
+                            walls = s.walls.map { WallAddDto(length = it.lengthM) },
+                            offsets = s.points.map { OffsetAddDto(x = it.x, y = it.y) }
+                        )
+                    )
                 }
             }
                 .onSuccess { _state.update { it.copy(isSuccess = true) } }

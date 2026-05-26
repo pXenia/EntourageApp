@@ -1,6 +1,8 @@
 package com.entourageapp.features.rooms.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,9 +14,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.innerShadow
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageTeal
+import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.add
 import org.jetbrains.compose.resources.painterResource
 
@@ -23,10 +30,20 @@ fun AddRoomCard(
     modifier: Modifier = Modifier,
     onCardClick: () -> Unit = {},
 ) {
-    Surface(
-        modifier = modifier.clickable { onCardClick() },
-        color = EntourageBlack.copy(alpha = 0.1f),
-        shape = RoundedCornerShape(32.dp)
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(32.dp))
+            .background(EntourageBlack.copy(alpha = 0.1f))
+            .clickable { onCardClick() }
+            .innerShadow(
+                shape = RoundedCornerShape(32.dp),
+                shadow = Shadow(
+                    radius = 20.dp,
+                    spread = 4.dp,
+                    color = EntourageWhite.copy(alpha = 0.2f),
+                    offset = DpOffset(x = 4.dp, 4.dp)
+                )
+            ),
     ) {
         Box(
             modifier = Modifier.fillMaxWidth().padding(8.dp).height(80.dp),

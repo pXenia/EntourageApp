@@ -6,10 +6,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
@@ -42,6 +44,7 @@ import com.entourageapp.core.ui.components.CustomDateField
 import com.entourageapp.core.ui.components.CustomTextBar
 import com.entourageapp.core.ui.components.ScreenTitle
 import com.entourageapp.core.ui.cross
+import com.entourageapp.core.ui.tools.showToast
 import com.entourageapp.core.ui.user
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -49,6 +52,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun CreateProjectScreen(
     modifier: Modifier = Modifier,
+    projectId: Int? = null,
     onBackClick: () -> Unit = {},
     viewModel: CreateProjectVM = koinViewModel()
 ) {
@@ -56,8 +60,22 @@ fun CreateProjectScreen(
     val scrollState = rememberScrollState()
     var showAddUserDialog by remember { mutableStateOf(false) }
 
+    LaunchedEffect(projectId) {
+        if (projectId != null) {
+            viewModel.handleIntent(CreateProjectIntent.LoadProject(projectId))
+        }
+    }
+
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) onBackClick()
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+                is CreateProjectSideEffect.ShowError -> showToast(sideEffect.message)
+            }
+        }
     }
 
     if (showAddUserDialog) {
@@ -81,16 +99,17 @@ fun CreateProjectScreen(
             .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding()
+            .imePadding()
             .padding(horizontal = 16.dp)
     ) {
         ScreenTitle(
             modifier = modifier.fillMaxWidth().padding(bottom = 8.dp),
-            title = "Создание проекта",
+            title = if (projectId != null) "Редактирование проекта" else "Создание проекта",
             onBackClick = onBackClick
         )
 
         Column(
-            modifier = modifier.fillMaxSize().verticalScroll(scrollState),
+            modifier = modifier.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)).fillMaxSize().verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             CustomTextBar(
@@ -121,9 +140,9 @@ fun CreateProjectScreen(
             Row(modifier = Modifier.fillMaxWidth()) {
                 CustomTextBar(
                     label = "Площадь, кв. м",
-                    placeholder = if (state.isCalculatedSquare) "--" else "Например, 90",
+                    placeholder = if (state.isCalculatedSquare) "автом. расчёт" else "Например, 90",
                     modifier = Modifier.weight(1f).padding(end = 4.dp),
-                    value = if (state.isCalculatedSquare) "--" else state.square,
+                    value = if (state.isCalculatedSquare) "автом. расчёт" else state.square,
                     isEnable = !state.isCalculatedSquare,
                     isNumeric = true,
                     onValueChange = { viewModel.handleIntent(CreateProjectIntent.UpdateSquare(it)) },
@@ -164,11 +183,12 @@ fun CreateProjectScreen(
             state.pendingParticipants.forEach { participant ->
                 AddUserCard(
                     modifier = Modifier.fillMaxWidth(),
-                    name = participant.email,
+                    name = participant.name,
                     role = when (participant.roleCode) {
-                        "editor" -> "редакт."
-                        "viewer" -> "читатель"
-                        else -> participant.roleCode
+                        1 -> "владелец"
+                        2 -> "редактор"
+                        3 -> "читатель"
+                        else -> ""
                     },
                     email = participant.email,
                     onCrossClick = {
@@ -198,7 +218,11 @@ fun CreateProjectScreen(
             AccentButton(
                 modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth().height(56.dp),
                 onClick = { viewModel.handleIntent(CreateProjectIntent.Submit) },
-                text = if (state.isLoading) "создание..." else "создать",
+                text = if (state.isLoading) {
+                    if (projectId != null) "сохранение..." else "создание..."
+                } else {
+                    if (projectId != null) "сохранить" else "создать"
+                },
                 containerColor = EntourageBlack,
                 contentColor = EntourageWhite,
                 enabled = !state.isLoading

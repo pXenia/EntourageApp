@@ -1,5 +1,8 @@
 package com.entourageapp.features.projects.presentation.projectdetail
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,22 +11,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Surface
@@ -31,24 +30,33 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.innerShadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
-import com.entourageapp.core.ui.EntouragePeachAlpha80
+import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.arrowLeft
 import com.entourageapp.core.ui.blueprint
+import com.entourageapp.core.ui.components.ProgressBar
 import com.entourageapp.core.ui.components.ScreenTitleTwoButtons
 import com.entourageapp.core.ui.document
 import com.entourageapp.core.ui.folder
 import com.entourageapp.core.ui.gallery
 import com.entourageapp.core.ui.info
 import com.entourageapp.core.ui.stats
+import com.entourageapp.core.ui.tools.formatAmountWithCurrency
+import com.entourageapp.core.ui.tools.getPlural
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -57,18 +65,23 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ProjectDetailScreen(
     projectId: Int,
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {},
-    onEstimateClick: (Int) -> Unit = {},
-    onGalleryClick: (Int) -> Unit = {},
-    onDocumentsClick: (Int) -> Unit = {},
-    onRoomListClick: (Int) -> Unit = {},
-    onProjectInfoClick: () -> Unit = {},
+    onBackClick: () -> Unit,
+    onEstimateClick: (Int, Role) -> Unit,
+    onGalleryClick: (Int, Role) -> Unit,
+    onDocumentsClick: (Int, Role) -> Unit,
+    onRoomListClick: (Int, Role) -> Unit,
+    onProjectInfoClick: (Int, Role) -> Unit,
+    onProjectStatsClick: (Int) -> Unit,
     viewModel: ProjectDetailVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val animationProgress = remember { Animatable(0f) }
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(ProjectDetailIntent.LoadProject(projectId))
+        animationProgress.animateTo(
+            targetValue = 1f, animationSpec = tween(durationMillis = 1500)
+        )
     }
 
     when {
@@ -90,34 +103,39 @@ fun ProjectDetailScreen(
             Column(
                 modifier = modifier
                     .fillMaxSize()
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
+                    .systemBarsPadding()
                     .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 ScreenTitleTwoButtons(
-                    modifier = Modifier.padding(bottom = 16.dp),
                     title = project.title,
                     leftIcon = arrowLeft,
                     rightIcon = info,
                     onLeftButtonClick = onBackClick,
-                    onRightButtonClick = {}
+                    onRightButtonClick = { onProjectInfoClick(projectId, state.role) }
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 DaysProgress(
                     startDate = project.startDateFormatted,
                     endDate = project.endDateFormatted ?: "—",
                     pastDays = project.pastDays,
                     allDays = project.allDays,
-                    progress = project.progress
+                    progress = project.progress,
+                    animationP = animationProgress.value
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(22.dp))
 
                 ProjectInfoCard(
                     roomsCount = project.roomsCount,
-                    onRoomListClick = { onRoomListClick(projectId) }
+                    animationP = animationProgress.value,
+                    budget = project.budget,
+                    totalSpent = project.totalSpent,
+                    onRoomListClick = { onRoomListClick(projectId, state.role) },
+                    onProjectStatsClick = { onProjectStatsClick(projectId) }
                 )
 
                 HorizontalDivider(
@@ -132,19 +150,19 @@ fun ProjectDetailScreen(
                 ) {
                     SectionButton(
                         modifier = Modifier.weight(1f),
-                        onClick = { onDocumentsClick(projectId) },
+                        onClick = { onDocumentsClick(projectId, state.role) },
                         title = "Документ",
                         icon = document
                     )
                     SectionButton(
                         modifier = Modifier.weight(1f),
-                        onClick = { onGalleryClick(projectId) },
+                        onClick = { onGalleryClick(projectId, state.role) },
                         title = "Галерея",
                         icon = gallery
                     )
                     SectionButton(
                         modifier = Modifier.weight(1f),
-                        onClick = { onEstimateClick(projectId) },
+                        onClick = { onEstimateClick(projectId, state.role) },
                         title = "Смета",
                         icon = folder
                     )
@@ -166,20 +184,25 @@ private fun DaysProgress(
     endDate: String,
     pastDays: Int,
     allDays: Int,
-    progress: Float
+    progress: Float,
+    animationP: Float = 0.5f
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        CircularDaysProgress(pastDays, allDays, progress)
+        CircularDaysProgress(pastDays, allDays, progress, animationP)
         Column(
             modifier = Modifier.width(IntrinsicSize.Min),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             DateBadge(startDate)
-            HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = EntourageBlack)
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth(),
+                thickness = 1.dp,
+                color = EntourageBlack
+            )
             DateBadge(endDate)
         }
     }
@@ -189,22 +212,29 @@ private fun DaysProgress(
 private fun CircularDaysProgress(
     pastDays: Int,
     allDays: Int,
-    progress: Float
+    progress: Float,
+    animationP: Float,
 ) {
-    Box(contentAlignment = Alignment.Center) {
+    val animatedPastDays = (pastDays * animationP).toInt()
+
+    Box(
+        contentAlignment = Alignment.Center
+    ) {
         CircularProgressIndicator(
-            progress = progress,
+            progress = { progress * animationP },
             modifier = Modifier.size(200.dp),
             color = EntourageBlack,
-            trackColor = EntourageBlack.copy(alpha = 0.2f),
-            strokeWidth = 18.dp
+            strokeWidth = 20.dp,
+            trackColor = EntourageBlack.copy(alpha = 0.05f),
+            strokeCap = ProgressIndicatorDefaults.CircularDeterminateStrokeCap,
+            gapSize = (-16).dp
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy((-6).dp)
         ) {
             Text(
-                text = "$pastDays/$allDays",
+                text = "$animatedPastDays/$allDays",
                 color = EntourageTeal,
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 32.sp),
             )
@@ -214,34 +244,71 @@ private fun CircularDaysProgress(
                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 16.sp),
             )
         }
+        Box(
+            modifier = Modifier
+                .size(200.dp)
+                .clip(CircleShape)
+                .innerShadow(
+                    shape = CircleShape,
+                    shadow = Shadow(
+                        radius = 8.dp,
+                        spread = 4.dp,
+                        color = EntourageWhite.copy(alpha = 0.3f),
+                        offset = DpOffset(x = 2.dp, 2.dp)
+                    )
+                )
+        )
     }
 }
 
 @Composable
 private fun DateBadge(
-    date: String = "27.02.2022"
+    date: String
 ) {
-    Surface(
-        color = EntourageWhite.copy(alpha = 0.6f),
-        shape = RoundedCornerShape(32.dp)
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(32.dp))
+            .innerShadow(
+                shape = RoundedCornerShape(32.dp),
+                shadow = Shadow(
+                    radius = 20.dp,
+                    spread = 4.dp,
+                    color = EntourageWhite.copy(alpha = 0.4f),
+                    offset = DpOffset(x = 4.dp, 4.dp)
+                )
+            ),
+        contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier.padding(vertical = 8.dp, horizontal = 18.dp)
-        ) {
-            Text(
-                text = date,
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp),
-            )
-        }
+        Text(
+            modifier = Modifier.padding(vertical = 8.dp, horizontal = 18.dp),
+            text = date,
+            style = MaterialTheme.typography.bodySmall.copy(fontSize = 14.sp),
+            color = EntourageBlack
+        )
     }
 }
 
 @Composable
 private fun ProjectInfoCard(
     roomsCount: Int,
-    onRoomListClick: () -> Unit = {}
+    animationP: Float,
+    budget: Float,
+    totalSpent: Float,
+    onRoomListClick: () -> Unit = {},
+    onProjectStatsClick: () -> Unit = {},
 ) {
     Surface(
+        modifier = Modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(32.dp))
+            .innerShadow(
+                shape = RoundedCornerShape(32.dp),
+                shadow = Shadow(
+                    radius = 36.dp,
+                    spread = 8.dp,
+                    color = EntourageWhite.copy(alpha = 0.2f),
+                    offset = DpOffset(x = 20.dp, 20.dp)
+                )
+            ),
         color = EntourageBlack.copy(alpha = 0.1f),
         shape = RoundedCornerShape(32.dp),
     ) {
@@ -253,10 +320,18 @@ private fun ProjectInfoCard(
                 RoomsInfo(roomsCount = roomsCount)
                 RoomsButton(onClick = onRoomListClick)
                 Spacer(modifier = Modifier.weight(1f))
-                StatsButton(onClick = {})
+                StatsButton(onClick = onProjectStatsClick)
             }
-            HorizontalDivider(modifier = Modifier.fillMaxWidth(), thickness = 1.dp, color = EntourageBlack)
-            CostProgress()
+            HorizontalDivider(
+                modifier = Modifier.fillMaxWidth(),
+                thickness = 1.dp,
+                color = EntourageBlack
+            )
+            CostProgress(
+                budget = budget,
+                totalSpent = totalSpent,
+                animationP = animationP
+            )
         }
     }
 }
@@ -268,8 +343,8 @@ private fun RoomsInfo(
     Surface(
         modifier = Modifier
             .height(80.dp)
-            .border(1.dp, EntourageBlack, RoundedCornerShape(8.dp)),
-        shape = RoundedCornerShape(8.dp),
+            .border(1.dp, EntourageBlack, RoundedCornerShape(16.dp)),
+        shape = RoundedCornerShape(16.dp),
         color = Color.Transparent,
     ) {
         Column(
@@ -282,12 +357,12 @@ private fun RoomsInfo(
             ) {
                 Text(
                     text = "$roomsCount",
-                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 32.sp),
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 32.sp),
                     color = EntourageTeal,
                     modifier = Modifier.alignByBaseline()
                 )
                 Text(
-                    text = "комнат",
+                    text = getPlural(roomsCount, "комната", "комнаты", "комнат"),
                     style = MaterialTheme.typography.bodySmall.copy(fontSize = 16.sp),
                     modifier = Modifier.alignByBaseline()
                 )
@@ -300,12 +375,23 @@ private fun RoomsInfo(
 private fun RoomsButton(
     onClick: () -> Unit
 ) {
-    FloatingActionButton(
-        onClick = onClick,
-        shape = RoundedCornerShape(8.dp),
-        containerColor = EntourageBlack,
-        contentColor = EntourageWhite,
-        modifier = Modifier.size(80.dp)
+    Box(
+        modifier = Modifier
+            .size(80.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onClick() }
+            .background(EntourageBlack.copy(alpha = 0.85f))
+            .border(1.dp, EntourageBlack, RoundedCornerShape(16.dp))
+            .innerShadow(
+                shape = RoundedCornerShape(16.dp),
+                shadow = Shadow(
+                    radius = 16.dp,
+                    spread = 16.dp,
+                    color = EntourageBlack.copy(alpha = 0.5f),
+                    offset = DpOffset(x = 0.dp, 0.dp)
+                )
+            ),
+        contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -315,11 +401,13 @@ private fun RoomsButton(
                 painter = painterResource(blueprint),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(26.dp),
+                tint = EntourageWhite
             )
             Text(
-                text = "список комнат",
-                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp)
+                text = "список\nкомнат",
+                style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                color = EntourageWhite
             )
         }
     }
@@ -329,46 +417,59 @@ private fun RoomsButton(
 private fun StatsButton(
     onClick: () -> Unit
 ) {
-    FloatingActionButton(
-        onClick = onClick,
-        shape = RoundedCornerShape(8.dp),
-        containerColor = EntouragePeachAlpha80,
-        contentColor = EntourageBlack,
+    Box(
         modifier = Modifier
             .size(80.dp)
-            .border(1.dp, EntourageBlack, RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onClick() }
+            .background(EntouragePeach.copy(alpha = 0.7f))
+            .border(1.dp, EntourageBlack, RoundedCornerShape(16.dp))
+            .innerShadow(
+                shape = RoundedCornerShape(16.dp),
+                shadow = Shadow(
+                    radius = 16.dp,
+                    spread = 16.dp,
+                    color = EntouragePeach.copy(alpha = 0.5f),
+                    offset = DpOffset(x = 0.dp, 0.dp)
+                )
+            ),
+        contentAlignment = Alignment.Center
     ) {
         Column {
             Icon(
                 painter = painterResource(stats),
                 contentDescription = null,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
             )
         }
     }
 }
 
 @Composable
-private fun CostProgress() {
+private fun CostProgress(
+    budget: Float,
+    totalSpent: Float,
+    animationP: Float = 0.5f
+) {
+    val dif = ( budget - totalSpent)
+    val progress = if (budget > 0 ) (totalSpent / budget).coerceIn(0f, 1f) else 1f
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        LinearProgressIndicator(
-            progress = { 0.5f },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(32.dp),
+        ProgressBar(
             color = EntourageBlack,
-            trackColor = EntourageBlack.copy(alpha = 0.2f),
-            strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
+            height = 30.dp,
+            progress = progress,
+            animationP = animationP
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            TextMoney("Потрачено", "2,00 млн. ₽")
-            TextMoney("Осталось", "700 тыс. ₽")
+            TextMoney("Потрачено", formatAmountWithCurrency(totalSpent))
+            TextMoney("Осталось", formatAmountWithCurrency(dif))
         }
     }
 
@@ -401,13 +502,25 @@ private fun SectionButton(
     onClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        color = EntourageTeal.copy(alpha = 0.2f),
-        shape = RoundedCornerShape(32.dp),
+    Box(
         modifier = modifier
+            .clip(RoundedCornerShape(32.dp))
+            .clickable { onClick() }
+            .background(EntourageTeal.copy(alpha = 0.2f))
+            .innerShadow(
+                shape = RoundedCornerShape(32.dp),
+                shadow = Shadow(
+                    radius = 16.dp,
+                    spread = 16.dp,
+                    color = EntourageTeal.copy(alpha = 0.06f),
+                    offset = DpOffset(x = 0.dp, 0.dp)
+                )
+            ),
+        contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier.clickable { onClick() }.padding(vertical = 24.dp, horizontal = 16.dp),
+            modifier = Modifier
+                .padding(vertical = 24.dp, horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

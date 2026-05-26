@@ -26,7 +26,7 @@ class RoomDetailVM(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            repository.getRoomById(projectId, roomId)
+            repository.getRoomById(roomId)
                 .catch { error ->
                     _state.update { it.copy(isLoading = false, error = error.message) }
                 }

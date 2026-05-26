@@ -20,7 +20,8 @@ class CreatePositionVM(
 
     fun handleIntent(intent: CreatePositionIntent) {
         when (intent) {
-            is CreatePositionIntent.LoadDictionaries -> loadDictionaries(intent.projectId)
+            is CreatePositionIntent.LoadDictionaries -> loadDictionaries(intent.projectId, intent.roomId)
+            is CreatePositionIntent.LoadItem -> loadItem(intent.projectId, intent.itemId)
             is CreatePositionIntent.UpdateName -> _state.update { it.copy(name = intent.value) }
             is CreatePositionIntent.UpdatePrice -> _state.update { it.copy(price = intent.value) }
             is CreatePositionIntent.UpdateQuantity -> _state.update { it.copy(quantity = intent.value) }
@@ -44,11 +45,40 @@ class CreatePositionVM(
         }
     }
 
-    private fun loadDictionaries(projectId: Int) {
+    private fun loadItem(projectId: Int, itemId: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, itemId = itemId) }
+            try {
+                val item = repository.getEstimateItem(itemId)
+                val types = repository.getItemTypes()
+                val units = repository.getUnits()
+                val rooms = repository.getRooms(projectId)
+
+                _state.update {
+                    it.copy(
+                        name = item.title,
+                        price = item.price.toString(),
+                        quantity = item.quantity.toString(),
+                        selectedType = types.find { t -> t.title == item.itemType },
+                        selectedUnit = units.find { u -> u.title == item.unit },
+                        selectedRoom = rooms.find { r -> r.title == item.room },
+                        availableTypes = types,
+                        availableUnits = units,
+                        availableRooms = rooms,
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false, error = "Ошибка загрузки позиции") }
+            }
+        }
+    }
+
+    private fun loadDictionaries(projectId: Int, roomId: Int) {
         viewModelScope.launch {
             try {
-                val types = repository.getItemTypes(projectId)
-                val units = repository.getUnits(projectId)
+                val types = repository.getItemTypes()
+                val units = repository.getUnits()
                 val rooms = repository.getRooms(projectId)
 
                 val defaultType = types.find { it.id == 1 } ?: types.firstOrNull()
@@ -60,7 +90,8 @@ class CreatePositionVM(
                         availableUnits = units,
                         availableRooms = rooms,
                         selectedType = defaultType,
-                        selectedUnit = defaultUnit
+                        selectedUnit = defaultUnit,
+                        selectedRoom = rooms.find { it.id == roomId }
                     )
                 }
             } catch (e: Exception) {
@@ -87,13 +118,22 @@ class CreatePositionVM(
                 val dto = EstimateItemCreateDto(
                     roomId = s.selectedRoom.id,
                     itemTypeId = s.selectedType.id,
-                    name = s.name.trim(),
+                    title = s.name.trim(),
                     quantity = s.quantity.toDoubleOrNull() ?: 0.0,
                     unitId = s.selectedUnit.id,
                     price = s.price.toDoubleOrNull() ?: 0.0
                 )
 
-                repository.addEstimateItem(projectId, dto)
+                if (s.itemId != null) {
+                    repository.updateEstimateItem(s.itemId, dto)
+                    _state.update {
+                        it.copy(
+                        isLoading = true,
+                        error = null)
+                    }
+                } else {
+                    repository.addEstimateItem(projectId, dto)
+                }
                 _state.update { it.copy(isLoading = false, isSuccess = true) }
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.message) }

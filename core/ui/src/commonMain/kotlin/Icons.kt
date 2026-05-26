@@ -9,6 +9,7 @@ import entourageapp.core.ui.generated.resources.bath
 import entourageapp.core.ui.generated.resources.bed
 import entourageapp.core.ui.generated.resources.blueprint
 import entourageapp.core.ui.generated.resources.calculator
+import entourageapp.core.ui.generated.resources.calendar
 import entourageapp.core.ui.generated.resources.check
 import entourageapp.core.ui.generated.resources.clothes_hanger
 import entourageapp.core.ui.generated.resources.coins
@@ -17,6 +18,7 @@ import entourageapp.core.ui.generated.resources.document
 import entourageapp.core.ui.generated.resources.door_open
 import entourageapp.core.ui.generated.resources.folder
 import entourageapp.core.ui.generated.resources.house_plan
+import entourageapp.core.ui.generated.resources.ic_app
 import entourageapp.core.ui.generated.resources.info
 import entourageapp.core.ui.generated.resources.kitchen_set
 import entourageapp.core.ui.generated.resources.layout_fluid
@@ -33,6 +35,7 @@ import entourageapp.core.ui.generated.resources.teddy_bear
 import entourageapp.core.ui.generated.resources.trash
 import entourageapp.core.ui.generated.resources.user
 
+val logo = Res.drawable.ic_app
 val folder = Res.drawable.folder
 val arrowRight = Res.drawable.angle_small_right
 val arrowLeft = Res.drawable.angle_left
@@ -62,6 +65,6 @@ val hallway = Res.drawable.door_open
 val coins = Res.drawable.coins
 val print = Res.drawable.print
 val delete = Res.drawable.trash
-
 val edit = Res.drawable.pencil
 val done = Res.drawable.check
+val calendar = Res.drawable.calendar

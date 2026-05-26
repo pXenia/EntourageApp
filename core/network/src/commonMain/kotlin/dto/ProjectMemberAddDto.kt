@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ProjectMemberAddDto(
     @SerialName("email") val email: String,
-    @SerialName("role_code") val roleCode: String
+    @SerialName("role_id") val roleId: Int
 )

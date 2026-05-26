@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Card
@@ -27,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.innerShadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.shadow.Shadow
@@ -37,8 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeach
-import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
+import com.entourageapp.core.ui.tools.getPlural
 
 @Composable
 fun ProjectCard(
@@ -89,13 +87,13 @@ fun ProjectCard(
 
                 InfoBox(
                     value = participants.toString(),
-                    label = "участники",
+                    label = getPlural(participants, "участник", "участника", "участников"),
                     backgroundColor = Color.Transparent,
                     shape = RoundedCornerShape(16.dp)
                 )
                 InfoBox(
                     value = rooms.toString(),
-                    label = "комнат",
+                    label = getPlural(rooms, "комната", "комнаты", "комнат"),
                     backgroundColor = EntouragePeach.copy(alpha = 0.8f),
                     shape = RoundedCornerShape(16.dp)
                 )
@@ -200,7 +198,7 @@ private fun SquareBadge(
                 style = MaterialTheme.typography.headlineLarge
             )
             Text(
-                text = "кв.м",
+                text = "кв. м",
                 style = MaterialTheme.typography.bodySmall
             )
         }

@@ -1,11 +1,11 @@
 package com.entourageapp.features.rooms.domain
 
-import com.entourageapp.core.network.dto.RoomDetailDto
+import com.entourageapp.core.network.dto.rooms.RoomDetailDto
 
 data class RoomDetail(
     val id: Int,
     val title: String,
-    val typeCode: String?,
+    val typeCode: Int?,
     val description: String?,
     val square: Float?,
     val ceilingHeight: Float?,
@@ -14,6 +14,10 @@ data class RoomDetail(
     val workTotal: Float,
     val roomTotal: Float,
     val projectSharePercent: Float,
+    val estimateItemsCount: Int,
+    val photoCount: Int,
+    val stagesCount: Int,
+    val tasksCount: Int
 )
 
 fun RoomDetailDto.toRoomDetail() = RoomDetail(
@@ -28,4 +32,8 @@ fun RoomDetailDto.toRoomDetail() = RoomDetail(
     workTotal = workTotal,
     roomTotal = roomTotal,
     projectSharePercent = projectSharePercent,
+    estimateItemsCount = estimateItemsCount,
+    photoCount = photoCount,
+    stagesCount = stagesCount,
+    tasksCount = tasksCount
 )

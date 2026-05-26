@@ -1,12 +1,9 @@
 package com.entourageapp.features.gallery.domain
 
-import com.entourageapp.core.network.dto.ImageDto
-import com.entourageapp.core.network.dto.ImageUploadedDto
-import com.entourageapp.core.network.dto.RoomShortDto
 import kotlinx.coroutines.flow.Flow
 
 interface GalleryRepository {
-    fun getImages(projectId: Int, roomId: Int? = null): Flow<List<ImageDto>>
+    fun getImages(projectId: Int, roomId: Int? = null): Flow<List<GalleryImage>>
     suspend fun uploadImage(
         projectId: Int,
         fileBytes: ByteArray,
@@ -14,8 +11,8 @@ interface GalleryRepository {
         mimeType: String,
         roomId: Int? = null,
         note: String? = null
-    ): ImageUploadedDto
-    suspend fun deleteImage(projectId: Int, imageId: Int)
-    suspend fun updateImage(projectId: Int, imageId: Int, note: String? = null, roomId: Int? = null)
-    suspend fun getRooms(projectId: Int): List<RoomShortDto>
+    )
+    suspend fun deleteImage(imageId: Int)
+    suspend fun updateImage(imageId: Int, note: String? = null, roomId: Int? = null)
+    suspend fun getRooms(projectId: Int): List<GalleryRoom>
 }

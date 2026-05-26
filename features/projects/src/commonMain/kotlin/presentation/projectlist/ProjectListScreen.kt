@@ -18,16 +18,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,26 +36,37 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
-import com.entourageapp.core.ui.add
 import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.components.TabButton
 import com.entourageapp.core.ui.components.TopScreenTitle
 import com.entourageapp.features.projects.presentation.components.ProjectCard
-import org.jetbrains.compose.resources.painterResource
+import entourageapp.features.projects.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProjectListScreen(
     modifier: Modifier = Modifier,
-    onCardClick: (projectId: Int) -> Unit = {},
+    onCardClick: (Int) -> Unit = {},
     onAddProjectClick: () -> Unit = {},
     viewModel: ProjectListVM = koinViewModel()
 ) {
     val scrollState = rememberLazyListState()
+    val state by viewModel.state.collectAsState()
     val isCollapsed by remember {
-        derivedStateOf { scrollState.firstVisibleItemIndex > 0 || scrollState.firstVisibleItemScrollOffset > 50 }
+        derivedStateOf {
+            (scrollState.firstVisibleItemIndex > 0 || scrollState.firstVisibleItemScrollOffset > 50) && state.projectCards.size > 4
+        }
     }
-    val state = viewModel.state.collectAsState().value
+
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+                is ProjectListSideEffect.NavigateToProject -> onCardClick(sideEffect.id)
+                is ProjectListSideEffect.NavigateToCreateProject -> onAddProjectClick()
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(ProjectListIntent.LoadProjects)
@@ -79,9 +85,8 @@ fun ProjectListScreen(
             exit = shrinkVertically() + fadeOut()
         ) {
             TopScreenTitle(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                title = "проекты".uppercase()
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(Res.string.projects_title).uppercase()
             )
         }
 
@@ -93,54 +98,65 @@ fun ProjectListScreen(
         ) {
             TabButton(
                 modifier = Modifier.weight(1f),
-                title = "Все",
-                isSelected = state.projectFilter == ProjectFilter.ALL,
-                onClick = {viewModel.handleIntent(ProjectListIntent.FilterProjects(ProjectFilter.ALL))}
+                title = stringResource(Res.string.filter_current),
+                isSelected = state.projectFilter == ProjectFilter.CURRENT,
+                onClick = { viewModel.handleIntent(ProjectListIntent.ChangeFilter(ProjectFilter.CURRENT)) }
             )
             TabButton(
                 modifier = Modifier.weight(1f),
-                title = "Текущие",
-                isSelected = state.projectFilter == ProjectFilter.CURRENT,
-                onClick = {viewModel.handleIntent(ProjectListIntent.FilterProjects(ProjectFilter.CURRENT))}
+                title = stringResource(Res.string.filter_archive),
+                isSelected = state.projectFilter == ProjectFilter.ARCHIVE,
+                onClick = { viewModel.handleIntent(ProjectListIntent.ChangeFilter(ProjectFilter.ARCHIVE)) }
             )
         }
+
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            if (state.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                    color = EntourageTeal,
-                    trackColor = EntourageWhite.copy(alpha = 0.6f),
-                )
-            }
-            if (state.error != null) {
-                Text(
-                    text = state.error,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-            LazyColumn(
-                state = scrollState,
-                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(32.dp)),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(bottom = 80.dp)
-            ) {
-                items(state.projectCards) { project ->
-                    ProjectCard(
-                        modifier = Modifier
-                            .animateItem(
-                                fadeInSpec = tween(500),
-                                placementSpec = spring(stiffness = Spring.StiffnessLow)
-                            ),
-                        onCardClick = { onCardClick(project.id) },
-                        title = project.title,
-                        area = project.square,
-                        years = project.years,
-                        rooms = project.roomsCount,
-                        participants = project.membersCount
+            when {
+                state.isLoading && state.projectCards.isEmpty() -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
+                        color = EntourageTeal,
+                        trackColor = EntourageWhite.copy(alpha = 0.6f),
                     )
+                }
+
+                state.error != null && state.projectCards.isEmpty() -> {
+                    Text(
+                        text = state.error ?: stringResource(Res.string.error_occurred),
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+
+                else -> {
+                    LazyColumn(
+                        state = scrollState,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(32.dp)),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        contentPadding = PaddingValues(bottom = 80.dp)
+                    ) {
+                        items(
+                            items = state.projectCards,
+                            key = { it.id }) { project ->
+                            ProjectCard(
+                                modifier = Modifier
+                                    .animateItem(
+                                        fadeInSpec = tween(500),
+                                        placementSpec = spring(stiffness = Spring.StiffnessLow)
+                                    ),
+                                onCardClick = { viewModel.handleIntent(ProjectListIntent.OpenProject(project.id)) },
+                                title = project.title,
+                                area = project.square,
+                                years = project.years,
+                                rooms = project.roomsCount,
+                                participants = project.membersCount
+                            )
+                        }
+                    }
                 }
             }
 
@@ -149,7 +165,7 @@ fun ProjectListScreen(
                     .align(Alignment.BottomEnd)
                     .navigationBarsPadding()
                     .padding(bottom = 80.dp),
-                onClick = onAddProjectClick
+                onClick = { viewModel.handleIntent(ProjectListIntent.CreateProject) }
             )
         }
     }

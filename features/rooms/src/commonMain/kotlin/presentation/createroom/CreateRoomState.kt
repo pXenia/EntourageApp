@@ -1,9 +1,10 @@
 package com.entourageapp.features.rooms.presentation.createroom
 
 import androidx.compose.ui.geometry.Offset
-import com.entourageapp.core.network.dto.RoomTypeDto
+import com.entourageapp.core.network.dto.rooms.RoomTypeDto
 
 data class CreateRoomState(
+    val roomId: Int? = null,
     val title: String = "",
     val roomTypes: List<RoomTypeDto> = emptyList(),
     val selectedRoomType: RoomTypeDto? = null,
@@ -28,5 +29,6 @@ sealed class CreateRoomIntent {
         val square: Float
     ) : CreateRoomIntent()
     data class LoadRoomTypes(val projectId: Int) : CreateRoomIntent()
+    data class LoadRoom(val projectId: Int, val roomId: Int) : CreateRoomIntent()
     data class Submit(val projectId: Int) : CreateRoomIntent()
 }

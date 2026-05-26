@@ -11,16 +11,16 @@ import com.entourageapp.core.ui.room
 import com.entourageapp.core.ui.techroom
 import org.jetbrains.compose.resources.DrawableResource
 
-fun getRoomIcon(code: String): DrawableResource {
+fun getRoomIcon(code: Int?): DrawableResource {
     return when (code) {
-        "kitchen" -> kitchen
-        "kidsroom" -> kidsroom
-        "bathroom" -> bathroom
-        "bedroom" -> bedroom
-        "livingroom" -> livingroom
-        "dressingroom" -> dressingroom
-        "techroom" -> techroom
-        "hallway" -> hallway
+        1 -> kitchen
+        2 -> kidsroom
+        3 -> bathroom
+        4 -> bedroom
+        5 -> livingroom
+        6 -> dressingroom
+        7 -> techroom
+        8 -> hallway
         else -> room
     }
 }

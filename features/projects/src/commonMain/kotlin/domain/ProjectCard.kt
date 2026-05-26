@@ -1,6 +1,11 @@
 package com.entourageapp.features.projects.domain
 
 import com.entourageapp.core.network.dto.ProjectDto
+import com.entourageapp.core.network.dto.ProjectShortDto
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
 
 data class ProjectCard(
     val id: Int,
@@ -11,6 +16,7 @@ data class ProjectCard(
     val years: String,
     val isCompleted: Boolean = false
 )
+
 
 fun ProjectDto.toProjectCard(): ProjectCard {
     val startYear = startDate.take(4)
@@ -23,6 +29,11 @@ fun ProjectDto.toProjectCard(): ProjectCard {
         else -> ""
     }
 
+    val isCompleted = endDate?.let {
+        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        LocalDate.parse(it) < today
+    } ?: false
+
     return ProjectCard(
         id = id,
         title = title,
@@ -30,6 +41,33 @@ fun ProjectDto.toProjectCard(): ProjectCard {
         roomsCount = roomsCount,
         membersCount = membersCount,
         years = yearsString,
-        isCompleted = true
+        isCompleted = isCompleted
+    )
+}
+
+fun ProjectShortDto.toProjectCard(): ProjectCard {
+    val startYear = startDate.take(4)
+    val endYear = endDate?.take(4)
+
+    val yearsString = when {
+        endYear != null && startYear != endYear -> "$startYear–$endYear"
+        endYear != null && startYear == endYear -> startYear
+        endYear == null -> startYear
+        else -> ""
+    }
+
+    val isCompleted = endDate?.let {
+        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        LocalDate.parse(it) < today
+    } ?: false
+
+    return ProjectCard(
+        id = id,
+        title = title,
+        square = square.toInt().toString(),
+        roomsCount = roomsCount,
+        membersCount = membersCount,
+        years = yearsString,
+        isCompleted = isCompleted
     )
 }

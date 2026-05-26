@@ -19,6 +19,13 @@ class RoomListVM(
     fun handleIntent(intent: RoomListIntent) {
         when (intent) {
             is RoomListIntent.LoadRooms -> loadRooms(intent.projectId)
+            is RoomListIntent.ShowDeleteDialog -> _state.update { 
+                it.copy(showDeleteDialog = true, selectedRoomId = intent.roomId, selectedRoomTitle = intent.roomTitle) 
+            }
+            is RoomListIntent.DismissDeleteDialog -> _state.update { 
+                it.copy(showDeleteDialog = false, selectedRoomId = null, selectedRoomTitle = "") 
+            }
+            is RoomListIntent.DeleteRoom -> deleteRoom(intent.projectId)
         }
     }
 
@@ -35,6 +42,19 @@ class RoomListVM(
                         it.copy(isLoading = false, rooms = roomCards)
                     }
                 }
+        }
+    }
+
+    private fun deleteRoom(projectId: Int) {
+        val roomId = _state.value.selectedRoomId ?: return
+        viewModelScope.launch {
+            try {
+                repository.deleteRoom(roomId)
+                _state.update { it.copy(showDeleteDialog = false, selectedRoomId = null, selectedRoomTitle = "") }
+                loadRooms(projectId)
+            } catch (e: Exception) {
+                _state.update { it.copy(error = e.message, showDeleteDialog = false) }
+            }
         }
     }
 }

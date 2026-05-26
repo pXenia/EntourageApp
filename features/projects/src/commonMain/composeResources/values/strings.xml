@@ -1,0 +1,6 @@
+<resources>
+    <string name="projects_title">проекты</string>
+    <string name="filter_current">Текущие</string>
+    <string name="filter_archive">Архив</string>
+    <string name="error_occurred">Произошла ошибка</string>
+</resources>
