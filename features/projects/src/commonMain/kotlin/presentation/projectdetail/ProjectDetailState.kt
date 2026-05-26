@@ -1,10 +1,12 @@
 package com.entourageapp.features.projects.presentation.projectdetail
 
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.features.projects.domain.ProjectDetail
 
 data class ProjectDetailState(
     val isLoading: Boolean = false,
     val project: ProjectDetail? = null,
+    val role: Role = Role.Viewer,
     val error: String? = null
 )
 

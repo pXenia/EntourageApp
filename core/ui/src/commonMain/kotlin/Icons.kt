@@ -18,6 +18,7 @@ import entourageapp.core.ui.generated.resources.document
 import entourageapp.core.ui.generated.resources.door_open
 import entourageapp.core.ui.generated.resources.folder
 import entourageapp.core.ui.generated.resources.house_plan
+import entourageapp.core.ui.generated.resources.ic_app
 import entourageapp.core.ui.generated.resources.info
 import entourageapp.core.ui.generated.resources.kitchen_set
 import entourageapp.core.ui.generated.resources.layout_fluid
@@ -34,6 +35,7 @@ import entourageapp.core.ui.generated.resources.teddy_bear
 import entourageapp.core.ui.generated.resources.trash
 import entourageapp.core.ui.generated.resources.user
 
+val logo = Res.drawable.ic_app
 val folder = Res.drawable.folder
 val arrowRight = Res.drawable.angle_small_right
 val arrowLeft = Res.drawable.angle_left

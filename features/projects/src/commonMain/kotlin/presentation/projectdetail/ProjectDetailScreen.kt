@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageTeal
@@ -64,13 +65,13 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ProjectDetailScreen(
     projectId: Int,
     modifier: Modifier = Modifier,
-    onBackClick: () -> Unit = {},
-    onEstimateClick: (Int) -> Unit = {},
-    onGalleryClick: (Int) -> Unit = {},
-    onDocumentsClick: (Int) -> Unit = {},
-    onRoomListClick: (Int) -> Unit = {},
-    onProjectInfoClick: (Int) -> Unit = {},
-    onProjectStatsClick: (Int) -> Unit = {},
+    onBackClick: () -> Unit,
+    onEstimateClick: (Int, Role) -> Unit,
+    onGalleryClick: (Int, Role) -> Unit,
+    onDocumentsClick: (Int, Role) -> Unit,
+    onRoomListClick: (Int, Role) -> Unit,
+    onProjectInfoClick: (Int, Role) -> Unit,
+    onProjectStatsClick: (Int) -> Unit,
     viewModel: ProjectDetailVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -108,13 +109,14 @@ fun ProjectDetailScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 ScreenTitleTwoButtons(
-                    modifier = Modifier.padding(bottom = 16.dp),
                     title = project.title,
                     leftIcon = arrowLeft,
                     rightIcon = info,
                     onLeftButtonClick = onBackClick,
-                    onRightButtonClick = { onProjectInfoClick(projectId) }
+                    onRightButtonClick = { onProjectInfoClick(projectId, state.role) }
                 )
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 DaysProgress(
                     startDate = project.startDateFormatted,
@@ -125,14 +127,14 @@ fun ProjectDetailScreen(
                     animationP = animationProgress.value
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(22.dp))
 
                 ProjectInfoCard(
                     roomsCount = project.roomsCount,
                     animationP = animationProgress.value,
                     budget = project.budget,
                     totalSpent = project.totalSpent,
-                    onRoomListClick = { onRoomListClick(projectId) },
+                    onRoomListClick = { onRoomListClick(projectId, state.role) },
                     onProjectStatsClick = { onProjectStatsClick(projectId) }
                 )
 
@@ -148,19 +150,19 @@ fun ProjectDetailScreen(
                 ) {
                     SectionButton(
                         modifier = Modifier.weight(1f),
-                        onClick = { onDocumentsClick(projectId) },
+                        onClick = { onDocumentsClick(projectId, state.role) },
                         title = "Документ",
                         icon = document
                     )
                     SectionButton(
                         modifier = Modifier.weight(1f),
-                        onClick = { onGalleryClick(projectId) },
+                        onClick = { onGalleryClick(projectId, state.role) },
                         title = "Галерея",
                         icon = gallery
                     )
                     SectionButton(
                         modifier = Modifier.weight(1f),
-                        onClick = { onEstimateClick(projectId) },
+                        onClick = { onEstimateClick(projectId, state.role) },
                         title = "Смета",
                         icon = folder
                     )

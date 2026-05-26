@@ -1,6 +1,5 @@
 package com.entourageapp.core.network.api
 
-import com.entourageapp.core.network.dto.MessageDto
 import com.entourageapp.core.network.dto.StageAddDto
 import com.entourageapp.core.network.dto.StageDetailDto
 import com.entourageapp.core.network.dto.StageDto
@@ -14,11 +13,12 @@ interface StagesApi {
     suspend fun getStatuses(): List<StageStatusDto>
     suspend fun getStages(roomId: Int): List<StageDto>
     suspend fun getStageDetail(stageId: Int): StageDetailDto
-    suspend fun createStage(roomId: Int, data: StageAddDto): MessageDto
-    suspend fun patchStage(stageId: Int, data: StagePatchDto): MessageDto
-    suspend fun deleteStage(stageId: Int): MessageDto
+    suspend fun createStage(roomId: Int, data: StageAddDto)
+    suspend fun updateStage(stageId: Int, data: StageDetailDto)
+    suspend fun updateStageStatus(stageId: Int, data: StagePatchDto)
+    suspend fun deleteStage(stageId: Int)
     suspend fun getTasks(stageId: Int): List<TaskDto>
-    suspend fun createTask(stageId: Int, data: TaskAddDto): MessageDto
-    suspend fun patchTask(taskId: Int, data: TaskPatchDto): MessageDto
-    suspend fun deleteTask(taskId: Int): MessageDto
+    suspend fun createTask(stageId: Int, data: TaskAddDto)
+    suspend fun updateTaskStatus(taskId: Int, data: TaskPatchDto)
+    suspend fun deleteTask(taskId: Int)
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
@@ -97,6 +99,7 @@ fun CreateProjectScreen(
             .fillMaxSize()
             .statusBarsPadding()
             .navigationBarsPadding()
+            .imePadding()
             .padding(horizontal = 16.dp)
     ) {
         ScreenTitle(
@@ -106,7 +109,7 @@ fun CreateProjectScreen(
         )
 
         Column(
-            modifier = modifier.fillMaxSize().verticalScroll(scrollState),
+            modifier = modifier.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)).fillMaxSize().verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             CustomTextBar(
@@ -137,9 +140,9 @@ fun CreateProjectScreen(
             Row(modifier = Modifier.fillMaxWidth()) {
                 CustomTextBar(
                     label = "Площадь, кв. м",
-                    placeholder = if (state.isCalculatedSquare) "--" else "Например, 90",
+                    placeholder = if (state.isCalculatedSquare) "автом. расчёт" else "Например, 90",
                     modifier = Modifier.weight(1f).padding(end = 4.dp),
-                    value = if (state.isCalculatedSquare) "--" else state.square,
+                    value = if (state.isCalculatedSquare) "автом. расчёт" else state.square,
                     isEnable = !state.isCalculatedSquare,
                     isNumeric = true,
                     onValueChange = { viewModel.handleIntent(CreateProjectIntent.UpdateSquare(it)) },
@@ -183,7 +186,7 @@ fun CreateProjectScreen(
                     name = participant.name,
                     role = when (participant.roleCode) {
                         1 -> "владелец"
-                        2 -> "редакт."
+                        2 -> "редактор"
                         3 -> "читатель"
                         else -> ""
                     },

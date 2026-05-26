@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageTeal
@@ -62,11 +63,12 @@ import kotlin.math.roundToInt
 fun RoomDetailScreen(
     projectId: Int,
     roomId: Int,
+    roleId: Role,
     onBackClick: () -> Unit = {},
-    onEstimateClick: (Int, Int) -> Unit,
-    onGalleryClick: (Int, Int) -> Unit,
-    onRoomInfoClick: (Int, Int) -> Unit = { _, _ -> },
-    onStagesClick: (Int) -> Unit,
+    onEstimateClick: (Int, Int, Role) -> Unit,
+    onGalleryClick: (Int, Int, Role) -> Unit,
+    onRoomInfoClick: (Int, Int, Role) -> Unit,
+    onStagesClick: (Int, Role) -> Unit,
     viewModel: RoomDetailVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -104,12 +106,11 @@ fun RoomDetailScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 ScreenTitleTwoButtons(
-                    modifier = Modifier.padding(bottom = 8.dp),
                     title = room.title,
                     leftIcon = arrowLeft,
                     rightIcon = info,
                     onLeftButtonClick = onBackClick,
-                    onRightButtonClick = { onRoomInfoClick(projectId, roomId) }
+                    onRightButtonClick = { onRoomInfoClick(projectId, roomId, roleId) }
                 )
                 RoomInfo(
                     percent = room.projectSharePercent.toInt(),
@@ -121,17 +122,17 @@ fun RoomDetailScreen(
                 )
                 HorizontalDivider(thickness = 1.dp, color = EntourageBlack)
                 CardButton(
-                    onClick = { onStagesClick(roomId) },
+                    onClick = { onStagesClick(roomId, roleId) },
                     title = "Этапы и задачи",
                     text = "${room.stagesCount} ${getPlural(room.stagesCount, "этап", "этапа", "этапов")} и ${room.tasksCount} ${getPlural(room.tasksCount, "задача", "задачи", "задач")}",
                 )
                 CardButton(
-                    onClick = { onGalleryClick(projectId, roomId) },
-                    title = "Галерея идей",
+                    onClick = { onGalleryClick(projectId, roomId, roleId) },
+                    title = "Галерея",
                     text = "${room.photoCount} ${getPlural(room.photoCount, "идея", "идеи", "идей")}",
                 )
                 CardButton(
-                    onClick = { onEstimateClick(projectId, roomId) },
+                    onClick = { onEstimateClick(projectId, roomId, roleId) },
                     title = "Смета",
                     text = "${room.estimateItemsCount} ${getPlural(room.estimateItemsCount, "позиция", "позиции", "позиций")}",
                 )

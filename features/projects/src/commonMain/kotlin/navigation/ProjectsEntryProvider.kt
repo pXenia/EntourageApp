@@ -22,12 +22,49 @@ fun EntryProviderScope<NavKey>.projectsEntryBuilder(navigator: Navigator) {
         ProjectDetailScreen(
             projectId = route.projectId,
             onBackClick = { navigator.goBack() },
-            onEstimateClick = { navigator.navigate(Route.EstimateList(it)) },
-            onGalleryClick = { navigator.navigate(Route.Gallery(it, 0)) },
-            onDocumentsClick = { navigator.navigate(Route.Documents(it)) },
-            onRoomListClick = { navigator.navigate(Route.RoomList(it)) },
-            onProjectStatsClick = { navigator.navigate(Route.ProjectsStats(it))},
-            onProjectInfoClick = { navigator.navigate(Route.ProjectInfo(it)) }
+            onEstimateClick = { projectId, roleId ->
+                navigator.navigate(
+                    Route.EstimateList(
+                        projectId,
+                        0,
+                        roleId
+                    )
+                )
+            },
+            onGalleryClick = { projectId, roleId ->
+                navigator.navigate(
+                    Route.Gallery(
+                        projectId,
+                        0,
+                        roleId
+                    )
+                )
+            },
+            onDocumentsClick = { projectId, roleId ->
+                navigator.navigate(
+                    Route.Documents(
+                        projectId,
+                        roleId
+                    )
+                )
+            },
+            onRoomListClick = { projectId, roleId ->
+                navigator.navigate(
+                    Route.RoomList(
+                        projectId,
+                        roleId
+                    )
+                )
+            },
+            onProjectStatsClick = { navigator.navigate(Route.ProjectsStats(it)) },
+            onProjectInfoClick = { projectId, roleId ->
+                navigator.navigate(
+                    Route.ProjectInfo(
+                        projectId,
+                        roleId
+                    )
+                )
+            }
         )
     }
 

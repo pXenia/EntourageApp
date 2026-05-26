@@ -59,13 +59,12 @@ fun StatisticsScreen(
             onBackClick = onBackClick
         )
 
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Column(
             modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .verticalScroll(rememberScrollState())
-                .padding(top = 4.dp),
+                .clip(RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp))
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

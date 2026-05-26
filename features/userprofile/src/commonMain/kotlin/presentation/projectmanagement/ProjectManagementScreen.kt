@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +48,7 @@ import com.entourageapp.core.ui.calendar
 import com.entourageapp.core.ui.components.ScreenTitle
 import com.entourageapp.core.ui.components.SectionTitle
 import com.entourageapp.core.ui.dialogs.DeleteDialog
+import com.entourageapp.core.ui.tools.getPlural
 import com.entourageapp.core.ui.tools.showToast
 import com.entourageapp.core.ui.user
 import org.jetbrains.compose.resources.DrawableResource
@@ -64,7 +63,6 @@ fun ProjectManagementScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.onIntent(ProjectManagementIntent.LoadProjects)
@@ -101,15 +99,14 @@ fun ProjectManagementScreen(
             .padding(horizontal = 16.dp)
     ) {
         ScreenTitle(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
             title = "УПРАВЛЕНИЕ УЧАСТИЕМ\nВ ПРОЕКТАХ",
             onBackClick = onBackClick
         )
 
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp)),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(top = 8.dp)
         ) {
             if (state.ownedProjects.isNotEmpty()) {
                 item {
@@ -188,7 +185,7 @@ private fun ProjectActionCard(
                 color = EntourageBlack.copy(alpha = 0.6f)
             )
 
-            ProjectInfoRow(icon = user, text = "$participantsCount участника")
+            ProjectInfoRow(icon = user, text = "$participantsCount " + getPlural(participantsCount, "участник", "участника", "участников"))
             ProjectInfoRow(icon = calendar, text = dateRange)
 
             Spacer(modifier = Modifier.height(8.dp))

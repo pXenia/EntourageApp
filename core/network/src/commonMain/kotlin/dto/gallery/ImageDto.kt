@@ -1,4 +1,4 @@
-package com.entourageapp.core.network.dto
+package com.entourageapp.core.network.dto.gallery
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -10,7 +10,7 @@ data class ImageDto(
     val projectId: Int,
     @SerialName("room_id")
     val roomId: Int? = null,
-    @SerialName("object_name")
+    @SerialName("object_key")
     val objectName: String,
     val note: String? = null,
     val url: String? = null

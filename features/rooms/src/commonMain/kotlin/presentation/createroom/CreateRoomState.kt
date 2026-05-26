@@ -1,7 +1,7 @@
 package com.entourageapp.features.rooms.presentation.createroom
 
 import androidx.compose.ui.geometry.Offset
-import com.entourageapp.core.network.dto.RoomTypeDto
+import com.entourageapp.core.network.dto.rooms.RoomTypeDto
 
 data class CreateRoomState(
     val roomId: Int? = null,

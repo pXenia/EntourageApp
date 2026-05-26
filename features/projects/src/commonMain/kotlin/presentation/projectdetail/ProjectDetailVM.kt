@@ -2,6 +2,7 @@ package com.entourageapp.features.projects.presentation.projectdetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.features.projects.domain.ProjectsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +32,13 @@ class ProjectDetailVM(
                     _state.update { it.copy(isLoading = false, error = error.message) }
                 }
                 .collect { project ->
-                    _state.update { it.copy(isLoading = false, project = project) }
+                    val role = when (project.role){
+                        1 -> Role.Owner
+                        2 -> Role.Editor
+                        3 -> Role.Viewer
+                        else -> Role.Viewer
+                    }
+                    _state.update { it.copy(isLoading = false, project = project, role=role) }
                 }
         }
     }

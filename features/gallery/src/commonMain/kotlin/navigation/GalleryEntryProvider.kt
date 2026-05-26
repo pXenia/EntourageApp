@@ -11,6 +11,7 @@ fun EntryProviderScope<NavKey>.galleryEntryBuilder(navigator: Navigator) {
         GalleryScreen(
             projectId = it.projectId,
             roomId = it.roomId,
+            roleId = it.roleId,
             onBackClick = { navigator.goBack() }
         )
     }

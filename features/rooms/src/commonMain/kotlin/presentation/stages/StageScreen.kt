@@ -1,7 +1,9 @@
 package com.entourageapp.features.rooms.presentation.stages
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,29 +42,76 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.components.ScreenTitle
+import com.entourageapp.core.ui.dialogs.DeleteDialog
+import com.entourageapp.core.ui.dialogs.OptionsDialog
+import com.entourageapp.core.ui.tools.showToast
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StageScreen(
     roomId: Int,
+    roleId: Role,
     onBackClick: () -> Unit = {},
     viewModel: StageVM = koinViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     var showSheet by remember { mutableStateOf(false) }
     var showAddDialog by remember { mutableStateOf(false) }
+    var showEditDialog by remember { mutableStateOf(false) }
     var selectedStage by remember { mutableStateOf<Stage?>(null) }
     val sheetState = rememberModalBottomSheetState()
+    val deleteSheetState = rememberModalBottomSheetState()
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(StageIntent.LoadStages(roomId))
+    }
+
+    LaunchedEffect(state.error) {
+        state.error?.let {
+            showToast(it)
+        }
+    }
+
+    if (state.showActionDialog) {
+        OptionsDialog(
+            title = state.selectedItemName,
+            onDismiss = { viewModel.handleIntent(StageIntent.DismissActionDialog) },
+            onEditClick = {
+                selectedStage = state.stages.find { it.id == state.selectedStageId }
+                showEditDialog = true
+            },
+            onDeleteClick = { viewModel.handleIntent(StageIntent.ShowDeleteStageDialog(state.selectedStageId ?: 0, state.selectedItemName)) }
+        )
+    }
+
+    if (state.showDeleteStageDialog) {
+        DeleteDialog(
+            onDismiss = { viewModel.handleIntent(StageIntent.DismissDeleteDialog) },
+            onOkClick = { viewModel.handleIntent(StageIntent.DeleteStage(roomId, state.selectedStageId ?: 0)) },
+            sheetState = deleteSheetState,
+            title = "Удаление этапа",
+            text = "Вы действительно хотите удалить этап \"${state.selectedItemName}\"?",
+            buttonTitle = "Удалить"
+        )
+    }
+
+    if (state.showDeleteTaskDialog) {
+        DeleteDialog(
+            onDismiss = { viewModel.handleIntent(StageIntent.DismissDeleteDialog) },
+            onOkClick = { viewModel.handleIntent(StageIntent.DeleteTask(roomId, state.selectedTaskId ?: 0)) },
+            sheetState = deleteSheetState,
+            title = "Удаление задачи",
+            text = "Вы действительно хотите удалить задачу \"${state.selectedItemName}\"?",
+            buttonTitle = "Удалить"
+        )
     }
 
     Box(
@@ -96,7 +145,7 @@ fun StageScreen(
 
             Column(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                     .verticalScroll(rememberScrollState())
                     .padding(top = 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -105,24 +154,33 @@ fun StageScreen(
                 state.stages.forEach { stage ->
                     StageSection(
                         stage = stage,
+                        roleId = roleId,
                         onTaskToggle = { taskId ->
                             viewModel.handleIntent(StageIntent.ToggleTask(roomId, stage.id, taskId))
                         },
                         onStatusClick = {
                             selectedStage = stage
                             showSheet = true
+                        },
+                        onStageLongClick = {
+                            viewModel.handleIntent(StageIntent.ShowActionDialog(stage.id, stage.title))
+                        },
+                        onTaskLongClick = { taskId, title ->
+                            viewModel.handleIntent(StageIntent.ShowDeleteTaskDialog(taskId, title))
                         }
                     )
                 }
             }
         }
-
-        AddRoundButton(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(bottom = 16.dp),
-            onClick = { showAddDialog = true }
-        )
+        
+        if (roleId != Role.Viewer) {
+            AddRoundButton(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 16.dp),
+                onClick = { showAddDialog = true }
+            )
+        }
 
         if (showSheet) {
             UpdateStatusStageBottomSheet(
@@ -134,7 +192,8 @@ fun StageScreen(
                     showSheet = false
                 },
                 sheetState = sheetState,
-                selectedStage = selectedStage
+                selectedStage = selectedStage,
+                roleId = roleId
             )
         }
 
@@ -152,22 +211,45 @@ fun StageScreen(
                 }
             )
         }
+
+        if (showEditDialog && selectedStage != null) {
+            EditStageDialog(
+                stage = selectedStage!!,
+                onDismiss = { showEditDialog = false },
+                onConfirm = { title, deadline ->
+                    viewModel.handleIntent(
+                        StageIntent.UpdateStage(roomId,selectedStage!!.id, title, deadline)
+                    )
+                    showEditDialog = false
+                }
+            )
+        }
     }
 }
 
 @Composable
 private fun StageSection(
     stage: Stage,
+    roleId: Role,
     onTaskToggle: (Int) -> Unit,
-    onStatusClick: () -> Unit
+    onStatusClick: () -> Unit,
+    onStageLongClick: () -> Unit,
+    onTaskLongClick: (Int, String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.combinedClickable(
+                onClick = {}, 
+                onLongClick = {
+                    if (roleId != Role.Viewer) onStageLongClick()
+                }
+            )
         ) {
             StatusBadge(
                 status = stage.status,
+                roleId = roleId,
                 onStatusClick = onStatusClick,
             )
             Text(
@@ -195,7 +277,9 @@ private fun StageSection(
             stage.tasks.forEach { task ->
                 TaskRow(
                     task = task,
-                    onClick = { onTaskToggle(task.id) }
+                    roleId = roleId,
+                    onClick = { onTaskToggle(task.id) },
+                    onLongClick = { onTaskLongClick(task.id, task.title) }
                 )
             }
         }
@@ -205,6 +289,7 @@ private fun StageSection(
 @Composable
 fun StatusBadge(
     status: StageStatus,
+    roleId: Role,
     onStatusClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -217,7 +302,7 @@ fun StatusBadge(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(32.dp))
-            .clickable{ onStatusClick() }
+            .clickable(enabled = roleId != Role.Viewer) { onStatusClick() }
             .background(backgroundColor)
             .innerShadow(
                 shape = RoundedCornerShape(32.dp),
@@ -239,15 +324,22 @@ fun StatusBadge(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TaskRow(
     task: Task,
-    onClick: (Boolean) -> Unit
+    roleId: Role,
+    onClick: (Boolean) -> Unit,
+    onLongClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp)),
+            .clip(RoundedCornerShape(16.dp))
+            .combinedClickable(
+                onClick = { if (roleId != Role.Viewer) onClick(!task.isCompleted) },
+                onLongClick = { if(roleId != Role.Viewer) onLongClick() }
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {

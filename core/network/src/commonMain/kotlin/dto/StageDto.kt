@@ -23,13 +23,6 @@ data class StagePatchDto(
     val statusId: Int
 )
 
-@Serializable
-data class StagePutDto(
-    @SerialName("status_id")
-    val statusId: Int,
-    val title: String,
-    val deadline: String? = null
-)
 
 @Serializable
 data class StageDto(
@@ -39,19 +32,15 @@ data class StageDto(
     @SerialName("status_id")
     val statusId: Int,
     val title: String,
-    val deadline: String? = null
+    val deadline: String? = null,
+    val tasks: List<TaskDto> = emptyList()
 )
 
 @Serializable
 data class StageDetailDto(
     val id: Int,
-    @SerialName("room_id")
-    val roomId: Int,
-    @SerialName("status_id")
-    val statusId: Int,
     val title: String,
     val deadline: String? = null,
-    val tasks: List<TaskDto> = emptyList()
 )
 
 @Serializable

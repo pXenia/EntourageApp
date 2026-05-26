@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
 
@@ -27,7 +28,8 @@ actual fun UpdateStatusStageBottomSheet(
     onDismiss: () -> Unit,
     onSelected: (Int, StageStatus) -> Unit,
     sheetState: SheetState,
-    selectedStage: Stage?
+    selectedStage: Stage?,
+    roleId: Role
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -63,6 +65,7 @@ actual fun UpdateStatusStageBottomSheet(
                 StageStatus.entries.forEach { status ->
                     StatusBadge(
                         status = status,
+                        roleId = roleId,
                         onStatusClick = {
                             onSelected(selectedStage?.id ?: 0, status)
                         }

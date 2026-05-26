@@ -1,5 +1,6 @@
 package com.entourageapp.features.rooms.presentation.roomInfo
 
+import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entourageapp.core.network.api.RoomsApi
@@ -10,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import androidx.compose.ui.geometry.Offset
 
 class RoomInfoVM(
     private val roomsApi: RoomsApi
@@ -29,9 +29,9 @@ class RoomInfoVM(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             runCatching {
-                val detailDef = async { roomsApi.getRoomById(projectId, roomId) }
-                val paramsDef = async { roomsApi.getParams(projectId, roomId) }
-                val offsetsDef = async { roomsApi.getOffsets(projectId, roomId) }
+                val detailDef = async { roomsApi.getRoomById(roomId) }
+                val paramsDef = async { roomsApi.getParams(roomId) }
+                val offsetsDef = async { roomsApi.getOffsets(roomId) }
 
                 val detail = detailDef.await()
                 val params = paramsDef.await()

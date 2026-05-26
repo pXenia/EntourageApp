@@ -2,9 +2,10 @@ package com.entourageapp.features.estimates.presentation.createestimateposition
 
 import com.entourageapp.core.network.dto.EstimateItemTypeDto
 import com.entourageapp.core.network.dto.MeasureUnitDto
-import com.entourageapp.core.network.dto.RoomShortDto
+import com.entourageapp.core.network.dto.rooms.RoomShortDto
 
 data class CreatePositionState(
+    val itemId: Int? = null,
     val name: String = "",
     val price: String = "",
     val quantity: String = "",
@@ -25,7 +26,8 @@ data class CreatePositionState(
 }
 
 sealed class CreatePositionIntent {
-    data class LoadDictionaries(val projectId: Int) : CreatePositionIntent()
+    data class LoadDictionaries(val projectId: Int, val roomId: Int) : CreatePositionIntent()
+    data class LoadItem(val projectId: Int, val itemId: Int) : CreatePositionIntent()
     data class UpdateName(val value: String) : CreatePositionIntent()
     data class UpdatePrice(val value: String) : CreatePositionIntent()
     data class UpdateQuantity(val value: String) : CreatePositionIntent()

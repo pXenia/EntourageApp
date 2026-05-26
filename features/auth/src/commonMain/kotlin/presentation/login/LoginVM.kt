@@ -21,6 +21,8 @@ class LoginVM(
             is LoginIntent.OnEmailChanged -> _state.update { it.copy(email = intent.value, generalError = null) }
             is LoginIntent.OnPasswordChanged -> _state.update { it.copy(password = intent.value, generalError = null) }
             is LoginIntent.OnLoginClicked -> login(intent.onSuccess)
+            LoginIntent.OnForgotPasswordClicked -> _state.update { it.copy(showForgotPasswordDialog = true) }
+            LoginIntent.OnDismissForgotPasswordDialog -> _state.update { it.copy(showForgotPasswordDialog = false) }
         }
     }
 

@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
-import com.entourageapp.core.ui.EntouragePeachAlpha80
+import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.arrowRight
@@ -135,7 +135,7 @@ fun UserProfileScreen(
                     AccentButton(
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         text = "удалить аккаунт",
-                        containerColor = EntouragePeachAlpha80,
+                        containerColor = EntouragePeach.copy(alpha = 0.7f),
                         contentColor = EntourageBlack,
                         onClick = { viewModel.onIntent(UserProfileIntent.SetDeleteDialogVisibility(isVisible = true)) }
                     )

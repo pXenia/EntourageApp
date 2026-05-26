@@ -1,6 +1,6 @@
 package com.entourageapp.features.rooms.domain
 
-import com.entourageapp.core.network.dto.RoomDto
+import com.entourageapp.core.network.dto.rooms.RoomDto
 import org.jetbrains.compose.resources.DrawableResource
 
 data class RoomCard(

@@ -29,13 +29,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.entourageapp.core.ui.EntourageBlack
+import com.entourageapp.core.ui.EntouragePeach
 import com.entourageapp.core.ui.EntouragePeachAlpha30
-import com.entourageapp.core.ui.EntouragePeachAlpha80
 import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.components.AccentButton
 import com.entourageapp.core.ui.components.InfoRow
 import com.entourageapp.core.ui.components.ScreenTitle
 import com.entourageapp.core.ui.components.SectionTitle
+import com.entourageapp.core.ui.tools.formatAmountWithCurrency
+import com.entourageapp.core.ui.tools.formatTwoDecimals
 import com.entourageapp.core.ui.user
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -92,11 +94,11 @@ fun ProjectInfoScreen(
                         InfoRow("Дата окончания", it) 
                     }
                     project.square?.let { 
-                        InfoRow("Площадь, кв.м", it.toString()) 
+                        InfoRow("Площадь, кв. м", it.formatTwoDecimals())
                     }
                     InfoRow("Всего комнат", project.roomsCount.toString())
                     project.budget?.let { 
-                        InfoRow("Бюджет", "${it.toLong()} ₽") 
+                        InfoRow("Бюджет", formatAmountWithCurrency(it))
                     }
                 }
 
@@ -142,7 +144,7 @@ fun ProjectInfoScreen(
                     text = "Редактировать",
                     onClick = { onEditClick(projectId) },
                     elevation = 0.dp,
-                    containerColor = EntouragePeachAlpha80,
+                    containerColor = EntouragePeach.copy(alpha = 0.7f),
                     contentColor = EntourageBlack
                 )
             }

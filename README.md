@@ -1,55 +1,33 @@
-This is a Kotlin Multiplatform project targeting Android, Web.
+# Антураж (EntourageApp)
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
+Приложение для планирования и контроля проведения ремонтных работ собственниками помещений.
 
-### Build and Run Android Application
+## Возможности
 
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
+* **Проекты**: создание и управление проектами ремонта.
+* **Комнаты**: отрисовка планов комнат, расчет площадей и периметров.
+* **Смета**: учет материалов и работ, экспорт в XLSX.
+* **Этапы и задачи**: планирование работ по каждой комнате.
+* **Калькуляторы**: расчет необходимого количества краски, обоев и ламината.
+* **Галерея и Документы**: хранение фотографий и документов проекта.
 
-### Build and Run Web Application
+## Технологии
 
-To build and run the development version of the web app, use the run configuration from the run widget
-in your IDE's toolbar or run it directly from the terminal:
-- for the Wasm target (faster, modern browsers):
-  - on macOS/Linux
-    ```shell
-    ./gradlew :composeApp:wasmJsBrowserDevelopmentRun
-    ```
-  - on Windows
-    ```shell
-    .\gradlew.bat :composeApp:wasmJsBrowserDevelopmentRun
-    ```
-- for the JS target (slower, supports older browsers):
-  - on macOS/Linux
-    ```shell
-    ./gradlew :composeApp:jsBrowserDevelopmentRun
-    ```
-  - on Windows
-    ```shell
-    .\gradlew.bat :composeApp:jsBrowserDevelopmentRun
-    ```
+* **Kotlin Multiplatform** (Android, Web/Wasm)
+* **Jetpack Compose / Compose Multiplatform**
+* **Koin** (DI)
+* **Ktor** (Networking)
 
----
+## Сборка и Запуск
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html),
-[Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform/#compose-multiplatform),
-[Kotlin/Wasm](https://kotl.in/wasm/)…
+### Android
 
-We would appreciate your feedback on Compose/Web and Kotlin/Wasm in the public Slack channel [#compose-web](https://slack-chats.kotlinlang.org/c/compose-web).
-If you face any issues, please report them on [YouTrack](https://youtrack.jetbrains.com/newIssue?project=CMP).
+```shell
+./gradlew :composeApp:assembleDebug
+```
+
+### Web (Wasm)
+
+```shell
+./gradlew :composeApp:wasmJsBrowserDevelopmentRun
+```

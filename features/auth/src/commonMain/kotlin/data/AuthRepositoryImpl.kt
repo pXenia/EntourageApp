@@ -11,7 +11,7 @@ class AuthRepositoryImpl(private val authApi: AuthApi): AuthRepository {
     }
 
     override suspend fun register(name: String, email: String, password: String): Result<Unit> = runCatching {
-        authApi.register(name, email, password).message
+        authApi.register(name, email, password)
     }
 
     override suspend fun logout(): Result<Unit> = runCatching {

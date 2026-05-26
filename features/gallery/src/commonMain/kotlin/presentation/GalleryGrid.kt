@@ -25,8 +25,6 @@ import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults.elevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,32 +37,34 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.entourageapp.core.network.dto.ImageDto
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
-import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.EntourageWhite
-import com.entourageapp.core.ui.add
 import com.entourageapp.core.ui.components.AddRoundButton
 import com.entourageapp.core.ui.delete
+import com.entourageapp.features.gallery.domain.GalleryImage
 import org.jetbrains.compose.resources.painterResource
 
 private val OverlayGrad = Brush.verticalGradient(
-    0f to Color.Transparent,
-    1f to EntourageBlack,
+    0.7f to Color.Transparent,
+    1f to EntourageBlack.copy(alpha = 0.8f),
 )
 
 @Composable
 internal fun GalleryGrid(
-    images: List<ImageDto>,
+    roleId: Role,
+    images: List<GalleryImage>,
     selectedIds: Set<Int>,
     isSelectionMode: Boolean,
     onIntent: (GalleryIntent) -> Unit,
+    screenWidth: Dp,
     scrollState: LazyGridState,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
@@ -80,89 +80,89 @@ internal fun GalleryGrid(
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            val difPattern = images.size % 9
             images.forEachIndexed { index, image ->
+                val remaining = images.size - index
+
+                val span = when {
+                    index % 9 == 0 -> 3
+                    index % 9 == 4 -> 2
+                    else -> 1
+                }
+
+                val spanDif = when (difPattern) {
+                    1 -> 3
+                    2 -> if (remaining == 2) 2 else 1
+                    3 -> 1
+                    4 -> if (remaining == 4) 3 else 1
+                    5 -> if (remaining == 5) 2 else 1
+                    6 -> if (remaining == 6) 3 else if (remaining == 2) 2 else 1
+                    7 -> if (remaining == 7 || remaining == 1) 3 else if (remaining == 3) 2 else 1
+                    8 -> if (remaining == 8 || remaining == 2) 2 else if (remaining == 3) 3 else 1
+                    else -> 1
+                }
+
                 item(
                     key = image.id,
-                    span = {
-                        when (index % 9) {
-                            0 -> GridItemSpan(3)
-                            4 -> GridItemSpan(2)
-                            else -> GridItemSpan(1)
-                        }
-                    }
+                    span = { GridItemSpan(if (remaining <= difPattern) spanDif else span) }
                 ) {
-                    val isSelected = selectedIds.contains(image.id)
-                    when (index % 9) {
-                        0 -> {
-                            ItemImage(
-                                id = image.id,
-                                imageUrl = image.url ?: "",
-                                note = image.note,
-                                heigh = 9f,
-                                width = 16f,
-                                isSelected = isSelected,
-                                onImageClick = { id ->
-                                    if (isSelectionMode) {
-                                        onIntent(GalleryIntent.ToggleSelection(id))
-                                    } else {
-                                        onIntent(GalleryIntent.SelectImage(id))
-                                    }
-                                },
-                                onImageLongClick = { id ->
-                                    onIntent(GalleryIntent.ToggleSelection(id))
-                                },
-                                sharedTransitionScope = sharedTransitionScope,
-                                animatedVisibilityScope = animatedVisibilityScope
-                            )
-                        }
+                    val isSelected = selectedIds.contains(image.id) && roleId != Role.Viewer
 
-                        5 -> {
-                            ItemImage(
-                                id = image.id,
-                                imageUrl = image.url ?: "",
-                                note = image.note,
-                                heigh = 2.0375f,
-                                width = 1f,
-                                isSelected = isSelected,
-                                onImageClick = { id ->
-                                    if (isSelectionMode) {
-                                        onIntent(GalleryIntent.ToggleSelection(id))
-                                    } else {
-                                        onIntent(GalleryIntent.SelectImage(id))
-                                    }
-                                },
-                                onImageLongClick = { id ->
-                                    onIntent(GalleryIntent.ToggleSelection(id))
-                                },
-                                sharedTransitionScope = sharedTransitionScope,
-                                animatedVisibilityScope = animatedVisibilityScope
-                            )
-                        }
+                    val w: Float
+                    val h: Float
 
-                        else -> {
-                            ItemImage(
-                                id = image.id,
-                                imageUrl = image.url ?: "",
-                                note = image.note,
-                                isSelected = isSelected,
-                                onImageClick = { id ->
-                                    if (isSelectionMode) {
-                                        onIntent(GalleryIntent.ToggleSelection(id))
-                                    } else {
-                                        onIntent(GalleryIntent.SelectImage(id))
-                                    }
-                                },
-                                onImageLongClick = { id ->
-                                    onIntent(GalleryIntent.ToggleSelection(id))
-                                },
-                                sharedTransitionScope = sharedTransitionScope,
-                                animatedVisibilityScope = animatedVisibilityScope
-                            )
+                    val wide = 16f to 9f
+                    val tall = 1f to (2f + 4.dp / (screenWidth / 3))
+                    val square = 1f to 1f
+
+                    if (remaining > difPattern) {
+                        val pair = when {
+                            index % 9 == 0 -> wide
+                            index % 9 == 5 -> tall
+                            else -> square
                         }
+                        w = pair.first
+                        h = pair.second
+                    } else {
+                        val pair = when (difPattern) {
+                            1 -> wide
+                            2 -> if (remaining == 2) square else tall
+                            3 -> square
+                            4 -> if (remaining == 4) wide else square
+                            5 -> if (remaining == 4) tall else square
+                            6 -> if (remaining == 6) wide else if (remaining == 1) tall else square
+                            7 -> if (remaining == 7 || remaining == 1) wide else if (remaining == 2) tall else square
+                            8 -> if (remaining == 7 || remaining == 1) tall else if (remaining == 3) wide else square
+                            else -> square
+                        }
+                        w = pair.first
+                        h = pair.second
                     }
+
+                    ItemImage(
+                        id = image.id,
+                        imageUrl = image.url ?: "",
+                        note = image.note,
+                        heigh = h,
+                        width = w,
+                        isSelected = isSelected,
+                        onImageClick = { id ->
+                            if (isSelectionMode && roleId != Role.Viewer) {
+                                onIntent(GalleryIntent.ToggleSelection(id))
+                            } else {
+                                onIntent(GalleryIntent.SelectImage(id))
+                            }
+                        },
+                        onImageLongClick = { id ->
+                            if (roleId != Role.Viewer) {
+                                onIntent(GalleryIntent.ToggleSelection(id))
+                            }
+                        },
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
                 }
             }
-
         }
         AnimatedVisibility(
             visible = !scrollState.isScrollInProgress,
@@ -177,11 +177,15 @@ internal fun GalleryGrid(
             ) + fadeOut(animationSpec = tween(durationMillis = 300)),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 18.dp, end = 8.dp)
+                .padding(bottom = 16.dp, end = 8.dp)
         ) {
-            AddRoundButton(
-                onClick = { onIntent(GalleryIntent.SetAddImageVisibility(true)) },
-            )
+            if (roleId != Role.Viewer) {
+                AddRoundButton(
+                    onClick = {
+                        onIntent(GalleryIntent.SetAddImageVisibility(true))
+                    },
+                )
+            }
         }
     }
 }
@@ -251,8 +255,8 @@ private fun ItemImage(
                 }
             }
         }
-        if (!note.isNullOrBlank()) {
             Box(modifier = Modifier.fillMaxSize().background(OverlayGrad))
+        if (!note.isNullOrBlank()) {
             Text(
                 text = note,
                 modifier = Modifier

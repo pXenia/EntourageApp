@@ -4,10 +4,12 @@ import com.entourageapp.core.network.dto.ProjectCreateDto
 import com.entourageapp.core.network.dto.ProjectDto
 import com.entourageapp.core.network.dto.ProjectMemberDto
 import com.entourageapp.core.network.dto.ProjectMembersSyncDto
+import com.entourageapp.core.network.dto.ProjectShortDto
 import com.entourageapp.core.network.dto.ProjectSummaryDto
 
 interface ProjectsApi {
     suspend fun getProjects(): List<ProjectDto>
+    suspend fun getProjectsListShort(): List<ProjectShortDto>
     suspend fun getProjectById(projectId: Int): ProjectDto
     suspend fun createProject(project: ProjectCreateDto): Int
     suspend fun updateProject(projectId: Int, project: ProjectCreateDto)

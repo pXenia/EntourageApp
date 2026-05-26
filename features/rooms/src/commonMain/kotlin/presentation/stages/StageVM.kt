@@ -23,7 +23,25 @@ class StageVM(
             is StageIntent.ToggleTask -> toggleTask(intent.roomId, intent.stageId, intent.taskId)
             is StageIntent.UpdateStageStatus -> updateStageStatus(intent.roomId, intent.stageId, intent.status)
             is StageIntent.AddStage -> addStage(intent.roomId, intent.title, intent.deadline)
+            is StageIntent.UpdateStage -> updateStage(intent.roomId, intent.stageId, intent.title, intent.deadline)
             is StageIntent.AddTask -> addTask(intent.roomId, intent.stageId, intent.title, intent.deadline)
+            is StageIntent.ShowActionDialog -> _state.update {
+                it.copy(showActionDialog = true, selectedStageId = intent.stageId, selectedItemName = intent.title)
+            }
+            is StageIntent.DismissActionDialog -> _state.update {
+                it.copy(showActionDialog = false)
+            }
+            is StageIntent.ShowDeleteStageDialog -> _state.update { 
+                it.copy(showActionDialog = false, showDeleteStageDialog = true, selectedStageId = intent.stageId, selectedItemName = intent.title)
+            }
+            is StageIntent.ShowDeleteTaskDialog -> _state.update { 
+                it.copy(showDeleteTaskDialog = true, selectedTaskId = intent.taskId, selectedItemName = intent.title) 
+            }
+            is StageIntent.DismissDeleteDialog -> _state.update { 
+                it.copy(showDeleteStageDialog = false, showDeleteTaskDialog = false, selectedStageId = null, selectedTaskId = null, selectedItemName = "") 
+            }
+            is StageIntent.DeleteStage -> deleteStage(intent.roomId, intent.stageId)
+            is StageIntent.DeleteTask -> deleteTask(intent.roomId, intent.taskId)
         }
     }
 
@@ -32,14 +50,10 @@ class StageVM(
             _state.update { it.copy(isLoading = true, error = null) }
             runCatching {
                 val stages = repository.getStages(roomId)
-                val stageDetails = stages.map { stage ->
-                    repository.getStageDetail(stage.id)
-                }
-                
                 _state.update { state ->
                     state.copy(
                         isLoading = false,
-                        stages = stageDetails.map { detail ->
+                        stages = stages.map { detail ->
                             Stage(
                                 id = detail.id,
                                 title = detail.title,
@@ -84,6 +98,26 @@ class StageVM(
         }
     }
 
+    private fun updateStage(roomId: Int, stageId: Int, title: String, deadline: String) {
+        viewModelScope.launch {
+            runCatching {
+                val deadlinePars = if (deadline.isNotBlank()) {
+                    tryParseDate(deadline)
+                } else null
+
+                repository.updateStage(
+                    stageId = stageId,
+                    title = title,
+                    deadline = deadlinePars?.toString()
+                )
+            }.onSuccess {
+                loadStages(roomId)
+            }.onFailure { e ->
+                _state.update { it.copy(error = e.message) }
+            }
+        }
+    }
+
     private fun addTask(roomId: Int, stageId: Int, title: String, deadline: String) {
         viewModelScope.launch {
             runCatching {
@@ -100,6 +134,34 @@ class StageVM(
                 loadStages(roomId = roomId)
             }.onFailure { e ->
                 _state.update { it.copy(error = e.message) }
+            }
+        }
+    }
+
+    private fun deleteStage(roomId: Int, stageId: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+            runCatching {
+                repository.deleteStage(stageId)
+            }.onSuccess {
+                _state.update { it.copy(showDeleteStageDialog = false, selectedStageId = null, selectedItemName = "", isLoading = false) }
+                loadStages(roomId)
+            }.onFailure { e ->
+                _state.update { it.copy(error = e.message, showDeleteStageDialog = false, isLoading = false) }
+            }
+        }
+    }
+
+    private fun deleteTask(roomId: Int, taskId: Int) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+            runCatching {
+                repository.deleteTask(taskId)
+            }.onSuccess {
+                _state.update { it.copy(showDeleteTaskDialog = false, selectedTaskId = null, selectedItemName = "", isLoading = false) }
+                loadStages(roomId)
+            }.onFailure { e ->
+                _state.update { it.copy(error = e.message, showDeleteTaskDialog = false, isLoading = false) }
             }
         }
     }

@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntouragePeachAlpha80
 import com.entourageapp.core.ui.EntourageTeal
@@ -40,6 +41,7 @@ import kotlin.math.roundToInt
 fun RoomInfoScreen(
     projectId: Int,
     roomId: Int,
+    roleId: Role,
     onBackClick: () -> Unit = {},
     onEditClick: (Int, Int) -> Unit = { _, _ -> },
     viewModel: RoomInfoVM = koinViewModel(),
@@ -75,19 +77,19 @@ fun RoomInfoScreen(
             ) {
                 ScreenTitle(
                     title = "Информация о комнате",
-                    onBackClick = onBackClick
+                    onBackClick = onBackClick,
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Column(
                     modifier = Modifier
+                        .clip(RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp))
                         .weight(1f)
-                        .verticalScroll(scrollState)
-                        .clip(RoundedCornerShape(16.dp))
-                        .padding(top = 4.dp),
+                        .padding(top = 4.dp)
+                        .verticalScroll(scrollState),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    InfoRow("Высота потолков", "${state.ceilingHeight?.roundToInt() ?: 0} см")
+                    InfoRow("Название", state.title)
                     HorizontalDivider(thickness = 1.dp, color = EntourageBlack)
-
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -112,12 +114,13 @@ fun RoomInfoScreen(
                     state.walls.forEach { wall ->
                         InfoRow("Стена ${wall.index}", "${(wall.lengthM * 100).roundToInt()} см")
                     }
+                    InfoRow("Высота потолка", "${state.ceilingHeight?.roundToInt() ?: 0} см")
 
                     HorizontalDivider(thickness = 1.dp, color = EntourageBlack)
 
                     InfoRow("Периметр", "${(state.perimeter * 100).roundToInt()} см")
-                    InfoRow("Площадь стен", "${state.wallArea.fmt()} кв.м")
-                    InfoRow("Площадь помещения", "${state.square?.fmt() ?: "0"} кв.м")
+                    InfoRow("Площадь стен", "${state.wallArea.fmt()} кв. м")
+                    InfoRow("Площадь помещения", "${state.square?.fmt() ?: "0"} кв. м")
 
                     HorizontalDivider(thickness = 1.dp, color = EntourageBlack)
 
@@ -134,14 +137,16 @@ fun RoomInfoScreen(
                     }
                 }
 
-                AccentButton(
-                    modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth().height(56.dp),
-                    text = "Редактировать",
-                    onClick = { onEditClick(projectId, roomId) },
-                    elevation = 0.dp,
-                    containerColor = EntouragePeachAlpha80,
-                    contentColor = EntourageBlack
-                )
+                if (roleId == Role.Owner) {
+                    AccentButton(
+                        modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth().height(56.dp),
+                        text = "Редактировать",
+                        onClick = { onEditClick(projectId, roomId) },
+                        elevation = 0.dp,
+                        containerColor = EntouragePeachAlpha80,
+                        contentColor = EntourageBlack
+                    )
+                }
             }
         }
     }

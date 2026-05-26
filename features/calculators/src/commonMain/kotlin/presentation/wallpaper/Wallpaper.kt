@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -22,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,7 +63,11 @@ fun Wallpaper(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .systemBarsPadding()
+            .imePadding()
+            .padding(horizontal = 16.dp)
+            .fillMaxSize(),
     ) {
         ScreenTitle(
             modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
@@ -70,10 +76,10 @@ fun Wallpaper(
         )
         Column(
             modifier = Modifier
+                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
                 .weight(1f)
                 .verticalScroll(scrollState)
-                .padding(bottom = 16.dp)
-                .imePadding(),
+                .padding(bottom = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             CustomTextBar(

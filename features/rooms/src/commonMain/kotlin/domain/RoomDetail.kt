@@ -1,6 +1,6 @@
 package com.entourageapp.features.rooms.domain
 
-import com.entourageapp.core.network.dto.RoomDetailDto
+import com.entourageapp.core.network.dto.rooms.RoomDetailDto
 
 data class RoomDetail(
     val id: Int,

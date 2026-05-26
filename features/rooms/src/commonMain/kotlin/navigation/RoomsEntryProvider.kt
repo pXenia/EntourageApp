@@ -15,8 +15,9 @@ fun EntryProviderScope<NavKey>.roomsEntryBuilder(navigator: Navigator) {
     entry<Route.RoomList> {
         RoomListScreen(
             projectId = it.projectId,
+            roleId = it.roleId,
             onAddRoomClick = { navigator.navigate(Route.RoomGraph(it)) },
-            onRoomClick = { projectId, roomId -> navigator.navigate(Route.RoomInfo(projectId,roomId)) },
+            onRoomClick = { projectId, roomId, roleId -> navigator.navigate(Route.RoomInfo(projectId,roomId, roleId)) },
             onBackClick = { navigator.goBack() }
         )
     }
@@ -32,17 +33,19 @@ fun EntryProviderScope<NavKey>.roomsEntryBuilder(navigator: Navigator) {
         RoomDetailScreen(
             projectId = route.projectId,
             roomId = route.roomId,
+            roleId = route.roleId,
             onBackClick = { navigator.goBack() },
-            onEstimateClick = { projectId, roomId -> navigator.navigate(Route.CreateEstimatePosition(projectId, roomId))},
-            onGalleryClick = { projectId, roomId -> navigator.navigate(Route.Gallery(projectId, roomId))},
-            onRoomInfoClick = { projectId, roomId -> navigator.navigate(Route.RoomParameters(projectId, roomId)) },
-            onStagesClick = { roomId -> navigator.navigate(Route.StageList(roomId)) }
+            onEstimateClick = { projectId, roomId, roleId -> navigator.navigate(Route.EstimateList(projectId, roomId, roleId))},
+            onGalleryClick = { projectId, roomId, roleId -> navigator.navigate(Route.Gallery(projectId, roomId, roleId))},
+            onRoomInfoClick = { projectId, roomId, roleId -> navigator.navigate(Route.RoomParameters(projectId, roomId, roleId)) },
+            onStagesClick = { roomId, roleId-> navigator.navigate(Route.StageList(roomId, roleId)) }
         )
     }
 
     entry<Route.StageList> { route ->
         StageScreen(
             roomId = route.roomId,
+            roleId = route.roleId,
             onBackClick = { navigator.goBack() }
         )
     }
@@ -51,6 +54,7 @@ fun EntryProviderScope<NavKey>.roomsEntryBuilder(navigator: Navigator) {
         RoomInfoScreen(
             projectId = route.projectId,
             roomId = route.roomId,
+            roleId = route.roleId,
             onBackClick = { navigator.goBack() },
             onEditClick = { projectId, roomId -> navigator.navigate(Route.RoomGraph(projectId, roomId)) }
         )

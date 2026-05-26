@@ -1,7 +1,6 @@
 package com.entourageapp.features.rooms.data
 
 import com.entourageapp.core.network.api.StagesApi
-import com.entourageapp.core.network.dto.MessageDto
 import com.entourageapp.core.network.dto.StageAddDto
 import com.entourageapp.core.network.dto.StageDetailDto
 import com.entourageapp.core.network.dto.StageDto
@@ -15,19 +14,22 @@ class StagesRepositoryImpl(private val api: StagesApi) : StagesRepository {
 
     override suspend fun getStageDetail(stageId: Int): StageDetailDto = api.getStageDetail(stageId)
 
-    override suspend fun createStage(roomId: Int, statusId: Int, title: String, deadline: String?): MessageDto =
+    override suspend fun createStage(roomId: Int, statusId: Int, title: String, deadline: String?)=
         api.createStage(roomId, StageAddDto(statusId, title, deadline))
 
-    override suspend fun updateStageStatus(stageId: Int, statusId: Int): MessageDto =
-        api.patchStage(stageId, StagePatchDto(statusId))
+    override suspend fun updateStage(stageId: Int,  title: String, deadline: String?) =
+        api.updateStage(stageId, StageDetailDto(stageId, title, deadline))
 
-    override suspend fun toggleTask(taskId: Int, isCompleted: Boolean): MessageDto =
-        api.patchTask(taskId, TaskPatchDto(isCompleted))
+    override suspend fun updateStageStatus(stageId: Int, statusId: Int) =
+        api.updateStageStatus(stageId, StagePatchDto(statusId))
 
-    override suspend fun createTask(stageId: Int, title: String, deadline: String?): MessageDto =
+    override suspend fun toggleTask(taskId: Int, isCompleted: Boolean) =
+        api.updateTaskStatus(taskId, TaskPatchDto(isCompleted))
+
+    override suspend fun createTask(stageId: Int, title: String, deadline: String?) =
         api.createTask(stageId, TaskAddDto(title, deadline))
 
-    override suspend fun deleteStage(stageId: Int): MessageDto = api.deleteStage(stageId)
+    override suspend fun deleteStage(stageId: Int) = api.deleteStage(stageId)
 
-    override suspend fun deleteTask(taskId: Int): MessageDto = api.deleteTask(taskId)
+    override suspend fun deleteTask(taskId: Int) = api.deleteTask(taskId)
 }

@@ -31,29 +31,34 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.innerShadow
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.entourageapp.core.network.dto.ImageDto
-import com.entourageapp.core.network.dto.RoomShortDto
+import com.entourageapp.core.navigation.Role
 import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageWhite
 import com.entourageapp.core.ui.appBackground
 import com.entourageapp.core.ui.cross
+import com.entourageapp.features.gallery.domain.GalleryImage
+import com.entourageapp.features.gallery.domain.GalleryRoom
 import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 actual fun GalleryViewPager(
-    images: List<ImageDto>,
+    images: List<GalleryImage>,
     pagerState: PagerState,
-    availableRooms: List<RoomShortDto>,
+    availableRooms: List<GalleryRoom>,
     onIntent: (GalleryIntent) -> Unit,
     projectId: Int,
+    roleId: Role,
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
@@ -116,9 +121,13 @@ actual fun GalleryViewPager(
                     modifier = Modifier
                         .fillMaxSize()
                         .align(Alignment.Center)
-                        .sharedElement(
-                            rememberSharedContentState(key = "image_${images[index].id}"),
-                            animatedVisibilityScope = animatedVisibilityScope
+                        .then(
+                            if (index == pagerState.currentPage) {
+                                Modifier.sharedElement(
+                                    rememberSharedContentState(key = "image_${images[index].id}"),
+                                    animatedVisibilityScope = animatedVisibilityScope
+                                )
+                            } else Modifier
                         )
                         .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.FillWidth
@@ -139,7 +148,16 @@ actual fun GalleryViewPager(
             Box(
                 modifier = Modifier
                     .clip(CircleShape)
-                    .background(EntourageWhite.copy(alpha = 0.6f))
+                    .background(EntourageWhite.copy(alpha = 0.3f))
+                    .innerShadow(
+                        shape = CircleShape,
+                        shadow = Shadow(
+                            radius = 20.dp,
+                            spread = 4.dp,
+                            color = EntourageWhite.copy(alpha = 0.8f),
+                            offset = DpOffset(x = 0.dp, 0.dp)
+                        )
+                    )
                     .clickable { onIntent(GalleryIntent.CloseViewPager) },
                 contentAlignment = Alignment.Center
             ) {
@@ -147,8 +165,8 @@ actual fun GalleryViewPager(
                     painter = painterResource(cross),
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(8.dp)
-                        .size(16.dp),
+                        .padding(12.dp)
+                        .size(20.dp),
                     tint = EntourageBlack,
                 )
             }
@@ -156,6 +174,7 @@ actual fun GalleryViewPager(
 
         if (showBottomSheet && currentImage != null) {
             UpdateImageBottomSheet(
+                roleId = roleId,
                 image = currentImage,
                 availableRooms = availableRooms,
                 projectId = projectId,

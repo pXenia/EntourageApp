@@ -36,6 +36,8 @@ fun CalculatorListScreen(
     projectId: Int,
     roomId: Int,
     onWallpaperClick: (Int, Int) -> Unit,
+    onPaintClick: (Int, Int) -> Unit,
+    onLaminateClick: (Int, Int) -> Unit
 ) {
     val scrollState = rememberLazyListState()
     val isCollapsed by remember {
@@ -56,14 +58,15 @@ fun CalculatorListScreen(
         ) {
             TopScreenTitle(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
                 title = "калькуляторы".uppercase()
             )
         }
 
         LazyColumn(
             state = scrollState,
-            modifier = Modifier.padding(top = 16.dp).fillMaxSize().clip(RoundedCornerShape(32.dp)),
+            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(4.dp),
             contentPadding = PaddingValues(bottom = 80.dp)
@@ -78,6 +81,30 @@ fun CalculatorListScreen(
                         ),
                     onCardClick = { onWallpaperClick(projectId, roomId) },
                     title = "Обои"
+                )
+            }
+            item{
+                CalculatorCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem(
+                            fadeInSpec = tween(500),
+                            placementSpec = spring(stiffness = Spring.StiffnessLow)
+                        ),
+                    onCardClick = { onPaintClick(projectId, roomId) },
+                    title = "Краска"
+                )
+            }
+            item{
+                CalculatorCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItem(
+                            fadeInSpec = tween(500),
+                            placementSpec = spring(stiffness = Spring.StiffnessLow)
+                        ),
+                    onCardClick = { onLaminateClick(projectId, roomId) },
+                    title = "Ламинат"
                 )
             }
         }

@@ -3,64 +3,73 @@ package com.entourageapp.features.projects.presentation.projectlist
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.entourageapp.features.projects.domain.ProjectCard
-import com.entourageapp.features.projects.domain.usecases.GetProjectListUseCase
-import kotlinx.coroutines.delay
+import com.entourageapp.features.projects.domain.ProjectsRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-
 class ProjectListVM(
-    private val getProjectListUseCase: GetProjectListUseCase,
+    private val repository: ProjectsRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(ProjectListState())
-    val state: StateFlow<ProjectListState> = _state
-    private var allProjectCards = emptyList<ProjectCard>()
-    private var archiveProjectCards = emptyList<ProjectCard>()
+    val state: StateFlow<ProjectListState> = _state.asStateFlow()
 
+    private val _sideEffect = MutableSharedFlow<ProjectListSideEffect>()
+    val sideEffect: SharedFlow<ProjectListSideEffect> = _sideEffect.asSharedFlow()
+
+    private var currentProjectCards = emptyList<ProjectCard>()
+    private var archiveProjectCards = emptyList<ProjectCard>()
 
     fun handleIntent(intent: ProjectListIntent) {
         when (intent) {
             is ProjectListIntent.LoadProjects -> loadProjects()
-            is ProjectListIntent.FilterProjects -> filterProjects(intent.filter)
+            is ProjectListIntent.ChangeFilter -> changeFilter(intent.filter)
+            is ProjectListIntent.OpenProject -> {
+                viewModelScope.launch {
+                    _sideEffect.emit(ProjectListSideEffect.NavigateToProject(intent.id))
+                }
+            }
+            is ProjectListIntent.CreateProject -> {
+                viewModelScope.launch {
+                    _sideEffect.emit(ProjectListSideEffect.NavigateToCreateProject)
+                }
+            }
         }
     }
 
     private fun loadProjects() {
         viewModelScope.launch {
-            _state.update {
-                it.copy(isLoading = true)
+            repository.getProjectsList().onStart {
+                _state.update { it.copy(isLoading = true, error = null) }
+            }.catch {
+                _state.update { it.copy(isLoading = false, error = it.error) }
+            }.collect { projects ->
+                _state.update { currentState ->
+                    currentProjectCards = projects.filter { !it.isCompleted }
+                    archiveProjectCards = projects.filter { it.isCompleted }
+                    currentState.copy(
+                        isLoading = false,
+                        projectCards = if (currentState.projectFilter == ProjectFilter.CURRENT) currentProjectCards else archiveProjectCards,
+                        error = null
+                    )
+                }
             }
-            delay(1000)
-
-            getProjectListUseCase()
-                .catch { error ->
-                    _state.update { it.copy(isLoading = false, error = error.message.toString()) }
-                }
-                .collect { projects ->
-                    allProjectCards = projects
-                    archiveProjectCards = allProjectCards.filter { it.isCompleted }
-                    _state.update { currentState ->
-                        currentState.copy(
-                            isLoading = false,
-                            projectCards = when (currentState.projectFilter) {
-                                ProjectFilter.ALL -> allProjectCards
-                                ProjectFilter.ARCHIVE -> archiveProjectCards
-                            }
-                        )
-                    }
-                }
         }
     }
 
-    private fun filterProjects(filter: ProjectFilter) {
+    private fun changeFilter(filter: ProjectFilter) {
         _state.update { currentState ->
             currentState.copy(
                 projectFilter = filter,
                 projectCards = when (filter) {
-                    ProjectFilter.ALL -> allProjectCards
+                    ProjectFilter.CURRENT -> currentProjectCards
                     ProjectFilter.ARCHIVE -> archiveProjectCards
                 }
             )

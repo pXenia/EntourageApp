@@ -20,6 +20,19 @@ class DocumentListVM(
         when (intent) {
             is DocumentListIntent.LoadDocuments -> loadDocuments(intent.projectId)
             is DocumentListIntent.AddDocument -> addDocument(intent.projectId, intent.title, intent.url)
+            is DocumentListIntent.ShowDeleteDialog -> _state.update {
+                it.copy(showDeleteDialog = true, selectedDocId = intent.docId, selectedDocTitle = intent.docTitle)
+            }
+            is DocumentListIntent.DismissDeleteDialog -> _state.update {
+                it.copy(showDeleteDialog = false, selectedDocId = null, selectedDocTitle = "")
+            }
+            is DocumentListIntent.DeleteDocument -> deleteDocument(intent.projectId)
+            is DocumentListIntent.SetSearchVisibility -> _state.update {
+                it.copy(isSearchVisible = intent.isVisible, searchQuery = if (!intent.isVisible) "" else it.searchQuery)
+            }
+            is DocumentListIntent.UpdateSearchQuery -> _state.update {
+                it.copy(searchQuery = intent.query)
+            }
         }
     }
 
@@ -40,10 +53,23 @@ class DocumentListVM(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                repository.addDocument(projectId, title, url)
+                repository.createDocument(projectId, title, url)
                 loadDocuments(projectId)
             } catch (e: Exception) {
                 _state.update { it.copy(isLoading = false, error = e.message) }
+            }
+        }
+    }
+
+    private fun deleteDocument(projectId: Int) {
+        val docId = _state.value.selectedDocId ?: return
+        viewModelScope.launch {
+            try {
+                repository.deleteDocument(docId)
+                _state.update { it.copy(showDeleteDialog = false, selectedDocId = null, selectedDocTitle = "") }
+                loadDocuments(projectId)
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false, error = e.message, showDeleteDialog = false) }
             }
         }
     }

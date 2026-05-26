@@ -7,7 +7,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,10 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.entourageapp.core.ui.EntourageBlack
 import com.entourageapp.core.ui.EntourageLightBlueGray
-import com.entourageapp.core.ui.EntourageTeal
 import com.entourageapp.core.ui.components.CustomTextBar
+import com.entourageapp.core.ui.components.DialogButton
 
 @Composable
 fun AddDocDialog(
@@ -33,20 +31,17 @@ fun AddDocDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(
+            DialogButton(
+                text = "Добавить",
                 onClick = { onConfirm(title, url) },
                 enabled = title.isNotBlank() && url.isNotBlank()
-            ) {
-                Text(
-                    text = "Добавить",
-                    color = if (title.isNotBlank() && url.isNotBlank()) EntourageTeal else EntourageBlack.copy(alpha = 0.5f)
-                )
-            }
+            )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = "Отмена", color = EntourageBlack)
-            }
+            DialogButton(
+                text = "Отмена",
+                onClick = onDismiss
+            )
         },
         shape = RoundedCornerShape(28.dp),
         containerColor = EntourageLightBlueGray,
