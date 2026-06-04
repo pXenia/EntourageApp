@@ -50,12 +50,12 @@ fun BudgetOverview(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             BudgetCard(
-                title = "Потрачено",
+                title = "Расходы",
                 amount = spent,
                 modifier = Modifier.weight(1f)
             )
             BudgetCard(
-                title = "Запланировано",
+                title = "Бюджет",
                 amount = planned,
                 modifier = Modifier.weight(1f)
             )
@@ -119,7 +119,7 @@ fun BudgetProgressBar(
                 animationP = animationP / 3f
             )
             Text(
-                text = "${(progress * 100).toInt()}% бюджета потрачено",
+                text = "израсходовано ${(progress * 100).toInt()}% бюджета",
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
                 color = EntourageBlack
             )
@@ -137,7 +137,7 @@ fun BudgetSummaryTable(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SectionTitle("Затраты по категориям")
+        SectionTitle("Расходы по категориям")
 
         Column(
             modifier = modifier

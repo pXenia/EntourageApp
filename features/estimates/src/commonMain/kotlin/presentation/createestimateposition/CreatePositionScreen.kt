@@ -105,7 +105,7 @@ fun CreatePositionScreen(
     ) {
         ScreenTitle(
             modifier = Modifier.fillMaxWidth(),
-            title = if (itemId != null) "Редактирование позиции" else "Добавление в смету",
+            title = if (itemId != null) "Редактирование позиции" else "Добавление в список расходов",
             onBackClick = onBackClick
         )
 

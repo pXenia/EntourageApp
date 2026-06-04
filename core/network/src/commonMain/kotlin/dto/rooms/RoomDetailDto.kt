@@ -23,7 +23,7 @@ data class RoomDetailDto(
     val roomTotal: Float,
     @SerialName("project_share_percent")
     val projectSharePercent: Float,
-    @SerialName("estimate_items_count")
+    @SerialName("expense_items_count")
     val estimateItemsCount: Int,
     @SerialName("photo_count")
     val photoCount: Int,
