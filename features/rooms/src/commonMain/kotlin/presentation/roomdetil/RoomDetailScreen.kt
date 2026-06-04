@@ -133,7 +133,7 @@ fun RoomDetailScreen(
                 )
                 CardButton(
                     onClick = { onEstimateClick(projectId, roomId, roleId) },
-                    title = "Смета",
+                    title = "Расходы",
                     text = "${room.estimateItemsCount} ${getPlural(room.estimateItemsCount, "позиция", "позиции", "позиций")}",
                 )
             }

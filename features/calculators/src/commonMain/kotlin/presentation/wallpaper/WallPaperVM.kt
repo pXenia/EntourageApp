@@ -87,27 +87,25 @@ class WallpaperVM(
         } else {
             s.walls
                 .filter { it.id in s.selectedWallIds }
-                .map { it.length.toDouble() }
+                .map { it.length.toDouble() * 100 }
         }
 
         if (wallLengthsCm.isEmpty()) return
+        val totalPerimeterCm = wallLengthsCm.sum()
+
+        val marginCm = 5.0
+        val adjustedCeilingHeight = ceilingHeightCm + marginCm
 
         val effectiveStripLengthCm = if (patternRepeatCm > 0.0) {
-            ceil(ceilingHeightCm / patternRepeatCm) * patternRepeatCm
+            ceil(adjustedCeilingHeight / patternRepeatCm) * patternRepeatCm
         } else {
-            ceilingHeightCm
+            adjustedCeilingHeight
         }
-
         val stripsPerRoll = floor(rollLengthCm / effectiveStripLengthCm).toInt()
         if (stripsPerRoll == 0) return
-
-        val totalStrips = wallLengthsCm.sumOf { wallLength ->
-            ceil(wallLength / rollWidthCm).toInt()
-        }
-
-        val rolls = ceil(totalStrips.toDouble() / stripsPerRoll).toInt()
-        val withReserve = ceil(rolls * (1.0 + reservePercent / 100.0)).toInt()
-
+        val totalStrips = ceil(totalPerimeterCm / rollWidthCm).toInt()
+        val exactRolls = ceil(totalStrips.toDouble() / stripsPerRoll).toInt()
+        val withReserve = ceil(exactRolls * (1.0 + reservePercent / 100.0)).toInt()
         _state.update { it.copy(result = withReserve) }
     }
 }
