@@ -79,7 +79,7 @@ fun StatisticsScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                SectionTitle("Затраты по комнатам")
+                SectionTitle("Расходы по комнатам")
 
                 state.rooms.forEach { room ->
                     Column {

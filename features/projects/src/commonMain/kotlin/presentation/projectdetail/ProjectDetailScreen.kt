@@ -163,7 +163,7 @@ fun ProjectDetailScreen(
                     SectionButton(
                         modifier = Modifier.weight(1f),
                         onClick = { onEstimateClick(projectId, state.role) },
-                        title = "Смета",
+                        title = "Расходы",
                         icon = folder
                     )
                 }

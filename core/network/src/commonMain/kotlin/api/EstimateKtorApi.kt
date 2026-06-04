@@ -20,40 +20,40 @@ import io.ktor.http.contentType
 
 class EstimateKtorApi(private val client: HttpClient) : EstimateApi {
     override suspend fun getUnits(): List<MeasureUnitDto> =
-        client.get("estimate/units").body()
+        client.get("expense/units").body()
 
     override suspend fun getItemTypes(): List<EstimateItemTypeDto> =
-        client.get("estimate/item-types").body()
+        client.get("expense/item-types").body()
 
     override suspend fun getRooms(projectId: Int): List<RoomShortDto> =
         client.get("projects/$projectId/rooms/short").body()
 
     override suspend fun getEstimateList(projectId: Int, roomId: Int?): EstimateListDto =
-        client.get("projects/$projectId/estimates"){
+        client.get("projects/$projectId/expense"){
             roomId?.let { parameter("room_id", it) }
         }.body()
 
     override suspend fun addEstimateItem(projectId: Int, item: EstimateItemCreateDto) {
-        client.post("projects/$projectId/estimates") {
+        client.post("projects/$projectId/expense") {
             contentType(ContentType.Application.Json)
             setBody(item)
         }
     }
 
     override suspend fun getEstimateItem(itemId: Int): EstimateItemDto =
-        client.get("estimates/$itemId").body()
+        client.get("expense/$itemId").body()
 
     override suspend fun updateEstimateItem(itemId: Int, item: EstimateItemCreateDto) {
-        client.put("estimates/$itemId") {
+        client.put("expense/$itemId") {
             contentType(ContentType.Application.Json)
             setBody(item)
         }
     }
 
     override suspend fun deleteEstimateItem(itemId: Int) {
-        client.delete("estimates/$itemId")
+        client.delete("expense/$itemId")
     }
 
     override suspend fun exportEstimateXlsx(projectId: Int): ByteArray =
-        client.get("projects/$projectId/estimates/export").readBytes()
+        client.get("projects/$projectId/expense/export").readBytes()
 }

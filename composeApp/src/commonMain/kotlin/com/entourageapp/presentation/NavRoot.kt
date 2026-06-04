@@ -1,5 +1,12 @@
 package com.entourageapp.presentation
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -92,6 +99,22 @@ fun NavRoot(
         NavDisplay(
             modifier = modifier.fillMaxSize(),
             onBack = navigator::goBack,
+            // --- ОБЫЧНАЯ АНИМАЦИЯ (ПЛАВНОЕ ПОЯВЛЕНИЕ) ---
+            transitionSpec = {
+                // Вперед: новый экран плавно появляется, старый плавно исчезает
+                fadeIn(animationSpec = tween(500)) togetherWith
+                        fadeOut(animationSpec = tween(300))
+            },
+            popTransitionSpec = {
+                // Назад: точно так же плавно меняются местами
+                fadeIn(animationSpec = tween(500)) togetherWith
+                        fadeOut(animationSpec = tween(500))
+            },
+            predictivePopTransitionSpec = {
+                fadeIn(animationSpec = tween(500)) togetherWith
+                        fadeOut(animationSpec = tween(300))
+            },
+            // --------------------------------------------
             entries = navigationState.toEntries(
                 entryProvider {
                     authEntryBuilder(navigator)

@@ -146,7 +146,7 @@ fun EstimateListScreen(
                 ) {
                     ScreenTitleTwoButtons(
                         modifier = Modifier.padding(bottom = 8.dp),
-                        title = if (roomId == 0) "Смета по проекту" else "Смета по комнате",
+                        title = if (roomId == 0) "Расходы по проекту" else "Расходы по комнате",
                         leftIcon = arrowLeft,
                         rightIcon = print,
                         onLeftButtonClick = onBackClick,

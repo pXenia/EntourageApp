@@ -120,12 +120,6 @@ fun StageScreen(
             .systemBarsPadding()
             .padding(horizontal = 16.dp),
     ) {
-        if (state.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center),
-                color = EntourageTeal
-            )
-        }
 
         Column {
             ScreenTitle(

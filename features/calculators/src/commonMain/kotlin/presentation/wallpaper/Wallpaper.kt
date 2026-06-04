@@ -192,7 +192,7 @@ fun Wallpaper(
         if (projectId != 0 && state.result != 0) {
             AccentButton(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp).height(52.dp),
-                text = "Перенести в смету",
+                text = "Перенести в расходы",
                 onClick = { transferToEstimate(state.result) },
                 containerColor = EntouragePeachAlpha80,
                 contentColor = EntourageBlack
