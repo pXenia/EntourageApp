@@ -18,16 +18,13 @@
 * **Koin** (DI)
 * **Ktor** (Networking)
 
-## Сборка и Запуск
-
-### Android
-
-```shell
-./gradlew :composeApp:assembleDebug
-```
-
-### Web (Wasm)
-
-```shell
-./gradlew :composeApp:wasmJsBrowserDevelopmentRun
-```
+## Пример работы
+![](https://github.com/pXenia/EntourageApp/blob/master/photo/Frame%2030.png)
+![](https://github.com/pXenia/EntourageApp/blob/master/photo/Frame%2031.png)
+![](https://github.com/pXenia/EntourageApp/blob/master/photo/Frame%2032.png)
+![](https://github.com/pXenia/EntourageApp/blob/master/photo/Frame%2033.png)
+![](https://github.com/pXenia/EntourageApp/blob/master/photo/Frame%2034.png)
+![](https://github.com/pXenia/EntourageApp/blob/master/photo/Frame%2035.png)
+![](https://github.com/pXenia/EntourageApp/blob/master/photo/Frame%2036.png)
+![](https://github.com/pXenia/EntourageApp/blob/master/photo/Frame%2037.png)
+![](https://github.com/pXenia/EntourageApp/blob/master/photo/Frame%2038.png)
